@@ -21,11 +21,8 @@ body {
 
 
 .header {
-    background: #003366;
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: var(--primary-blue);
+    border-bottom: 4px solid var(--gold);
 }
 
 
