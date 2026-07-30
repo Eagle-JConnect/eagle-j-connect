@@ -397,3 +397,11 @@ height: 150px;
     border-top: 5px solid var(--gold);
     box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
+.card button {
+    background: var(--gold);
+    color: var(--primary-blue);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+}
