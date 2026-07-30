@@ -26,7 +26,10 @@ header {
     font-size: 24px;
     font-weight: bold;
 }
-
+.logo img {
+    width: 120px;
+    height: auto;
+}
 
 nav a {
     color: white;
