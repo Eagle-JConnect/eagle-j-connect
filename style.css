@@ -168,3 +168,41 @@ footer {
     }
 
 }
+.menu-btn {
+    display: none;
+    background: var(--gold);
+    color: var(--primary-blue);
+    border: none;
+    font-size: 25px;
+    padding: 8px 12px;
+}
+
+
+@media (max-width: 768px) {
+
+    .header {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .brand img {
+        width: 55px;
+        height: 55px;
+    }
+
+    .brand h2 {
+        font-size: 18px;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+    .nav-menu {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+    }
+
+}
