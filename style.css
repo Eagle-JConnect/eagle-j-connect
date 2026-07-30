@@ -154,12 +154,13 @@ button:hover {
 }
 
 
-.cards {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 30px;
-    flex-wrap: wrap;
+.card {
+    background: white;
+    padding: 30px;
+    width: 300px;
+    border-radius: 15px;
+    border-top: 5px solid var(--gold);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 
