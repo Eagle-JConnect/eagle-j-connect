@@ -1,74 +1,35 @@
 
-* root {
+:root {
     --primary-blue: #003366;
     --gold: #F4B400;
     --white: #FFFFFF;
     --light-bg: #F5F8FC;
     --text-dark: #222222;
 }
-{
+
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
 }
 
-
 body {
     background: var(--light-bg);
     color: var(--text-dark);
 }
 
+/* HEADER */
+
 .header {
     background: var(--primary-blue);
     border-bottom: 4px solid var(--gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    flex-wrap: wrap;
 }
-
-
-.brand h2 {
-    color: yellow;
-}
-
-.brand span {
-    color: yellow;
-}
-
-nav a {
-    color: yellow;
-    font-weight: bold;
-}
-
-.brand img {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-}
-
-
-.brand h2 {
-    color: white;
-    font-size: 24px;
-}
-
-
-.brand span {
-    color: white;
-    font-size: 14px;
-}
-
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 25px;
-    font-weight: bold;
-}
-
-
-nav a:hover {
-    opacity: 0.7;
-}
-
 
 .brand {
     display: flex;
@@ -76,52 +37,40 @@ nav a:hover {
     gap: 15px;
 }
 
-
 .brand img {
     width: 70px;
     height: 70px;
     object-fit: contain;
 }
 
-
 .brand h2 {
-    color: white;
+    color: var(--white);
     font-size: 24px;
+    margin: 0;
 }
 
-
 .brand span {
-    color: white;
+    color: var(--gold);
     font-size: 14px;
 }
 
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 25px;
-    font-weight: bold;
+nav {
+    display: flex;
+    gap: 20px;
 }
 
+nav a {
+    color: var(--white);
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
 
 nav a:hover {
-    opacity: 0.7;
+    color: var(--gold);
 }
 
-
-.logo img {
-    width: 80px;
-    height: auto;
-}
-
-
-
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 20px;
-}
-
+/* HERO */
 
 .hero {
     text-align: center;
@@ -129,59 +78,80 @@ nav a {
     background: white;
 }
 
-
 .hero h1 {
-    font-size: 40px;
+    font-size: 42px;
+    color: var(--primary-blue);
     margin-bottom: 20px;
 }
-
 
 .hero p {
     font-size: 20px;
     max-width: 700px;
     margin: auto;
+    line-height: 1.6;
 }
 
+/* BUTTON */
 
 button {
+    margin-top: 30px;
+    padding: 15px 35px;
     background: var(--gold);
     color: var(--primary-blue);
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
 }
 
 button:hover {
-    opacity: 0.85;
+    opacity: 0.9;
 }
+
+/* SERVICES */
 
 .services {
-    padding: 50px 20px;
+    padding: 60px 20px;
     text-align: center;
 }
 
+.services h2 {
+    color: var(--primary-blue);
+    margin-bottom: 40px;
+}
+
+.cards {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    flex-wrap: wrap;
+}
 
 .card {
     background: white;
-    padding: 30px;
     width: 300px;
+    padding: 30px;
     border-radius: 15px;
     border-top: 5px solid var(--gold);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 20px rgba(0,0,0,.1);
 }
 
-
-.card {
-    background: white;
-    padding: 30px;
-    width: 300px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px #ccc;
+.card h3 {
+    color: var(--primary-blue);
+    margin-bottom: 15px;
 }
 
+.card p {
+    line-height: 1.6;
+}
+
+/* FOOTER */
 
 footer {
-    background: #003366;
+    background: var(--primary-blue);
     color: white;
     text-align: center;
-    padding: 20px;
+    padding: 25px;
+    margin-top: 50px;
 }
