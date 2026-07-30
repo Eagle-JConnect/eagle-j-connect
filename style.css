@@ -242,3 +242,41 @@ footer {
     }
 
 }
+
+@media (max-width: 768px) {
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .menu-btn {
+        margin-left: auto;
+        order: 2;
+    }
+
+    .brand {
+        order: 1;
+    }
+
+    .nav-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 220px;
+        background: #003366;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .nav-menu a {
+        display: block;
+        padding: 12px;
+        border-bottom: none;
+        color: white;
+    }
+
+}
