@@ -199,10 +199,21 @@ footer {
     }
 
     .nav-menu {
+    display: flex;
+}
+
+@media (max-width: 768px) {
+
+    .nav-menu {
         display: none;
         width: 100%;
         flex-direction: column;
         text-align: center;
     }
+
+    .nav-menu.show {
+        display: flex;
+    }
+}
 
 }
