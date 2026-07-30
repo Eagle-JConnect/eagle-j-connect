@@ -280,3 +280,26 @@ footer {
     }
 
 }
+.logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.logo-area img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+.logo-area h2 {
+    color: white;
+    margin-top: 8px;
+    font-size: 22px;
+}
+
+.logo-area span {
+    color: #F4B400;
+    font-size: 14px;
+}
