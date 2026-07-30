@@ -405,3 +405,16 @@ height: 150px;
     border-radius: 8px;
     font-weight: bold;
 }
+.hero a {
+    text-decoration: none;
+}
+
+.hero button {
+    margin-top: 20px;
+    padding: 15px 30px;
+    background: #F4B400;
+    color: #003366;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
