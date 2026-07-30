@@ -25,12 +25,18 @@ body {
 }
 
 
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.brand h2 {
+    color: yellow;
 }
 
+.brand span {
+    color: yellow;
+}
+
+nav a {
+    color: yellow;
+    font-weight: bold;
+}
 
 .brand img {
     width: 70px;
