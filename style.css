@@ -55,6 +55,7 @@ body {
 }
 
 nav {
+    border-bottom: none;
     display: flex;
     gap: 15px;
     align-items: center;
