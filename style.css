@@ -303,3 +303,22 @@ footer {
     color: #F4B400;
     font-size: 14px;
 }
+.logo-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.logo-area img {
+    width: 70px;
+    height: 70px;
+}
+
+.logo-area h2 {
+    color: white;
+    margin: 5px 0;
+}
+
+.logo-area span {
+    color: #F4B400;
+}
