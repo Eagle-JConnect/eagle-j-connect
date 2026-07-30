@@ -12,13 +12,51 @@ body {
 }
 
 
-header {
+.header {
     background: #003366;
-    color: white;
-    padding: 20px;
+    padding: 15px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+
+.brand img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+
+
+.brand h2 {
+    color: white;
+    font-size: 24px;
+}
+
+
+.brand span {
+    color: white;
+    font-size: 14px;
+}
+
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 25px;
+    font-weight: bold;
+}
+
+
+nav a:hover {
+    opacity: 0.7;
 }
 
 
