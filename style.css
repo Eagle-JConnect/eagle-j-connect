@@ -1,11 +1,12 @@
-:root {
+
+* root {
     --primary-blue: #003366;
     --gold: #F4B400;
     --white: #FFFFFF;
     --light-bg: #F5F8FC;
     --text-dark: #222222;
 }
-* {
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
