@@ -219,23 +219,25 @@ footer {
 }
 @media (max-width: 768px) {
 
+    .header {
+        flex-wrap: wrap;
+    }
+
     .nav-menu {
-        background: var(--primary-blue);
+        background: #003366 !important;
+        width: 100% !important;
+        flex-direction: column !important;
+        text-align: center;
         padding: 20px;
-        border-radius: 10px;
         margin-top: 15px;
+        border-radius: 10px;
     }
 
     .nav-menu a {
-        display: block;
-        padding: 12px;
-        color: white;
+        display: block !important;
+        color: white !important;
+        padding: 15px;
         font-size: 18px;
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-    }
-
-    .nav-menu a:last-child {
-        border-bottom: none;
     }
 
 }
