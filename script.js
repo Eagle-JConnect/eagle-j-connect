@@ -1,6 +1,12 @@
-const menuBtn = document.querySelector(".menu-btn");
-const navMenu = document.querySelector(".nav-menu");
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("Eagle-J Connect ap mache!");
 
-menuBtn.onclick = function() {
-    navMenu.classList.toggle("show");
-};
+    const forms = document.querySelectorAll("form");
+
+    forms.forEach(form => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            alert("Fonksyon sa a ap disponib byento. Mèsi paske w ap teste Eagle-J Connect!");
+        });
+    });
+});
