@@ -473,3 +473,36 @@ height: 150px;
     font-size: 30px;
     cursor: pointer;
 }
+.header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-icon {
+    font-size: 30px;
+    color: white;
+    cursor: pointer;
+}
+
+#menu {
+    position: absolute;
+    top: 80px;
+    right: 0;
+    background: #003366;
+    width: 200px;
+    display: none;
+    flex-direction: column;
+    padding: 15px;
+}
+
+#menu.show {
+    display: flex;
+}
+
+#menu a {
+    color: white;
+    padding: 12px;
+    text-decoration: none;
+}
