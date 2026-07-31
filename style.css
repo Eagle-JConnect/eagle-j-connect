@@ -442,14 +442,3 @@ height: 150px;
     align-items: center;
     padding: 15px 20px;
 }
-#menu {
-    display: none;
-}
-.menu-icon {
-    display: block;
-
-    font-size: 30px;
-    color: white;
-    cursor: pointer;
-    margin-left: auto;
-}
