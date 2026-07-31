@@ -453,20 +453,3 @@ height: 150px;
     cursor: pointer;
     margin-left: auto;
 }
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-}
-
-.menu-icon {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-}
