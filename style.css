@@ -442,7 +442,9 @@ height: 150px;
     align-items: center;
     padding: 15px 20px;
 }
-
+#menu {
+    display: none;
+}
 .menu-icon {
     display: block;
 
@@ -450,4 +452,18 @@ height: 150px;
     color: white;
     cursor: pointer;
     margin-left: auto;
+}
+#menu {
+    position: absolute;
+    top: 90px;
+    right: 0;
+    width: 200px;
+    background: #003366;
+    padding: 20px;
+}
+
+#menu a {
+    display: block;
+    color: white;
+    padding: 10px;
 }
