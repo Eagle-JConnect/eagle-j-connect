@@ -2,80 +2,271 @@
 <html lang="ht">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eagle-J Connect | Travay</title>
-    <link rel="stylesheet" href="style.css">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Eagle-J Connect | Travay</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
+
 <header class="header">
 
-    <div class="brand">
-        <div class="logo-area">
-            <img src="Logo.jpg" alt="Eagle-J Connect Logo">
-            <h2>Eagle-J Connect</h2>
-            <span>Ayiti + Bahamas</span>
-        </div>
-    </div>
 
-    <nav>
-        <a href="index.html">Akèy</a>
-        <a href="travay.html">Travay</a>
-        <a href="biznis.html">Biznis</a>
-        <a href="kontak.html">Kontak</a>
-    </nav>
+<div class="brand">
+
+<div class="logo-area">
+
+<img src="Logo.jpg" alt="Eagle-J Connect Logo">
+
+<h2>Eagle-J Connect</h2>
+
+<span>Ayiti + Bahamas</span>
+
+</div>
+
+</div>
+
+
+
+<div class="menu-icon" onclick="toggleMenu()">
+☰
+</div>
+
+
+
+<nav id="menu">
+
+
+<a id="nav-home" href="index.html">Akèy</a>
+
+<a id="nav-jobs" href="travay.html">Travay</a>
+
+<a id="nav-business" href="biznis.html">Biznis</a>
+
+<a id="nav-contact" href="kontak.html">Kontak</a>
+
+
+<div class="language">
+
+<select id="languageSelect" onchange="changeLanguage()">
+
+<option value="ht">🇭🇹 Kreyòl</option>
+
+<option value="en">🇺🇸 English</option>
+
+<option value="fr">🇫🇷 Français</option>
+
+</select>
+
+</div>
+
+
+</nav>
+
 
 </header>
 
 
-<section class="services">
 
-<h1>Opòtinite Travay</h1>
 
-<p>
-    Jwenn travay ki disponib nan Bahamas ak Ayiti.
+
+<section class="hero">
+
+
+<h1 id="jobs-title">
+
+Opòtinite Travay
+
+</h1>
+
+
+<p id="jobs-description">
+
+Jwenn travay ki disponib nan Bahamas ak Ayiti.
+
 </p>
 
 
-<div class="cards">
 
-<div class="card">
-<h3>Travay Restoran</h3>
-<p>
-Pozisyon disponib pou moun ki gen eksperyans nan sèvis.
-</p>
-</div>
+<input type="text" 
+placeholder="Chèche travay..."
+class="search-box">
 
 
-<div class="card">
-<h3>Konstriksyon</h3>
-<p>
-Opòtinite pou travayè nan domèn konstriksyon.
-</p>
-</div>
-
-
-<div class="card">
-<h3>Teknoloji</h3>
-<p>
-Travay pou moun ki enterese nan teknoloji ak entènèt.
-</p>
-</div>
-
-
-</div>
 
 </section>
 
 
-<footer>
+
+
+
+
+<section class="services">
+
+
+<h2 id="category-title">
+
+Kategori Travay
+
+</h2>
+
+
+
+
+<div class="cards">
+
+
+
+<div class="card">
+
+<h3>🍽️ Restoran</h3>
+
 <p>
-© 2026 Eagle-J Connect Bahamas + Ayiti
+Pozisyon pou moun ki gen eksperyans nan sèvis kliyan, kwizin ak administrasyon.
 </p>
+
+<button>
+Aplike
+</button>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h3>🏗️ Konstriksyon</h3>
+
+<p>
+Opòtinite pou travayè nan domèn konstriksyon.
+</p>
+
+<button>
+Aplike
+</button>
+
+</div>
+
+
+
+
+
+<div class="card">
+
+<h3>💻 Teknoloji</h3>
+
+<p>
+Travay pou moun ki enterese nan teknoloji ak entènèt.
+</p>
+
+<button>
+Aplike
+</button>
+
+</div>
+
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section class="about">
+
+
+<h2>
+Kijan sa mache?
+</h2>
+
+
+<div class="cards">
+
+
+<div class="card">
+
+<h3>1️⃣ Kreye Kont</h3>
+
+<p>
+Enskri pou kreye pwofil ou.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>2️⃣ Chèche Travay</h3>
+
+<p>
+Jwenn opòtinite ki adapte ak ou.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<h3>3️⃣ Aplike</h3>
+
+<p>
+Kontakte anplwayè a.
+</p>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+
+<footer>
+
+
+<h3>
+Eagle-J Connect
+</h3>
+
+
+<p>
+Konekte Opòtinite ant Ayiti ak Bahamas.
+</p>
+
+
+<p>
+© 2026 Eagle-J Connect
+</p>
+
+
 </footer>
 
+
+
+
+<script src="language.js"></script>
+
 <script src="script.js"></script>
+
+
 </body>
+
 </html>
