@@ -531,3 +531,41 @@ footer p{
 .stat-box:hover{
     transform:translateY(-8px);
 }
+/* FIX LOGO HEADER */
+
+.brand{
+    display:flex !important;
+    align-items:center !important;
+}
+
+.logo-area{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    gap:10px;
+}
+
+.logo-area img{
+    display:block !important;
+    width:60px !important;
+    height:60px !important;
+    object-fit:contain !important;
+}
+
+.logo-area h2{
+    display:block !important;
+    color:white !important;
+    margin:0 !important;
+}
+
+.logo-area span{
+    display:block !important;
+    color:#F4B400 !important;
+}
+
+
+/* MENU ICON A DWA */
+
+.menu-icon{
+    margin-left:auto !important;
+}
