@@ -139,4 +139,35 @@ item.innerHTML = elements[id];
 
 }
 
+
+// Sove lang ou chwazi a
+localStorage.setItem("selectedLanguage", lang);
+
 }
+
+
+
+
+// Chaje dènye lang lan lè nenpòt paj ouvri
+
+document.addEventListener("DOMContentLoaded", function(){
+
+let savedLanguage = localStorage.getItem("selectedLanguage");
+
+
+if(savedLanguage){
+
+let selector = document.getElementById("languageSelect");
+
+
+if(selector){
+
+selector.value = savedLanguage;
+
+changeLanguage();
+
+}
+
+}
+
+});
