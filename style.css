@@ -972,37 +972,91 @@ footer p{
    DESKTOP
 ====================================== */
 
-@media (min-width:769px){
+/* FINAL HEADER FIX */
+
+.header{
+    width:100%;
+    height:80px;
+    background:#003366;
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    padding:10px 40px;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:1000;
+}
+
+.brand{
+    display:flex !important;
+    align-items:center !important;
+}
+
+.logo-area{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    gap:10px;
+    text-align:left !important;
+}
+
+.logo-area img{
+    width:60px;
+    height:60px;
+}
+
+#menu{
+    display:flex !important;
+    flex-direction:row !important;
+    gap:25px;
+    position:static !important;
+    background:none !important;
+    width:auto !important;
+}
+
+#menu a{
+    color:white;
+    text-decoration:none;
+}
 
 .menu-icon{
     display:none;
 }
 
+
+@media(max-width:768px){
+
+.header{
+    padding:10px 20px;
+}
+
+.menu-icon{
+    display:block;
+}
+
 #menu{
+    display:none !important;
+    position:absolute !important;
+    top:80px;
+    right:0;
+    width:220px !important;
+    background:#003366 !important;
+    flex-direction:column !important;
+    padding:20px;
+}
+
+#menu.show{
     display:flex !important;
-    position:static;
-    width:auto;
-    background:none
-   
-.header {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
 }
 
-.brand {
-    width: auto !important;
+.logo-area h2{
+    font-size:17px;
 }
 
-.logo-area {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
+.logo-area span{
+    display:none;
 }
 
-#menu {
-    display: flex !important;
-    flex-direction: row !important;
-    margin-left: auto !important;
 }
