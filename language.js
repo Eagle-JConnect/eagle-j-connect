@@ -1,6 +1,7 @@
 const translations = {
 
 en: {
+
 "nav-home":"Home",
 "nav-jobs":"Jobs",
 "nav-business":"Business",
@@ -22,13 +23,24 @@ en: {
 
 "jobs-title":"Job Opportunities",
 "jobs-description":"Find available jobs in Bahamas and Haiti.",
-"category-title":"Job Categories"
+"category-title":"Job Categories",
+
+"search-job":"Search jobs...",
+
+"apply-button":"Apply",
+
+"how-title":"How does it work?",
+
+"step-one":"1️⃣ Create Account",
+"step-two":"2️⃣ Search Jobs",
+"step-three":"3️⃣ Apply"
 
 },
 
 
 
 fr: {
+
 "nav-home":"Accueil",
 "nav-jobs":"Emplois",
 "nav-business":"Entreprise",
@@ -50,13 +62,24 @@ fr: {
 
 "jobs-title":"Opportunités d'emploi",
 "jobs-description":"Trouvez les emplois disponibles aux Bahamas et en Haïti.",
-"category-title":"Catégories d'emploi"
+"category-title":"Catégories d'emploi",
+
+"search-job":"Rechercher un emploi...",
+
+"apply-button":"Postuler",
+
+"how-title":"Comment ça marche ?",
+
+"step-one":"1️⃣ Créer un compte",
+"step-two":"2️⃣ Chercher un emploi",
+"step-three":"3️⃣ Postuler"
 
 },
 
 
 
 ht: {
+
 "nav-home":"Akèy",
 "nav-jobs":"Travay",
 "nav-business":"Biznis",
@@ -78,7 +101,17 @@ ht: {
 
 "jobs-title":"Opòtinite Travay",
 "jobs-description":"Jwenn travay ki disponib nan Bahamas ak Ayiti.",
-"category-title":"Kategori Travay"
+"category-title":"Kategori Travay",
+
+"search-job":"Chèche travay...",
+
+"apply-button":"Aplike",
+
+"how-title":"Kijan sa mache?",
+
+"step-one":"1️⃣ Kreye Kont",
+"step-two":"2️⃣ Chèche Travay",
+"step-three":"3️⃣ Aplike"
 
 }
 
