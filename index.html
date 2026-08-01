@@ -37,18 +37,24 @@
 
 <nav id="menu">
 
-<a href="index.html">Akèy</a>
-<a href="travay.html">Travay</a>
-<a href="biznis.html">Biznis</a>
-<a href="kontak.html">Kontak</a>
-<a href="enskri.html">Enskri</a>
+<a id="nav-home" href="index.html">Akèy</a>
+
+<a id="nav-jobs" href="travay.html">Travay</a>
+
+<a id="nav-business" href="biznis.html">Biznis</a>
+
+<a id="nav-contact" href="kontak.html">Kontak</a>
+
+<a id="nav-register" href="enskri.html">Enskri</a>
+
 <div class="language">
-    <select id="languageSelect" onchange="changeLanguage()">
-        <option value="ht">🇭🇹 Kreyòl</option>
-        <option value="en">🇺🇸 English</option>
-        <option value="fr">🇫🇷 Français</option>
-    </select>
+<select id="languageSelect" onchange="changeLanguage()">
+<option value="ht">🇭🇹 Kreyòl</option>
+<option value="en">🇺🇸 English</option>
+<option value="fr">🇫🇷 Français</option>
+</select>
 </div>
+
 </nav>
 
 </header>
@@ -56,32 +62,26 @@
 
 <section class="hero">
 
-<h1>
+<h1 id="hero-title">
 Konekte Opòtinite ant Ayiti ak Bahamas
 </h1>
 
-<p>
-
+<p id="hero-text">
 Jwenn travay, devlope biznis ou, pataje sèvis ou epi konekte ak kominote a.
-
 </p>
 
 <div class="hero-buttons">
 
 <a href="enskri.html">
-
-<button>
+<button id="create-account">
 Kreye Kont
 </button>
-
 </a>
 
 <a href="travay.html">
-
-<button class="secondary-btn">
+<button id="find-job" class="secondary-btn">
 Chèche Travay
 </button>
-
 </a>
 
 </div>
@@ -345,8 +345,8 @@ Konekte Opòtinite ant Ayiti ak Bahamas.
 
 </footer>
 
+<script src="language.js"></script>
 <script src="script.js"></script>
-
 </body>
 
 </html>
