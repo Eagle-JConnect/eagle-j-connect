@@ -154,20 +154,48 @@ document.addEventListener("DOMContentLoaded", function(){
 
 let savedLanguage = localStorage.getItem("selectedLanguage");
 
-
-if(savedLanguage){
-
 let selector = document.getElementById("languageSelect");
 
 
-if(selector){
+if(savedLanguage && selector){
 
 selector.value = savedLanguage;
 
-changeLanguage();
-
-}
+applyLanguage(savedLanguage);
 
 }
 
 });
+
+
+
+function changeLanguage(){
+
+let lang = document.getElementById("languageSelect").value;
+
+localStorage.setItem("selectedLanguage", lang);
+
+applyLanguage(lang);
+
+}
+
+
+
+function applyLanguage(lang){
+
+let elements = translations[lang];
+
+
+for(let id in elements){
+
+let item = document.getElementById(id);
+
+if(item){
+
+item.innerHTML = elements[id];
+
+}
+
+}
+
+}
