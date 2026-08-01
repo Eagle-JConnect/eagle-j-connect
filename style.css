@@ -983,3 +983,26 @@ footer p{
     position:static;
     width:auto;
     background:none
+   
+.header {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+}
+
+.brand {
+    width: auto !important;
+}
+
+.logo-area {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+}
+
+#menu {
+    display: flex !important;
+    flex-direction: row !important;
+    margin-left: auto !important;
+}
