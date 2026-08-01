@@ -1377,3 +1377,45 @@ body{
     font-weight:bold;
     cursor:pointer;
 }
+/* ===== HEADER FINAL ALIGNMENT ===== */
+
+.header{
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+}
+
+
+.logo-area{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    gap:10px;
+}
+
+
+.logo-area img{
+    width:55px !important;
+    height:55px !important;
+}
+
+
+.logo-area h2{
+    margin:0 !important;
+    white-space:nowrap;
+}
+
+
+.logo-area span{
+    margin-left:5px !important;
+    white-space:nowrap;
+}
+
+
+#menu{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    gap:20px;
+}
