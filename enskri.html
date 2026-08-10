@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>Enskri | Eagle-J Connect</title>
+    <title>Konekte | Eagle-J Connect</title>
 
     <link rel="stylesheet"
           href="style.css">
@@ -47,8 +47,6 @@
     </div>
 
 
-    <!-- MOBILE MENU BUTTON -->
-
     <button
         type="button"
         class="menu-toggle"
@@ -58,8 +56,6 @@
         ☰
     </button>
 
-
-    <!-- NAVIGATION -->
 
     <nav id="menu">
 
@@ -83,10 +79,6 @@
             Enskri
         </a>
 
-        <a href="login.html">
-            Konekte
-        </a>
-
     </nav>
 
 </header>
@@ -94,26 +86,23 @@
 
 
 <!-- =========================
-     REGISTER
+     LOGIN
 ========================= -->
 
 <section class="services">
 
     <h1>
-        Kreye Kont Ou
+        Konekte sou kont ou
     </h1>
 
 
     <p>
-        Kreye yon kont pou jwenn travay,
-        poste travay oswa devlope biznis ou.
+        Antre email ak modpas ou pou kontinye.
     </p>
 
 
-    <!-- MESSAGE -->
-
     <p
-        id="registerMessage"
+        id="loginMessage"
         style="
             text-align:center;
             font-weight:bold;
@@ -122,112 +111,37 @@
     ></p>
 
 
-    <!-- REGISTER FORM -->
-
     <form
-        id="registerForm"
+        id="loginForm"
         class="business-form"
     >
 
-
-        <!-- FULL NAME -->
-
-        <input
-            type="text"
-            id="fullName"
-            placeholder="Non konplè"
-            autocomplete="name"
-            required
-        >
-
-
-        <!-- EMAIL -->
-
         <input
             type="email"
-            id="email"
+            id="loginEmail"
             placeholder="Imèl"
             autocomplete="email"
             required
         >
 
 
-        <!-- PHONE -->
-
-        <input
-            type="tel"
-            id="phone"
-            placeholder="Telefòn oswa WhatsApp"
-            autocomplete="tel"
-            required
-        >
-
-
-        <!-- ACCOUNT TYPE -->
-
-        <select
-            id="accountType"
-            required
-        >
-
-            <option
-                value=""
-            >
-                Chwazi kalite kont
-            </option>
-
-            <option
-                value="job_seeker"
-            >
-                👤 Moun k ap chèche travay
-            </option>
-
-            <option
-                value="employer"
-            >
-                🏢 Anplwayè
-            </option>
-
-        </select>
-
-
-        <!-- PASSWORD -->
-
         <input
             type="password"
-            id="password"
+            id="loginPassword"
             placeholder="Modpas"
-            autocomplete="new-password"
-            minlength="6"
+            autocomplete="current-password"
             required
         >
 
-
-        <!-- CONFIRM PASSWORD -->
-
-        <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Konfime modpas"
-            autocomplete="new-password"
-            minlength="6"
-            required
-        >
-
-
-        <!-- SUBMIT -->
 
         <button
             type="submit"
         >
-            🚀 Kreye Kont
+            🔐 Konekte
         </button>
-
 
     </form>
 
-
-    <!-- LOGIN LINK -->
 
     <p
         style="
@@ -236,24 +150,17 @@
         "
     >
 
-        Ou deja gen yon kont?
+        Ou poko gen kont?
 
-        <a
-            href="login.html"
-        >
-            Konekte
+        <a href="enskri.html">
+            Kreye yon kont
         </a>
 
     </p>
 
-
 </section>
 
 
-
-<!-- =========================
-     FOOTER
-========================= -->
 
 <footer>
 
@@ -261,26 +168,19 @@
         Eagle-J Connect
     </h3>
 
-
     <p>
         Konekte Opòtinite ant Ayiti ak Bahamas.
     </p>
 
-
     <p>
-        © 2026 Eagle-J Connect Bahamas + Ayiti
+        © 2026 Eagle-J Connect
     </p>
 
 </footer>
 
 
 
-<!-- =========================
-     JAVASCRIPT
-========================= -->
-
 <script src="script.js"></script>
-
 
 </body>
 
