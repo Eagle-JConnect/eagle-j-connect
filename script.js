@@ -773,7 +773,7 @@ async function loadBusinesses() {
                             SUPABASE_KEY,
 
                         "Authorization":
-                            `Bearer ${SUPABASE_KEY}`
+                            `Bearer ${sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr}`
 
                     }
 
