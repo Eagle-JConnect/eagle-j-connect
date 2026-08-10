@@ -3,12 +3,15 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>Eagle-J Connect | Kontak</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="style.css">
+    <title>Eagle-J Connect | Kontak</title>
+
+    <link rel="stylesheet"
+          href="style.css">
 
 </head>
 
@@ -16,81 +19,159 @@
 <body>
 
 
+<!-- =========================
+     HEADER
+========================= -->
+
 <header class="header">
 
-<div class="brand">
+    <div class="brand">
 
-<div class="logo-area">
+        <div class="logo-area">
 
-<img src="Logo.jpg" alt="Eagle-J Connect Logo">
+            <img
+                src="Logo.jpg"
+                alt="Eagle-J Connect Logo"
+            >
 
-<h2>Eagle-J Connect</h2>
+            <h2>
+                Eagle-J Connect
+            </h2>
 
-<span>Ayiti + Bahamas</span>
+            <span>
+                Ayiti + Bahamas
+            </span>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 
-<nav>
+    <!-- =========================
+         MOBILE MENU BUTTON
+    ========================== -->
 
-<a href="index.html">Akèy</a>
-<a href="travay.html">Travay</a>
-<a href="biznis.html">Biznis</a>
-<a href="kontak.html">Kontak</a>
+    <button
+        type="button"
+        class="menu-toggle"
+        onclick="toggleMenu()"
+        aria-label="Louvri meni"
+    >
+        ☰
+    </button>
 
-</nav>
+
+    <!-- =========================
+         NAVIGATION MENU
+    ========================== -->
+
+    <nav id="menu">
+
+        <a href="index.html">
+            Akèy
+        </a>
+
+        <a href="travay.html">
+            Travay
+        </a>
+
+        <a href="biznis.html">
+            Biznis
+        </a>
+
+        <a href="kontak.html">
+            Kontak
+        </a>
+
+    </nav>
 
 </header>
 
 
 
+<!-- =========================
+     CONTACT SECTION
+========================= -->
+
 <section class="services">
 
-<h1>Kontakte Nou</h1>
-
-<p>
-Nou la pou ede w jwenn opòtinite ak koneksyon.
-</p>
+    <h1>
+        Kontakte Nou
+    </h1>
 
 
-<form class="business-form">
+    <p>
+        Nou la pou ede w jwenn opòtinite
+        ak koneksyon.
+    </p>
 
 
-<input type="text" placeholder="Non ou">
+    <!-- =========================
+         CONTACT FORM
+    ========================== -->
+
+    <form class="business-form">
 
 
-<input type="email" placeholder="Imèl ou">
+        <input
+            type="text"
+            placeholder="Non ou"
+        >
 
 
-<input type="text" placeholder="Telefòn oswa WhatsApp">
+        <input
+            type="email"
+            placeholder="Imèl ou"
+        >
 
 
-<textarea placeholder="Mesaj ou"></textarea>
+        <input
+            type="text"
+            placeholder="Telefòn oswa WhatsApp"
+        >
 
 
-<button>
-Voye Mesaj
-</button>
+        <textarea
+            placeholder="Mesaj ou"
+        ></textarea>
 
 
-</form>
+        <button
+            type="button"
+        >
+            Voye Mesaj
+        </button>
 
+
+    </form>
 
 </section>
 
 
 
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer>
 
-<p>
-© 2026 Eagle-J Connect Bahamas + Ayiti
-</p>
+    <p>
+        © 2026 Eagle-J Connect Bahamas + Ayiti
+    </p>
 
 </footer>
+
+
+
+<!-- =========================
+     SCRIPTS
+========================= -->
+
 <script src="language.js"></script>
+
 <script src="script.js"></script>
+
+
 </body>
 
 </html>
