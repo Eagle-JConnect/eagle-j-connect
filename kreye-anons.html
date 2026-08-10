@@ -223,10 +223,15 @@
     name="businessImages"
     accept="image/*"
     multiple
+    onchange="limitBusinessImages(this)"
 >
 <small style="color:#666;">
-    Ou ka chwazi jiska 5 foto.
+    📸 Ou ka chwazi jiska 5 foto.
 </small>
+
+<p id="imageMessage"
+   style="color:red; margin-top:8px;">
+</p>
 
 
             <!-- BOUTON -->
