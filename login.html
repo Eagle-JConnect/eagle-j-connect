@@ -1,476 +1,499 @@
-<!DOCTYPE html>
-<html lang="ht">
+<!DOCTYPE html><html lang="ht"><head><meta charset="UTF-8">
 
-<head>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <meta charset="UTF-8">
+<title>Konekte | Eagle-J Connect</title>
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet"
+      href="style.css">
 
-    <title>Konekte | Eagle-J Connect</title>
-
-    <link rel="stylesheet"
-          href="style.css">
-
-</head>
-
-
-<body>
-
-
-<!-- =========================
+</head><body><!-- =========================
      HEADER
-========================= -->
+========================= --><header class="header"><div class="brand">
 
-<header class="header">
+    <div class="logo-area">
 
-    <div class="brand">
+        <img
+            src="Logo.jpg"
+            alt="Eagle-J Connect Logo"
+        >
 
-        <div class="logo-area">
+        <h2>
+            Eagle-J Connect
+        </h2>
 
-            <img
-                src="Logo.jpg"
-                alt="Eagle-J Connect Logo"
-            >
-
-            <h2>
-                Eagle-J Connect
-            </h2>
-
-            <span>
-                Ayiti + Bahamas
-            </span>
-
-        </div>
+        <span>
+            Ayiti + Bahamas
+        </span>
 
     </div>
 
+</div>
+
+
+<button
+    type="button"
+    class="menu-toggle"
+    onclick="toggleMenu()"
+    aria-label="Louvri meni"
+>
+    ☰
+</button>
+
+
+<nav id="menu">
+
+    <a href="index.html">
+        Akèy
+    </a>
+
+    <a href="travay.html">
+        Travay
+    </a>
+
+    <a href="biznis.html">
+        Biznis
+    </a>
+
+    <a href="kontak.html">
+        Kontak
+    </a>
+
+    <a href="enskri.html">
+        Enskri
+    </a>
+
+</nav>
+
+</header><!-- =========================
+     LOGIN
+========================= --><section class="services"><h1>
+    Konekte sou kont ou
+</h1>
+
+
+<p>
+    Antre email ak modpas ou pou kontinye.
+</p>
+
+
+<p
+    id="loginMessage"
+    style="
+        text-align:center;
+        font-weight:bold;
+        margin:15px 0;
+    "
+></p>
+
+
+<form
+    id="loginForm"
+    class="business-form"
+>
+
+    <input
+        type="email"
+        id="loginEmail"
+        placeholder="Imèl"
+        autocomplete="email"
+        required
+    >
+
+
+    <input
+        type="password"
+        id="loginPassword"
+        placeholder="Modpas"
+        autocomplete="current-password"
+        required
+    >
+
 
     <button
-        type="button"
-        class="menu-toggle"
-        onclick="toggleMenu()"
-        aria-label="Louvri meni"
+        type="submit"
     >
-        ☰
+        🔐 Konekte
     </button>
 
-
-    <nav id="menu">
-
-        <a href="index.html">
-            Akèy
-        </a>
-
-        <a href="travay.html">
-            Travay
-        </a>
-
-        <a href="biznis.html">
-            Biznis
-        </a>
-
-        <a href="kontak.html">
-            Kontak
-        </a>
-
-        <a href="enskri.html">
-            Enskri
-        </a>
-
-        <a href="login.html">
-            Konekte
-        </a>
-
-    </nav>
-
-</header>
+</form>
 
 
+<p
+    style="
+        text-align:center;
+        margin-top:20px;
+    "
+>
 
-<!-- =========================
-     LOGIN SECTION
-========================= -->
+    Ou poko gen kont?
 
-<section class="services">
+    <a href="enskri.html">
+        Kreye yon kont
+    </a>
 
-    <h1>
-        🔐 Konekte sou kont ou
-    </h1>
+</p>
 
-
-    <p>
-        Antre imèl ak modpas ou pou
-        jwenn aksè ak espas pèsonèl ou.
-    </p>
-
-
-    <form
-        id="loginForm"
-        class="business-form"
-    >
-
-
-        <!-- EMAIL -->
-
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="Imèl"
-            autocomplete="email"
-            required
-        >
-
-
-        <!-- PASSWORD -->
-
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Modpas"
-            autocomplete="current-password"
-            required
-        >
-
-
-        <!-- MESSAGE -->
-
-        <p
-            id="loginMessage"
-            style="
-                text-align:center;
-                font-weight:bold;
-                margin:10px 0;
-            "
-        ></p>
-
-
-        <!-- LOGIN BUTTON -->
-
-        <button
-            type="submit"
-        >
-            🔐 Konekte
-        </button>
-
-
-    </form>
-
-
-    <!-- REGISTER LINK -->
-
-    <p
-        style="
-            text-align:center;
-            margin-top:20px;
-        "
-    >
-
-        Ou poko gen kont?
-
-        <a
-            href="enskri.html"
-        >
-            Kreye Kont
-        </a>
-
-    </p>
-
-
-</section>
-
-
-
-<!-- =========================
+</section><!-- =========================
      FOOTER
-========================= -->
+========================= --><footer><h3>
+    Eagle-J Connect
+</h3>
 
-<footer>
+<p>
+    Konekte Opòtinite ant Ayiti ak Bahamas.
+</p>
 
-    <p>
-        © 2026 Eagle-J Connect Bahamas + Ayiti
-    </p>
+<p>
+    © 2026 Eagle-J Connect
+</p>
 
-</footer>
-
-
-
-<!-- =========================
+</footer><!-- =========================
      SCRIPT
-========================= -->
+========================= --><script src="script.js"></script><script>
 
-<script src="script.js"></script>
+/* ======================================
+   EAGLE-J CONNECT LOGIN
+====================================== */
+
+const SUPABASE_URL =
+    "https://glwyqrvufmjscjbbszzz.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 
 
-<script>
+const loginForm =
+    document.getElementById("loginForm");
+
+
+if (loginForm) {
+
+    loginForm.addEventListener(
+        "submit",
+        loginUser
+    );
+
+}
+
 
 /* ======================================
    LOGIN USER
 ====================================== */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+async function loginUser(event) {
+
+    event.preventDefault();
 
 
-        const loginForm =
-            document.getElementById(
-                "loginForm"
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+
+    const message =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    message.textContent =
+        "⏳ Nap konekte...";
+
+    message.style.color =
+        "#003366";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_KEY
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            password:
+                                password
+
+                        })
+
+                }
             );
 
 
-        if (!loginForm) {
+        const data =
+            await response.json();
+
+
+        /* ======================================
+           LOGIN ERROR
+        ====================================== */
+
+        if (!response.ok) {
+
+            console.error(
+                "LOGIN ERROR:",
+                data
+            );
+
+
+            let errorMessage =
+                "Email oswa modpas la pa kòrèk.";
+
+
+            if (
+                data.error_description
+            ) {
+
+                errorMessage =
+                    data.error_description;
+
+            }
+            else if (
+                data.msg
+            ) {
+
+                errorMessage =
+                    data.msg;
+
+            }
+            else if (
+                data.message
+            ) {
+
+                errorMessage =
+                    data.message;
+
+            }
+
+
+            message.textContent =
+                "❌ " +
+                errorMessage;
+
+            message.style.color =
+                "red";
 
             return;
 
         }
 
 
-        loginForm.addEventListener(
-            "submit",
-            async function (event) {
+        /* ======================================
+           SAVE LOGIN SESSION
+        ====================================== */
 
-                event.preventDefault();
-
-
-                const email =
-                    document
-                        .getElementById(
-                            "loginEmail"
-                        )
-                        .value
-                        .trim();
+        localStorage.setItem(
+            "supabase_access_token",
+            data.access_token
+        );
 
 
-                const password =
-                    document
-                        .getElementById(
-                            "loginPassword"
-                        )
-                        .value;
+        localStorage.setItem(
+            "supabase_refresh_token",
+            data.refresh_token
+        );
 
 
-                const message =
-                    document.getElementById(
-                        "loginMessage"
-                    );
+        localStorage.setItem(
+            "supabase_user_id",
+            data.user.id
+        );
 
 
-                /* ======================================
-                   CHECK FIELDS
-                ====================================== */
+        localStorage.setItem(
+            "supabase_user_email",
+            data.user.email
+        );
+
+
+        /* ======================================
+           GET USER PROFILE
+        ====================================== */
+
+        const profileResponse =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=*`,
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${data.access_token}`
+
+                    }
+
+                }
+            );
+
+
+        const profiles =
+            await profileResponse.json();
+
+
+        /* ======================================
+           CHECK PROFILE
+        ====================================== */
+
+        if (
+            !profileResponse.ok
+        ) {
+
+            console.error(
+                "PROFILE LOGIN ERROR:",
+                profiles
+            );
+
+            message.textContent =
+                "⚠️ Kont lan konekte, men nou pa kapab jwenn pwofil ou.";
+
+            message.style.color =
+                "orange";
+
+            return;
+
+        }
+
+
+        if (
+            !profiles ||
+            profiles.length === 0
+        ) {
+
+            message.textContent =
+                "⚠️ Kont lan konekte, men pwofil la pa jwenn.";
+
+            message.style.color =
+                "orange";
+
+            return;
+
+        }
+
+
+        const profile =
+            profiles[0];
+
+
+        /* ======================================
+           SAVE PROFILE INFORMATION
+        ====================================== */
+
+        localStorage.setItem(
+            "user_full_name",
+            profile.full_name || ""
+        );
+
+
+        localStorage.setItem(
+            "user_phone",
+            profile.phone || ""
+        );
+
+
+        localStorage.setItem(
+            "user_account_type",
+            profile.account_type || ""
+        );
+
+
+        /* ======================================
+           SUCCESS
+        ====================================== */
+
+        message.textContent =
+            "✅ Ou konekte avèk siksè!";
+
+        message.style.color =
+            "green";
+
+
+        /* ======================================
+           REDIRECT
+        ====================================== */
+
+        setTimeout(
+            function () {
 
                 if (
-                    !email ||
-                    !password
+                    profile.account_type ===
+                    "employer"
                 ) {
 
-                    message.textContent =
-                        "⚠️ Tanpri antre imèl ak modpas ou.";
-
-                    message.style.color =
-                        "red";
-
-                    return;
+                    window.location.href =
+                        "employer.html";
 
                 }
-
-
-                /* ======================================
-                   LOADING
-                ====================================== */
-
-                message.textContent =
-                    "⏳ Nap verifye kont ou...";
-
-                message.style.color =
-                    "#003366";
-
-
-                try {
-
-
-                    /* ======================================
-                       SUPABASE LOGIN
-                    ====================================== */
-
-                    const response =
-                        await fetch(
-                            `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-                            {
-
-                                method:
-                                    "POST",
-
-                                headers: {
-
-                                    "Content-Type":
-                                        "application/json",
-
-                                    "apikey":
-                                        SUPABASE_KEY
-
-                                },
-
-                                body:
-                                    JSON.stringify({
-
-                                        email:
-                                            email,
-
-                                        password:
-                                            password
-
-                                    })
-
-                            }
-                        );
-
-
-                    const data =
-                        await response.json();
-
-
-                    /* ======================================
-                       LOGIN ERROR
-                    ====================================== */
-
-                    if (
-                        !response.ok
-                    ) {
-
-                        console.error(
-                            "LOGIN ERROR:",
-                            data
-                        );
-
-
-                        let errorMessage =
-                            "Imèl oswa modpas la pa kòrèk.";
-
-
-                        if (
-                            data.error_description
-                        ) {
-
-                            errorMessage =
-                                data.error_description;
-
-                        }
-                        else if (
-                            data.msg
-                        ) {
-
-                            errorMessage =
-                                data.msg;
-
-                        }
-                        else if (
-                            data.message
-                        ) {
-
-                            errorMessage =
-                                data.message;
-
-                        }
-
-
-                        message.textContent =
-                            "❌ " +
-                            errorMessage;
-
-                        message.style.color =
-                            "red";
-
-                        return;
-
-                    }
-
-
-                    /* ======================================
-                       SAVE ACCESS TOKEN
-                    ====================================== */
-
-                    if (
-                        data.access_token
-                    ) {
-
-                        localStorage.setItem(
-                            "eaglej_access_token",
-                            data.access_token
-                        );
-
-                    }
-
-
-                    if (
-                        data.refresh_token
-                    ) {
-
-                        localStorage.setItem(
-                            "eaglej_refresh_token",
-                            data.refresh_token
-                        );
-
-                    }
-
-
-                    /* ======================================
-                       SUCCESS
-                    ====================================== */
-
-                    message.textContent =
-                        "✅ Koneksyon reyisi! Nap ouvri pwofil ou...";
-
-                    message.style.color =
-                        "green";
-
-
-                    /* ======================================
-                       GO TO DASHBOARD
-                    ====================================== */
-
-                    setTimeout(
-                        function () {
-
-                            window.location.href =
-                                "dashboard.html";
-
-                        },
-                        1000
-                    );
-
-                }
-
-
-                catch (
-                    error
+                else if (
+                    profile.account_type ===
+                    "job_seeker"
                 ) {
 
-                    console.error(
-                        "LOGIN SYSTEM ERROR:",
-                        error
-                    );
+                    window.location.href =
+                        "job-seeker.html";
 
+                }
+                else {
 
-                    message.textContent =
-                        "❌ Gen yon pwoblèm koneksyon. Eseye ankò.";
-
-                    message.style.color =
-                        "red";
+                    window.location.href =
+                        "index.html";
 
                 }
 
-            }
+            },
+            1000
         );
 
     }
-);
-
-</script>
 
 
-</body>
+    catch (error) {
 
-</html>
+        console.error(
+            "LOGIN SYSTEM ERROR:",
+            error
+        );
+
+
+        message.textContent =
+            "❌ Gen yon pwoblèm koneksyon. Eseye ankò.";
+
+        message.style.color =
+            "red";
+
+    }
+
+}
+
+</script></body></html>
