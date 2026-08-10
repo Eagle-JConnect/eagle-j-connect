@@ -18,8 +18,7 @@ const IMAGE_BUCKET = "business-images";
 
 window.toggleMenu = function () {
 
-    const menu =
-        document.getElementById("menu");
+    const menu = document.getElementById("menu");
 
     if (menu) {
         menu.classList.toggle("show");
@@ -37,11 +36,16 @@ window.limitBusinessImages = function (input) {
     const message =
         document.getElementById("imageMessage");
 
+    if (!input || !input.files) {
+        return;
+    }
+
     if (input.files.length > 5) {
 
         if (message) {
             message.textContent =
                 "❌ Ou ka chwazi sèlman 5 foto.";
+            message.style.color = "red";
         }
 
         input.value = "";
@@ -64,6 +68,7 @@ window.limitBusinessImages = function (input) {
 
             message.style.color = "green";
         }
+
     }
 
 };
@@ -82,6 +87,8 @@ document.addEventListener(
         );
 
 
+        /* BUSINESS FORM */
+
         const businessForm =
             document.getElementById(
                 "businessForm"
@@ -97,6 +104,8 @@ document.addEventListener(
 
         }
 
+
+        /* BUSINESS LISTINGS */
 
         const businessListings =
             document.getElementById(
@@ -123,53 +132,88 @@ async function submitBusiness(event) {
     event.preventDefault();
 
 
-    const businessName =
-        document
-            .getElementById("businessName")
-            .value
-            .trim();
+    const businessNameElement =
+        document.getElementById(
+            "businessName"
+        );
 
+    const categoryElement =
+        document.getElementById(
+            "category"
+        );
+
+    const locationElement =
+        document.getElementById(
+            "location"
+        );
+
+    const phoneElement =
+        document.getElementById(
+            "phone"
+        );
+
+    const whatsappElement =
+        document.getElementById(
+            "whatsapp"
+        );
+
+    const priceElement =
+        document.getElementById(
+            "price"
+        );
+
+    const descriptionElement =
+        document.getElementById(
+            "description"
+        );
+
+
+    if (
+        !businessNameElement ||
+        !categoryElement ||
+        !locationElement ||
+        !descriptionElement
+    ) {
+
+        showMessage(
+            "❌ Gen yon chan ki manke nan fòm nan.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const businessName =
+        businessNameElement.value.trim();
 
     const category =
-        document
-            .getElementById("category")
-            .value;
-
+        categoryElement.value;
 
     const location =
-        document
-            .getElementById("location")
-            .value
-            .trim();
-
+        locationElement.value.trim();
 
     const phone =
-        document
-            .getElementById("phone")
-            .value
-            .trim();
-
+        phoneElement
+            ? phoneElement.value.trim()
+            : "";
 
     const whatsapp =
-        document
-            .getElementById("whatsapp")
-            .value
-            .trim();
-
+        whatsappElement
+            ? whatsappElement.value.trim()
+            : "";
 
     const price =
-        document
-            .getElementById("price")
-            .value
-            .trim();
-
+        priceElement
+            ? priceElement.value.trim()
+            : "";
 
     const description =
-        document
-            .getElementById("description")
-            .value
-            .trim();
+        descriptionElement.value.trim();
 
+
+    /* IMAGE INPUT */
 
     const imageInput =
         document.getElementById(
@@ -177,9 +221,13 @@ async function submitBusiness(event) {
         );
 
 
-    /* ======================================
-       CHECK REQUIRED FIELDS
-    ====================================== */
+    const files =
+        imageInput && imageInput.files
+            ? Array.from(imageInput.files)
+            : [];
+
+
+    /* REQUIRED FIELDS */
 
     if (
         !businessName ||
@@ -198,16 +246,7 @@ async function submitBusiness(event) {
     }
 
 
-    /* ======================================
-       CHECK IMAGE COUNT
-    ====================================== */
-
-    const files =
-        imageInput &&
-        imageInput.files
-            ? Array.from(imageInput.files)
-            : [];
-
+    /* MAX 5 IMAGES */
 
     if (files.length > 5) {
 
@@ -329,7 +368,7 @@ async function submitBusiness(event) {
         if (!businessId) {
 
             console.error(
-                "Business ID missing:",
+                "BUSINESS ID MISSING:",
                 businessData
             );
 
@@ -367,6 +406,8 @@ async function submitBusiness(event) {
                 files[i];
 
 
+            /* CHECK IMAGE TYPE */
+
             if (
                 !file.type.startsWith(
                     "image/"
@@ -383,13 +424,15 @@ async function submitBusiness(event) {
             }
 
 
+            /* CHECK FILE SIZE */
+
             if (
                 file.size >
                 5 * 1024 * 1024
             ) {
 
                 showMessage(
-                    "❌ Chak foto dwe pi piti pase 5MB.",
+                    `❌ Foto ${i + 1} depase 5MB.`,
                     "error"
                 );
 
@@ -404,6 +447,8 @@ async function submitBusiness(event) {
             );
 
 
+            /* FILE EXTENSION */
+
             const extension =
                 file.name
                     .split(".")
@@ -411,11 +456,17 @@ async function submitBusiness(event) {
                     .toLowerCase();
 
 
+            /* UNIQUE FILE NAME */
+
             const fileName =
                 `${businessId}-${Date.now()}-${i}-${Math.random()
                     .toString(36)
                     .substring(2)}.${extension}`;
 
+
+            /* ======================================
+               UPLOAD TO STORAGE
+            ====================================== */
 
             const uploadResponse =
                 await fetch(
@@ -464,6 +515,8 @@ async function submitBusiness(event) {
             }
 
 
+            /* PUBLIC IMAGE URL */
+
             const imageURL =
                 `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
@@ -473,9 +526,14 @@ async function submitBusiness(event) {
             );
 
 
+            console.log(
+                "Uploaded image:",
+                imageURL
+            );
+
+
             /* ======================================
-               SAVE IMAGE URL
-               IN BUSINESS_IMAGES
+               SAVE IMAGE IN BUSINESS_IMAGES
             ====================================== */
 
             const imageResponse =
@@ -540,7 +598,7 @@ async function submitBusiness(event) {
 
         /* ======================================
            SAVE FIRST IMAGE
-           IN businesses.image_url
+           IN BUSINESSES TABLE
         ====================================== */
 
         if (
@@ -553,7 +611,9 @@ async function submitBusiness(event) {
 
             const updateResponse =
                 await fetch(
-                    `${SUPABASE_URL}/rest/v1/businesses?id=eq.${businessId}`,
+                    `${SUPABASE_URL}/rest/v1/businesses?id=eq.${encodeURIComponent(
+                        businessId
+                    )}`,
                     {
 
                         method: "PATCH",
@@ -567,7 +627,10 @@ async function submitBusiness(event) {
                                 SUPABASE_KEY,
 
                             "Authorization":
-                                `Bearer ${SUPABASE_KEY`
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Prefer":
+                                "return=minimal"
 
                         },
 
@@ -719,7 +782,9 @@ async function loadBusinesses() {
                 businessText
             );
 
-            showLoadError(container);
+            showLoadError(
+                container
+            );
 
             return;
 
@@ -757,7 +822,7 @@ async function loadBusinesses() {
 
 
         /* ======================================
-           GET ALL BUSINESS IMAGES
+           GET BUSINESS IMAGES
         ====================================== */
 
         const imageResponse =
@@ -773,7 +838,7 @@ async function loadBusinesses() {
                             SUPABASE_KEY,
 
                         "Authorization":
-                            `Bearer ${sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr}`
+                            `Bearer ${SUPABASE_KEY}`
 
                     }
 
@@ -788,6 +853,13 @@ async function loadBusinesses() {
 
             images =
                 await imageResponse.json();
+
+        } else {
+
+            console.error(
+                "IMAGE LIST ERROR:",
+                await imageResponse.text()
+            );
 
         }
 
@@ -851,7 +923,7 @@ async function loadBusinesses() {
                     ] || [];
 
 
-                /* Old businesses */
+                /* OLD BUSINESS */
 
                 if (
                     businessImages.length === 0 &&
@@ -899,7 +971,9 @@ async function loadBusinesses() {
                             >
 
                                 <img
-                                    id="main-image-${business.id}"
+                                    id="main-image-${escapeAttribute(
+                                        business.id
+                                    )}"
                                     src="${escapeAttribute(
                                         businessImages[0]
                                     )}"
@@ -944,7 +1018,9 @@ async function loadBusinesses() {
                                                         )}"
                                                         alt="Foto ${index + 1}"
                                                         onclick="changeBusinessImage(
-                                                            ${business.id},
+                                                            '${escapeAttribute(
+                                                                business.id
+                                                            )}',
                                                             '${escapeAttribute(
                                                                 image
                                                             )}'
@@ -1001,7 +1077,9 @@ async function loadBusinesses() {
                             <button
                                 type="button"
                             >
+
                                 📞 Rele
+
                             </button>
 
                         </a>
@@ -1014,11 +1092,10 @@ async function loadBusinesses() {
                 if (business.whatsapp) {
 
                     const number =
-                        business.whatsapp
-                            .replace(
-                                /\D/g,
-                                ""
-                            );
+                        business.whatsapp.replace(
+                            /\D/g,
+                            ""
+                        );
 
 
                     if (number) {
@@ -1037,7 +1114,9 @@ async function loadBusinesses() {
                                 <button
                                     type="button"
                                 >
+
                                     💬 WhatsApp
+
                                 </button>
 
                             </a>
@@ -1050,7 +1129,7 @@ async function loadBusinesses() {
 
 
                 /* ======================================
-                   CARD
+                   BUSINESS CARD
                 ====================================== */
 
                 card.innerHTML = `
@@ -1059,23 +1138,29 @@ async function loadBusinesses() {
 
 
                     <h3>
+
                         ${escapeHTML(
                             business.business_name
                         )}
+
                     </h3>
 
 
                     <p>
+
                         📂 ${escapeHTML(
                             business.category
                         )}
+
                     </p>
 
 
                     <p>
+
                         📍 ${escapeHTML(
                             business.location
                         )}
+
                     </p>
 
 
@@ -1084,9 +1169,11 @@ async function loadBusinesses() {
                         ? `
 
                             <p>
+
                                 💰 ${escapeHTML(
                                     business.price
                                 )}
+
                             </p>
 
                         `
@@ -1095,9 +1182,11 @@ async function loadBusinesses() {
 
 
                     <p>
+
                         ${escapeHTML(
                             business.description
                         )}
+
                     </p>
 
 
@@ -1172,7 +1261,7 @@ window.changeBusinessImage =
 
 
 /* ======================================
-   SHOW LOAD ERROR
+   LOAD ERROR
 ====================================== */
 
 function showLoadError(
@@ -1197,7 +1286,7 @@ function showLoadError(
 
 
 /* ======================================
-   MESSAGE
+   FORM MESSAGE
 ====================================== */
 
 function showMessage(
@@ -1226,8 +1315,8 @@ function showMessage(
 
     box.style.color =
         type === "success"
-        ? "green"
-        : "red";
+            ? "green"
+            : "red";
 
 }
 
@@ -1267,6 +1356,10 @@ function escapeAttribute(value) {
         "&quot;"
     )
     .replace(
+        /'/g,
+        "&#39;"
+    )
+    .replace(
         /</g,
         "&lt;"
     )
@@ -1275,4 +1368,4 @@ function escapeAttribute(value) {
         "&gt;"
     );
 
-}
+} 
