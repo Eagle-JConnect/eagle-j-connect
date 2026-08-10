@@ -1,6 +1,6 @@
 /* ======================================
    EAGLE-J CONNECT
-   SUPABASE BUSINESS SYSTEM
+   BUSINESS SYSTEM + SUPABASE
 ====================================== */
 
 
@@ -32,51 +32,70 @@ window.toggleMenu = function () {
 
 
 /* ======================================
-   BUSINESS FORM
+   PAGE READY
 ====================================== */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    console.log("Eagle-J Connect ap mache!");
-
-    const businessForm =
-        document.getElementById("businessForm");
-
-
-    if (businessForm) {
-
-        businessForm.addEventListener(
-            "submit",
-            submitBusiness
+        console.log(
+            "Eagle-J Connect ap mache!"
         );
 
+
+        /* =========================
+           BUSINESS FORM
+        ========================= */
+
+        const businessForm =
+            document.getElementById(
+                "businessForm"
+            );
+
+
+        if (businessForm) {
+
+            businessForm.addEventListener(
+                "submit",
+                submitBusiness
+            );
+
+        }
+
+
+        /* =========================
+           BUSINESS LIST
+        ========================= */
+
+        const businessListings =
+            document.getElementById(
+                "businessListings"
+            );
+
+
+        if (businessListings) {
+
+            loadBusinesses();
+
+        }
+
     }
-
-
-    /* Load businesses */
-
-    const businessListings =
-        document.getElementById(
-            "businessListings"
-        );
-
-    if (businessListings) {
-
-        loadBusinesses();
-
-    }
-
-});
+);
 
 
 /* ======================================
-   SUBMIT BUSINESS
+   CREATE BUSINESS
 ====================================== */
 
 async function submitBusiness(event) {
 
     event.preventDefault();
 
+
+    /* =========================
+       GET FORM VALUES
+    ========================= */
 
     const businessName =
         document
@@ -126,13 +145,9 @@ async function submitBusiness(event) {
             .trim();
 
 
-    const imageInput =
-        document.getElementById(
-            "businessImage"
-        );
-
-
-    /* Required fields */
+    /* =========================
+       CHECK REQUIRED FIELDS
+    ========================= */
 
     if (
         !businessName ||
@@ -151,17 +166,21 @@ async function submitBusiness(event) {
     }
 
 
-    /* ======================================
-       INSERT INTO SUPABASE
-    ====================================== */
+    /* =========================
+       SHOW LOADING
+    ========================= */
+
+    showMessage(
+        "⏳ Anons lan ap pibliye...",
+        "success"
+    );
+
 
     try {
 
-        showMessage(
-            "⏳ Anons lan ap pibliye...",
-            "success"
-        );
-
+        /* =========================
+           SEND TO SUPABASE
+        ========================= */
 
         const response =
             await fetch(
@@ -218,38 +237,52 @@ async function submitBusiness(event) {
             );
 
 
-        /* Check response */
+        /* =========================
+           GET RESPONSE
+        ========================= */
+
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            "Supabase status:",
+            response.status
+        );
+
+
+        console.log(
+            "Supabase response:",
+            responseText
+        );
+
+
+        /* =========================
+           CHECK ERROR
+        ========================= */
 
         if (!response.ok) {
 
-            const error =
-                await response.text();
-
             console.error(
-                "Supabase error:",
-                error
+                "SUPABASE ERROR:",
+                responseText
             );
+
 
             showMessage(
-                "❌ Anons lan pa t kapab pibliye. Verifye koneksyon Supabase la.",
+                "❌ Anons lan pa t kapab pibliye.",
                 "error"
             );
+
 
             return;
 
         }
 
 
-        /* Success */
-
-        const data =
-            await response.json();
-
-        console.log(
-            "Business saved:",
-            data
-        );
-
+        /* =========================
+           SUCCESS
+        ========================= */
 
         showMessage(
             "✅ Anons ou a pibliye avèk siksè!",
@@ -257,14 +290,32 @@ async function submitBusiness(event) {
         );
 
 
-        document
-            .getElementById("businessForm")
-            .reset();
+        /* =========================
+           RESET FORM
+        ========================= */
+
+        const form =
+            document.getElementById(
+                "businessForm"
+            );
 
 
-    } catch (error) {
+        if (form) {
 
-        console.error(error);
+            form.reset();
+
+        }
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "CONNECTION ERROR:",
+            error
+        );
+
 
         showMessage(
             "❌ Gen yon pwoblèm koneksyon.",
@@ -277,7 +328,7 @@ async function submitBusiness(event) {
 
 
 /* ======================================
-   LOAD BUSINESSES
+   LOAD BUSINESS ADS
 ====================================== */
 
 async function loadBusinesses() {
@@ -288,20 +339,29 @@ async function loadBusinesses() {
         );
 
 
-    if (!container) return;
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML = `
+
+        <p style="
+            width:100%;
+            text-align:center;
+            color:#666;
+        ">
+
+            ⏳ Anons yo ap chaje...
+
+        </p>
+
+    `;
 
 
     try {
-
-        container.innerHTML = `
-            <p style="
-                width:100%;
-                text-align:center;
-            ">
-                ⏳ Anons yo ap chaje...
-            </p>
-        `;
-
 
         const response =
             await fetch(
@@ -324,24 +384,36 @@ async function loadBusinesses() {
             );
 
 
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            "Business response:",
+            responseText
+        );
+
+
         if (!response.ok) {
 
-            const error =
-                await response.text();
-
             console.error(
-                "Supabase error:",
-                error
+                "LOAD ERROR:",
+                responseText
             );
 
+
             container.innerHTML = `
+
                 <p style="
                     width:100%;
                     text-align:center;
                     color:red;
                 ">
+
                     ❌ Nou pa kapab chaje anons yo.
+
                 </p>
+
             `;
 
             return;
@@ -350,19 +422,32 @@ async function loadBusinesses() {
 
 
         const businesses =
-            await response.json();
+            JSON.parse(
+                responseText
+            );
 
 
-        if (!businesses.length) {
+        /* =========================
+           NO BUSINESSES
+        ========================= */
+
+        if (
+            !Array.isArray(businesses) ||
+            businesses.length === 0
+        ) {
 
             container.innerHTML = `
+
                 <p style="
                     width:100%;
                     text-align:center;
                     color:#666;
                 ">
+
                     Pa gen anons biznis pou kounye a.
+
                 </p>
+
             `;
 
             return;
@@ -370,8 +455,16 @@ async function loadBusinesses() {
         }
 
 
+        /* =========================
+           CLEAR CONTAINER
+        ========================= */
+
         container.innerHTML = "";
 
+
+        /* =========================
+           CREATE CARDS
+        ========================= */
 
         businesses.forEach(
             function (business) {
@@ -382,11 +475,108 @@ async function loadBusinesses() {
                         "div"
                     );
 
+
                 card.className =
                     "card";
 
 
+                let contactButtons = "";
+
+
+                /* PHONE */
+
+                if (business.phone) {
+
+                    contactButtons += `
+
+                        <a
+                            href="tel:${escapeAttribute(
+                                business.phone
+                            )}"
+                            style="
+                                text-decoration:none;
+                            "
+                        >
+
+                            <button
+                                type="button"
+                            >
+                                📞 Rele
+                            </button>
+
+                        </a>
+
+                    `;
+
+                }
+
+
+                /* WHATSAPP */
+
+                if (business.whatsapp) {
+
+                    const whatsappNumber =
+                        business.whatsapp
+                            .replace(
+                                /\D/g,
+                                ""
+                            );
+
+
+                    if (whatsappNumber) {
+
+                        contactButtons += `
+
+                            <a
+                                href="https://wa.me/${whatsappNumber}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style="
+                                    text-decoration:none;
+                                "
+                            >
+
+                                <button
+                                    type="button"
+                                >
+                                    💬 WhatsApp
+                                </button>
+
+                            </a>
+
+                        `;
+
+                    }
+
+                }
+
+
+                /* CARD */
+
                 card.innerHTML = `
+
+                    ${
+                        business.image_url
+                        ? `
+                            <img
+                                src="${escapeAttribute(
+                                    business.image_url
+                                )}"
+                                alt="${escapeAttribute(
+                                    business.business_name
+                                )}"
+                                style="
+                                    width:100%;
+                                    height:180px;
+                                    object-fit:cover;
+                                    border-radius:10px;
+                                    margin-bottom:15px;
+                                "
+                            >
+                        `
+                        : ""
+                    }
+
 
                     <h3>
                         ${escapeHTML(
@@ -394,17 +584,20 @@ async function loadBusinesses() {
                         )}
                     </h3>
 
+
                     <p>
                         📂 ${escapeHTML(
                             business.category
                         )}
                     </p>
 
+
                     <p>
                         📍 ${escapeHTML(
                             business.location
                         )}
                     </p>
+
 
                     ${
                         business.price
@@ -418,44 +611,25 @@ async function loadBusinesses() {
                         : ""
                     }
 
+
                     <p>
                         ${escapeHTML(
                             business.description
                         )}
                     </p>
 
-                    ${
-                        business.phone
-                        ? `
-                            <p>
-                                📞 ${escapeHTML(
-                                    business.phone
-                                )}
-                            </p>
-                        `
-                        : ""
-                    }
 
-                    ${
-                        business.whatsapp
-                        ? `
-                            <a
-                                href="https://wa.me/${business.whatsapp.replace(/\D/g, "")}"
-                                target="_blank"
-                                rel="noopener"
-                                style="
-                                    text-decoration:none;
-                                "
-                            >
-                                <button
-                                    type="button"
-                                >
-                                    💬 WhatsApp
-                                </button>
-                            </a>
-                        `
-                        : ""
-                    }
+                    <div style="
+                        display:flex;
+                        gap:10px;
+                        justify-content:center;
+                        flex-wrap:wrap;
+                        margin-top:15px;
+                    ">
+
+                        ${contactButtons}
+
+                    </div>
 
                 `;
 
@@ -467,19 +641,29 @@ async function loadBusinesses() {
             }
         );
 
+    }
 
-    } catch (error) {
 
-        console.error(error);
+    catch (error) {
+
+        console.error(
+            "LOAD BUSINESSES ERROR:",
+            error
+        );
+
 
         container.innerHTML = `
+
             <p style="
                 width:100%;
                 text-align:center;
                 color:red;
             ">
-                ❌ Erè koneksyon.
+
+                ❌ Erè koneksyon ak baz done a.
+
             </p>
+
         `;
 
     }
@@ -515,10 +699,17 @@ function showMessage(
         message;
 
 
-    messageBox.style.color =
-        type === "success"
-        ? "green"
-        : "red";
+    if (type === "success") {
+
+        messageBox.style.color =
+            "green";
+
+    } else {
+
+        messageBox.style.color =
+            "red";
+
+    }
 
 }
 
@@ -534,9 +725,36 @@ function escapeHTML(value) {
             "div"
         );
 
+
     div.textContent =
         value ?? "";
 
+
     return div.innerHTML;
+
+}
+
+
+function escapeAttribute(value) {
+
+    return String(
+        value ?? ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    );
 
 }
