@@ -20,16 +20,35 @@ const IMAGE_BUCKET =
 
 window.toggleMenu = function () {
 
+    const menu = document.getElementById("menu");
+
+    if (!menu) {
+        console.error("Menu #menu pa jwenn.");
+        return;
+    }
+
+    menu.classList.toggle("show");
+
+};
+
+
+/* Fèmen menu a lè yon lyen klike */
+
+document.addEventListener("click", function (event) {
+
     const menu =
         document.getElementById("menu");
 
-    if (menu) {
+    if (!menu) return;
 
-        menu.classList.toggle("show");
+    const link =
+        event.target.closest("#menu a");
 
+    if (link) {
+        menu.classList.remove("show");
     }
 
-};
+});
 
 
 /* ======================================
@@ -52,7 +71,6 @@ document.addEventListener(
                 "businessForm"
             );
 
-
         if (businessForm) {
 
             businessForm.addEventListener(
@@ -69,7 +87,6 @@ document.addEventListener(
             document.getElementById(
                 "businessListings"
             );
-
 
         if (businessListings) {
 
@@ -139,8 +156,8 @@ async function submitBusiness(event) {
 
 
     /* IMPORTANT:
-       Menm ID sa dwe nan HTML la:
-       businessImage
+       HTML la dwe itilize:
+       id="businessImage"
     */
 
     const imageInput =
@@ -502,6 +519,20 @@ async function submitBusiness(event) {
 
         }
 
+
+        /* Reload listings */
+
+        const businessListings =
+            document.getElementById(
+                "businessListings"
+            );
+
+        if (businessListings) {
+
+            loadBusinesses();
+
+        }
+
     }
 
 
@@ -692,7 +723,13 @@ async function loadBusinesses() {
                                         object-fit:contain;
                                         display:block;
                                     "
-                                    onerror="this.style.display='none';"
+                                    onerror="
+                                        console.error(
+                                            'Imaj pa ka afiche:',
+                                            this.src
+                                        );
+                                        this.style.display='none';
+                                    "
                                 >
 
                             </div>
