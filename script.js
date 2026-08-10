@@ -1,6 +1,6 @@
 /* ======================================
    EAGLE-J CONNECT
-   BUSINESS SYSTEM + SUPABASE
+   SUPABASE + BUSINESS + IMAGE UPLOAD
 ====================================== */
 
 
@@ -14,6 +14,9 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 
+const IMAGE_BUCKET =
+    "business-images";
+
 
 /* ======================================
    MOBILE MENU
@@ -25,7 +28,9 @@ window.toggleMenu = function () {
         document.getElementById("menu");
 
     if (menu) {
+
         menu.classList.toggle("show");
+
     }
 
 };
@@ -44,10 +49,6 @@ document.addEventListener(
         );
 
 
-        /* =========================
-           BUSINESS FORM
-        ========================= */
-
         const businessForm =
             document.getElementById(
                 "businessForm"
@@ -63,10 +64,6 @@ document.addEventListener(
 
         }
 
-
-        /* =========================
-           BUSINESS LIST
-        ========================= */
 
         const businessListings =
             document.getElementById(
@@ -92,10 +89,6 @@ async function submitBusiness(event) {
 
     event.preventDefault();
 
-
-    /* =========================
-       GET FORM VALUES
-    ========================= */
 
     const businessName =
         document
@@ -145,9 +138,15 @@ async function submitBusiness(event) {
             .trim();
 
 
-    /* =========================
+    const imageInput =
+        document.getElementById(
+            "businessImage"
+        );
+
+
+    /* ======================================
        CHECK REQUIRED FIELDS
-    ========================= */
+    ====================================== */
 
     if (
         !businessName ||
@@ -166,21 +165,173 @@ async function submitBusiness(event) {
     }
 
 
-    /* =========================
-       SHOW LOADING
-    ========================= */
-
-    showMessage(
-        "⏳ Anons lan ap pibliye...",
-        "success"
-    );
-
-
     try {
 
-        /* =========================
-           SEND TO SUPABASE
-        ========================= */
+        showMessage(
+            "⏳ Anons lan ap prepare...",
+            "success"
+        );
+
+
+        /* ======================================
+           IMAGE UPLOAD
+        ====================================== */
+
+        let imageURL = null;
+
+
+        if (
+            imageInput &&
+            imageInput.files &&
+            imageInput.files.length > 0
+        ) {
+
+            const file =
+                imageInput.files[0];
+
+
+            /* Check image type */
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                showMessage(
+                    "❌ Tanpri chwazi yon imaj.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /* Check image size */
+
+            if (
+                file.size >
+                5 * 1024 * 1024
+            ) {
+
+                showMessage(
+                    "❌ Foto a twò gwo. Maksimòm 5MB.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            showMessage(
+                "⏳ Foto a ap monte...",
+                "success"
+            );
+
+
+            /* Create unique file name */
+
+            const fileExtension =
+                file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const fileName =
+                `${Date.now()}-${Math.random()
+                    .toString(36)
+                    .substring(2)}.${fileExtension}`;
+
+
+            const filePath =
+                fileName;
+
+
+            /* Upload image */
+
+            const uploadResponse =
+                await fetch(
+                    `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${filePath}`,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Content-Type":
+                                file.type
+
+                        },
+
+                        body: file
+
+                    }
+                );
+
+
+            const uploadText =
+                await uploadResponse.text();
+
+
+            console.log(
+                "Image upload:",
+                uploadResponse.status,
+                uploadText
+            );
+
+
+            if (!uploadResponse.ok) {
+
+                console.error(
+                    "IMAGE UPLOAD ERROR:",
+                    uploadText
+                );
+
+
+                showMessage(
+                    "❌ Foto a pa t kapab monte.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            /* ======================================
+               CREATE PUBLIC IMAGE URL
+            ====================================== */
+
+            imageURL =
+                `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${filePath}`;
+
+
+            console.log(
+                "Image URL:",
+                imageURL
+            );
+
+        }
+
+
+        /* ======================================
+           SAVE BUSINESS
+        ====================================== */
+
+        showMessage(
+            "⏳ Anons lan ap pibliye...",
+            "success"
+        );
+
 
         const response =
             await fetch(
@@ -229,7 +380,7 @@ async function submitBusiness(event) {
                             description,
 
                         image_url:
-                            null
+                            imageURL
 
                     })
 
@@ -237,34 +388,21 @@ async function submitBusiness(event) {
             );
 
 
-        /* =========================
-           GET RESPONSE
-        ========================= */
-
         const responseText =
             await response.text();
 
 
         console.log(
-            "Supabase status:",
-            response.status
-        );
-
-
-        console.log(
-            "Supabase response:",
+            "Business response:",
+            response.status,
             responseText
         );
 
 
-        /* =========================
-           CHECK ERROR
-        ========================= */
-
         if (!response.ok) {
 
             console.error(
-                "SUPABASE ERROR:",
+                "BUSINESS ERROR:",
                 responseText
             );
 
@@ -274,25 +412,20 @@ async function submitBusiness(event) {
                 "error"
             );
 
-
             return;
 
         }
 
 
-        /* =========================
+        /* ======================================
            SUCCESS
-        ========================= */
+        ====================================== */
 
         showMessage(
             "✅ Anons ou a pibliye avèk siksè!",
             "success"
         );
 
-
-        /* =========================
-           RESET FORM
-        ========================= */
 
         const form =
             document.getElementById(
@@ -312,7 +445,7 @@ async function submitBusiness(event) {
     catch (error) {
 
         console.error(
-            "CONNECTION ERROR:",
+            "ERROR:",
             error
         );
 
@@ -328,7 +461,7 @@ async function submitBusiness(event) {
 
 
 /* ======================================
-   LOAD BUSINESS ADS
+   LOAD BUSINESSES
 ====================================== */
 
 async function loadBusinesses() {
@@ -388,12 +521,6 @@ async function loadBusinesses() {
             await response.text();
 
 
-        console.log(
-            "Business response:",
-            responseText
-        );
-
-
         if (!response.ok) {
 
             console.error(
@@ -427,10 +554,6 @@ async function loadBusinesses() {
             );
 
 
-        /* =========================
-           NO BUSINESSES
-        ========================= */
-
         if (
             !Array.isArray(businesses) ||
             businesses.length === 0
@@ -455,16 +578,8 @@ async function loadBusinesses() {
         }
 
 
-        /* =========================
-           CLEAR CONTAINER
-        ========================= */
-
         container.innerHTML = "";
 
-
-        /* =========================
-           CREATE CARDS
-        ========================= */
 
         businesses.forEach(
             function (business) {
@@ -480,14 +595,14 @@ async function loadBusinesses() {
                     "card";
 
 
-                let contactButtons = "";
+                let buttons = "";
 
 
                 /* PHONE */
 
                 if (business.phone) {
 
-                    contactButtons += `
+                    buttons += `
 
                         <a
                             href="tel:${escapeAttribute(
@@ -498,9 +613,7 @@ async function loadBusinesses() {
                             "
                         >
 
-                            <button
-                                type="button"
-                            >
+                            <button type="button">
                                 📞 Rele
                             </button>
 
@@ -515,7 +628,7 @@ async function loadBusinesses() {
 
                 if (business.whatsapp) {
 
-                    const whatsappNumber =
+                    const number =
                         business.whatsapp
                             .replace(
                                 /\D/g,
@@ -523,12 +636,12 @@ async function loadBusinesses() {
                             );
 
 
-                    if (whatsappNumber) {
+                    if (number) {
 
-                        contactButtons += `
+                        buttons += `
 
                             <a
-                                href="https://wa.me/${whatsappNumber}"
+                                href="https://wa.me/${number}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style="
@@ -536,9 +649,7 @@ async function loadBusinesses() {
                                 "
                             >
 
-                                <button
-                                    type="button"
-                                >
+                                <button type="button">
                                     💬 WhatsApp
                                 </button>
 
@@ -551,13 +662,12 @@ async function loadBusinesses() {
                 }
 
 
-                /* CARD */
-
                 card.innerHTML = `
 
                     ${
                         business.image_url
                         ? `
+
                             <img
                                 src="${escapeAttribute(
                                     business.image_url
@@ -567,12 +677,13 @@ async function loadBusinesses() {
                                 )}"
                                 style="
                                     width:100%;
-                                    height:180px;
+                                    height:200px;
                                     object-fit:cover;
-                                    border-radius:10px;
+                                    border-radius:12px;
                                     margin-bottom:15px;
                                 "
                             >
+
                         `
                         : ""
                     }
@@ -602,11 +713,13 @@ async function loadBusinesses() {
                     ${
                         business.price
                         ? `
+
                             <p>
                                 💰 ${escapeHTML(
                                     business.price
                                 )}
                             </p>
+
                         `
                         : ""
                     }
@@ -627,7 +740,7 @@ async function loadBusinesses() {
                         margin-top:15px;
                     ">
 
-                        ${contactButtons}
+                        ${buttons}
 
                     </div>
 
@@ -647,7 +760,7 @@ async function loadBusinesses() {
     catch (error) {
 
         console.error(
-            "LOAD BUSINESSES ERROR:",
+            "LOAD ERROR:",
             error
         );
 
@@ -660,7 +773,7 @@ async function loadBusinesses() {
                 color:red;
             ">
 
-                ❌ Erè koneksyon ak baz done a.
+                ❌ Erè koneksyon.
 
             </p>
 
@@ -680,13 +793,13 @@ function showMessage(
     type
 ) {
 
-    const messageBox =
+    const box =
         document.getElementById(
             "formMessage"
         );
 
 
-    if (!messageBox) {
+    if (!box) {
 
         alert(message);
 
@@ -695,21 +808,14 @@ function showMessage(
     }
 
 
-    messageBox.textContent =
+    box.textContent =
         message;
 
 
-    if (type === "success") {
-
-        messageBox.style.color =
-            "green";
-
-    } else {
-
-        messageBox.style.color =
-            "red";
-
-    }
+    box.style.color =
+        type === "success"
+        ? "green"
+        : "red";
 
 }
 
@@ -757,4 +863,4 @@ function escapeAttribute(value) {
         "&gt;"
     );
 
-}
+} 
