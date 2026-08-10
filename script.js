@@ -1,11 +1,6 @@
 /* ======================================
    EAGLE-J CONNECT
-   SUPABASE + BUSINESS + IMAGE UPLOAD
-====================================== */
-
-
-/* ======================================
-   SUPABASE CONNECTION
+   SUPABASE BUSINESS + 5 IMAGES
 ====================================== */
 
 const SUPABASE_URL =
@@ -14,8 +9,7 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 
-const IMAGE_BUCKET =
-    "business-images";
+const IMAGE_BUCKET = "business-images";
 
 
 /* ======================================
@@ -28,9 +22,48 @@ window.toggleMenu = function () {
         document.getElementById("menu");
 
     if (menu) {
-
         menu.classList.toggle("show");
+    }
 
+};
+
+
+/* ======================================
+   LIMIT 5 IMAGES
+====================================== */
+
+window.limitBusinessImages = function (input) {
+
+    const message =
+        document.getElementById("imageMessage");
+
+    if (input.files.length > 5) {
+
+        if (message) {
+            message.textContent =
+                "❌ Ou ka chwazi sèlman 5 foto.";
+        }
+
+        input.value = "";
+
+        return;
+    }
+
+    if (message) {
+
+        if (input.files.length === 0) {
+
+            message.textContent = "";
+
+        } else {
+
+            message.textContent =
+                "✅ " +
+                input.files.length +
+                " foto chwazi.";
+
+            message.style.color = "green";
+        }
     }
 
 };
@@ -140,7 +173,7 @@ async function submitBusiness(event) {
 
     const imageInput =
         document.getElementById(
-            "businessImage"
+            "businessImages"
         );
 
 
@@ -165,167 +198,30 @@ async function submitBusiness(event) {
     }
 
 
-    try {
+    /* ======================================
+       CHECK IMAGE COUNT
+    ====================================== */
+
+    const files =
+        imageInput &&
+        imageInput.files
+            ? Array.from(imageInput.files)
+            : [];
+
+
+    if (files.length > 5) {
 
         showMessage(
-            "⏳ Anons lan ap prepare...",
-            "success"
+            "❌ Ou ka chwazi sèlman 5 foto.",
+            "error"
         );
 
+        return;
 
-        /* ======================================
-           IMAGE UPLOAD
-        ====================================== */
-
-        let imageURL = null;
+    }
 
 
-        if (
-            imageInput &&
-            imageInput.files &&
-            imageInput.files.length > 0
-        ) {
-
-            const file =
-                imageInput.files[0];
-
-
-            /* Check image type */
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                showMessage(
-                    "❌ Tanpri chwazi yon imaj.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            /* Check image size */
-
-            if (
-                file.size >
-                5 * 1024 * 1024
-            ) {
-
-                showMessage(
-                    "❌ Foto a twò gwo. Maksimòm 5MB.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            showMessage(
-                "⏳ Foto a ap monte...",
-                "success"
-            );
-
-
-            /* Create unique file name */
-
-            const fileExtension =
-                file.name
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-
-
-            const fileName =
-                `${Date.now()}-${Math.random()
-                    .toString(36)
-                    .substring(2)}.${fileExtension}`;
-
-
-            const filePath =
-                fileName;
-
-
-            /* Upload image */
-
-            const uploadResponse =
-                await fetch(
-                    `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${filePath}`,
-                    {
-
-                        method: "POST",
-
-                        headers: {
-
-                            "apikey":
-                                SUPABASE_KEY,
-
-                            "Authorization":
-                                `Bearer ${SUPABASE_KEY}`,
-
-                            "Content-Type":
-                                file.type
-
-                        },
-
-                        body: file
-
-                    }
-                );
-
-
-            const uploadText =
-                await uploadResponse.text();
-
-
-            console.log(
-                "Image upload:",
-                uploadResponse.status,
-                uploadText
-            );
-
-
-            if (!uploadResponse.ok) {
-
-                console.error(
-                    "IMAGE UPLOAD ERROR:",
-                    uploadText
-                );
-
-
-                showMessage(
-                    "❌ Foto a pa t kapab monte.",
-                    "error"
-                );
-
-                return;
-
-            }
-
-
-            /* ======================================
-               CREATE PUBLIC IMAGE URL
-            ====================================== */
-
-            imageURL =
-                `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${filePath}`;
-
-
-            console.log(
-                "Image URL:",
-                imageURL
-            );
-
-        }
-
-
-        /* ======================================
-           SAVE BUSINESS
-        ====================================== */
+    try {
 
         showMessage(
             "⏳ Anons lan ap pibliye...",
@@ -333,7 +229,12 @@ async function submitBusiness(event) {
         );
 
 
-        const response =
+        /* ======================================
+           STEP 1
+           CREATE BUSINESS
+        ====================================== */
+
+        const businessResponse =
             await fetch(
                 `${SUPABASE_URL}/rest/v1/businesses`,
                 {
@@ -380,7 +281,7 @@ async function submitBusiness(event) {
                             description,
 
                         image_url:
-                            imageURL
+                            null
 
                     })
 
@@ -388,24 +289,16 @@ async function submitBusiness(event) {
             );
 
 
-        const responseText =
-            await response.text();
+        const businessText =
+            await businessResponse.text();
 
 
-        console.log(
-            "Business response:",
-            response.status,
-            responseText
-        );
-
-
-        if (!response.ok) {
+        if (!businessResponse.ok) {
 
             console.error(
                 "BUSINESS ERROR:",
-                responseText
+                businessText
             );
-
 
             showMessage(
                 "❌ Anons lan pa t kapab pibliye.",
@@ -413,6 +306,289 @@ async function submitBusiness(event) {
             );
 
             return;
+
+        }
+
+
+        const businessData =
+            JSON.parse(
+                businessText
+            );
+
+
+        const business =
+            Array.isArray(businessData)
+                ? businessData[0]
+                : businessData;
+
+
+        const businessId =
+            business.id;
+
+
+        if (!businessId) {
+
+            console.error(
+                "Business ID missing:",
+                businessData
+            );
+
+            showMessage(
+                "❌ Nou pa jwenn ID biznis la.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "Business created:",
+            businessId
+        );
+
+
+        /* ======================================
+           STEP 2
+           UPLOAD IMAGES
+        ====================================== */
+
+        let uploadedImages = [];
+
+
+        for (
+            let i = 0;
+            i < files.length;
+            i++
+        ) {
+
+            const file =
+                files[i];
+
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                showMessage(
+                    "❌ Tout fichye yo dwe imaj.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                file.size >
+                5 * 1024 * 1024
+            ) {
+
+                showMessage(
+                    "❌ Chak foto dwe pi piti pase 5MB.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            showMessage(
+                `⏳ Foto ${i + 1} sou ${files.length} ap monte...`,
+                "success"
+            );
+
+
+            const extension =
+                file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const fileName =
+                `${businessId}-${Date.now()}-${i}-${Math.random()
+                    .toString(36)
+                    .substring(2)}.${extension}`;
+
+
+            const uploadResponse =
+                await fetch(
+                    `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Content-Type":
+                                file.type
+
+                        },
+
+                        body: file
+
+                    }
+                );
+
+
+            const uploadText =
+                await uploadResponse.text();
+
+
+            if (!uploadResponse.ok) {
+
+                console.error(
+                    "IMAGE UPLOAD ERROR:",
+                    uploadText
+                );
+
+                showMessage(
+                    `❌ Foto ${i + 1} pa t kapab monte.`,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const imageURL =
+                `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
+
+
+            uploadedImages.push(
+                imageURL
+            );
+
+
+            /* ======================================
+               SAVE IMAGE URL
+               IN BUSINESS_IMAGES
+            ====================================== */
+
+            const imageResponse =
+                await fetch(
+                    `${SUPABASE_URL}/rest/v1/business_images`,
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY}`,
+
+                            "Prefer":
+                                "return=minimal"
+
+                        },
+
+                        body: JSON.stringify({
+
+                            business_id:
+                                businessId,
+
+                            image_url:
+                                imageURL
+
+                        })
+
+                    }
+                );
+
+
+            const imageResponseText =
+                await imageResponse.text();
+
+
+            if (!imageResponse.ok) {
+
+                console.error(
+                    "BUSINESS IMAGE ERROR:",
+                    imageResponseText
+                );
+
+                showMessage(
+                    "❌ Foto a monte men li pa t kapab konekte ak anons lan.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* ======================================
+           SAVE FIRST IMAGE
+           IN businesses.image_url
+        ====================================== */
+
+        if (
+            uploadedImages.length > 0
+        ) {
+
+            const firstImage =
+                uploadedImages[0];
+
+
+            const updateResponse =
+                await fetch(
+                    `${SUPABASE_URL}/rest/v1/businesses?id=eq.${businessId}`,
+                    {
+
+                        method: "PATCH",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "apikey":
+                                SUPABASE_KEY,
+
+                            "Authorization":
+                                `Bearer ${SUPABASE_KEY`
+
+                        },
+
+                        body: JSON.stringify({
+
+                            image_url:
+                                firstImage
+
+                        })
+
+                    }
+                );
+
+
+            if (!updateResponse.ok) {
+
+                console.warn(
+                    "First image URL update failed."
+                );
+
+            }
 
         }
 
@@ -439,13 +615,26 @@ async function submitBusiness(event) {
 
         }
 
+
+        const imageMessage =
+            document.getElementById(
+                "imageMessage"
+            );
+
+
+        if (imageMessage) {
+
+            imageMessage.textContent = "";
+
+        }
+
     }
 
 
     catch (error) {
 
         console.error(
-            "ERROR:",
+            "SUBMIT ERROR:",
             error
         );
 
@@ -473,9 +662,7 @@ async function loadBusinesses() {
 
 
     if (!container) {
-
         return;
-
     }
 
 
@@ -496,7 +683,11 @@ async function loadBusinesses() {
 
     try {
 
-        const response =
+        /* ======================================
+           GET BUSINESSES
+        ====================================== */
+
+        const businessResponse =
             await fetch(
                 `${SUPABASE_URL}/rest/v1/businesses?select=*&order=created_at.desc`,
                 {
@@ -517,31 +708,18 @@ async function loadBusinesses() {
             );
 
 
-        const responseText =
-            await response.text();
+        const businessText =
+            await businessResponse.text();
 
 
-        if (!response.ok) {
+        if (!businessResponse.ok) {
 
             console.error(
-                "LOAD ERROR:",
-                responseText
+                "BUSINESS LOAD ERROR:",
+                businessText
             );
 
-
-            container.innerHTML = `
-
-                <p style="
-                    width:100%;
-                    text-align:center;
-                    color:red;
-                ">
-
-                    ❌ Nou pa kapab chaje anons yo.
-
-                </p>
-
-            `;
+            showLoadError(container);
 
             return;
 
@@ -550,7 +728,7 @@ async function loadBusinesses() {
 
         const businesses =
             JSON.parse(
-                responseText
+                businessText
             );
 
 
@@ -578,12 +756,84 @@ async function loadBusinesses() {
         }
 
 
+        /* ======================================
+           GET ALL BUSINESS IMAGES
+        ====================================== */
+
+        const imageResponse =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/business_images?select=*&order=created_at.asc`,
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${SUPABASE_KEY}`
+
+                    }
+
+                }
+            );
+
+
+        let images = [];
+
+
+        if (imageResponse.ok) {
+
+            images =
+                await imageResponse.json();
+
+        }
+
+
+        /* ======================================
+           GROUP IMAGES BY BUSINESS
+        ====================================== */
+
+        const imagesByBusiness = {};
+
+
+        images.forEach(
+            function (image) {
+
+                if (
+                    !imagesByBusiness[
+                        image.business_id
+                    ]
+                ) {
+
+                    imagesByBusiness[
+                        image.business_id
+                    ] = [];
+
+                }
+
+
+                imagesByBusiness[
+                    image.business_id
+                ].push(
+                    image.image_url
+                );
+
+            }
+        );
+
+
+        /* ======================================
+           DISPLAY BUSINESSES
+        ====================================== */
+
         container.innerHTML = "";
 
 
         businesses.forEach(
             function (business) {
-
 
                 const card =
                     document.createElement(
@@ -595,10 +845,145 @@ async function loadBusinesses() {
                     "card";
 
 
+                let businessImages =
+                    imagesByBusiness[
+                        business.id
+                    ] || [];
+
+
+                /* Old businesses */
+
+                if (
+                    businessImages.length === 0 &&
+                    business.image_url
+                ) {
+
+                    businessImages = [
+                        business.image_url
+                    ];
+
+                }
+
+
+                /* ======================================
+                   IMAGE GALLERY
+                ====================================== */
+
+                let galleryHTML = "";
+
+
+                if (
+                    businessImages.length > 0
+                ) {
+
+                    galleryHTML = `
+
+                        <div
+                            style="
+                                width:100%;
+                                margin-bottom:18px;
+                            "
+                        >
+
+                            <div
+                                style="
+                                    width:100%;
+                                    height:220px;
+                                    background:#f5f5f5;
+                                    border-radius:12px;
+                                    display:flex;
+                                    align-items:center;
+                                    justify-content:center;
+                                    overflow:hidden;
+                                "
+                            >
+
+                                <img
+                                    id="main-image-${business.id}"
+                                    src="${escapeAttribute(
+                                        businessImages[0]
+                                    )}"
+                                    alt="${escapeAttribute(
+                                        business.business_name
+                                    )}"
+                                    style="
+                                        width:100%;
+                                        height:100%;
+                                        object-fit:contain;
+                                    "
+                                >
+
+                            </div>
+
+
+                            ${
+                                businessImages.length > 1
+                                ? `
+
+                                    <div
+                                        style="
+                                            display:flex;
+                                            gap:8px;
+                                            overflow-x:auto;
+                                            margin-top:10px;
+                                            padding-bottom:5px;
+                                        "
+                                    >
+
+                                        ${businessImages.map(
+                                            function (
+                                                image,
+                                                index
+                                            ) {
+
+                                                return `
+
+                                                    <img
+                                                        src="${escapeAttribute(
+                                                            image
+                                                        )}"
+                                                        alt="Foto ${index + 1}"
+                                                        onclick="changeBusinessImage(
+                                                            ${business.id},
+                                                            '${escapeAttribute(
+                                                                image
+                                                            )}'
+                                                        )"
+                                                        style="
+                                                            width:65px;
+                                                            height:65px;
+                                                            object-fit:cover;
+                                                            border-radius:8px;
+                                                            cursor:pointer;
+                                                            border:2px solid #F4B400;
+                                                            flex-shrink:0;
+                                                        "
+                                                    >
+
+                                                `;
+
+                                            }
+                                        ).join("")}
+
+                                    </div>
+
+                                `
+                                : ""
+                            }
+
+                        </div>
+
+                    `;
+
+                }
+
+
+                /* ======================================
+                   CONTACT BUTTONS
+                ====================================== */
+
                 let buttons = "";
 
-
-                /* PHONE */
 
                 if (business.phone) {
 
@@ -613,7 +998,9 @@ async function loadBusinesses() {
                             "
                         >
 
-                            <button type="button">
+                            <button
+                                type="button"
+                            >
                                 📞 Rele
                             </button>
 
@@ -623,8 +1010,6 @@ async function loadBusinesses() {
 
                 }
 
-
-                /* WHATSAPP */
 
                 if (business.whatsapp) {
 
@@ -649,7 +1034,9 @@ async function loadBusinesses() {
                                 "
                             >
 
-                                <button type="button">
+                                <button
+                                    type="button"
+                                >
                                     💬 WhatsApp
                                 </button>
 
@@ -662,31 +1049,13 @@ async function loadBusinesses() {
                 }
 
 
+                /* ======================================
+                   CARD
+                ====================================== */
+
                 card.innerHTML = `
 
-                    ${
-                        business.image_url
-                        ? `
-
-                            <img
-                                src="${escapeAttribute(
-                                    business.image_url
-                                )}"
-                                alt="${escapeAttribute(
-                                    business.business_name
-                                )}"
-                                style="
-                                    width:100%;
-                                    height:200px;
-                                    object-fit:cover;
-                                    border-radius:12px;
-                                    margin-bottom:15px;
-                                "
-                            >
-
-                        `
-                        : ""
-                    }
+                    ${galleryHTML}
 
 
                     <h3>
@@ -732,13 +1101,15 @@ async function loadBusinesses() {
                     </p>
 
 
-                    <div style="
-                        display:flex;
-                        gap:10px;
-                        justify-content:center;
-                        flex-wrap:wrap;
-                        margin-top:15px;
-                    ">
+                    <div
+                        style="
+                            display:flex;
+                            gap:10px;
+                            justify-content:center;
+                            flex-wrap:wrap;
+                            margin-top:15px;
+                        "
+                    >
 
                         ${buttons}
 
@@ -760,26 +1131,67 @@ async function loadBusinesses() {
     catch (error) {
 
         console.error(
-            "LOAD ERROR:",
+            "LOAD BUSINESSES ERROR:",
             error
         );
 
 
-        container.innerHTML = `
-
-            <p style="
-                width:100%;
-                text-align:center;
-                color:red;
-            ">
-
-                ❌ Erè koneksyon.
-
-            </p>
-
-        `;
+        showLoadError(
+            container
+        );
 
     }
+
+}
+
+
+/* ======================================
+   CHANGE GALLERY IMAGE
+====================================== */
+
+window.changeBusinessImage =
+    function (
+        businessId,
+        imageURL
+    ) {
+
+        const mainImage =
+            document.getElementById(
+                `main-image-${businessId}`
+            );
+
+
+        if (mainImage) {
+
+            mainImage.src =
+                imageURL;
+
+        }
+
+    };
+
+
+/* ======================================
+   SHOW LOAD ERROR
+====================================== */
+
+function showLoadError(
+    container
+) {
+
+    container.innerHTML = `
+
+        <p style="
+            width:100%;
+            text-align:center;
+            color:red;
+        ">
+
+            ❌ Nou pa kapab chaje anons yo.
+
+        </p>
+
+    `;
 
 }
 
@@ -863,22 +1275,4 @@ function escapeAttribute(value) {
         "&gt;"
     );
 
-} 
-function limitBusinessImages(input) {
-
-    const message =
-        document.getElementById("imageMessage");
-
-    if (input.files.length > 5) {
-
-        message.textContent =
-            "❌ Ou ka chwazi sèlman 5 foto.";
-
-        input.value = "";
-
-        return;
-    }
-
-    message.textContent =
-        "✅ " + input.files.length + " foto chwazi.";
 }
