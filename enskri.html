@@ -1,57 +1,202 @@
 <!DOCTYPE html>
 <html lang="ht">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>Enskri | Eagle-J Connect</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+          href="style.css">
+
 </head>
+
+
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header class="header">
+
     <div class="brand">
+
         <div class="logo-area">
-            <img src="Logo.jpg" alt="Eagle-J Connect Logo">
-            <h2>Eagle-J Connect</h2>
-            <span>Ayiti + Bahamas</span>
+
+            <img
+                src="Logo.jpg"
+                alt="Eagle-J Connect Logo"
+            >
+
+            <h2>
+                Eagle-J Connect
+            </h2>
+
+            <span>
+                Ayiti + Bahamas
+            </span>
+
         </div>
+
     </div>
 
-    <nav>
-        <a href="index.html">Akèy</a>
-        <a href="travay.html">Travay</a>
-        <a href="biznis.html">Biznis</a>
-        <a href="kontak.html">Kontak</a>
-        <a href="enskri.html">Enskri</a>
-        <a href="login.html">Konekte</a>
+
+    <!-- MOBILE MENU BUTTON -->
+
+    <button
+        type="button"
+        class="menu-toggle"
+        onclick="toggleMenu()"
+        aria-label="Louvri meni"
+    >
+        ☰
+    </button>
+
+
+    <!-- NAVIGATION MENU -->
+
+    <nav id="menu">
+
+        <a href="index.html">
+            Akèy
+        </a>
+
+        <a href="travay.html">
+            Travay
+        </a>
+
+        <a href="biznis.html">
+            Biznis
+        </a>
+
+        <a href="kontak.html">
+            Kontak
+        </a>
+
+        <a href="enskri.html">
+            Enskri
+        </a>
+
+        <a href="login.html">
+            Konekte
+        </a>
+
     </nav>
+
 </header>
 
+
+
+<!-- =========================
+     REGISTER SECTION
+========================= -->
+
 <section class="services">
-    <h1>Kreye Kont Ou</h1>
-    <p>Ranpli enfòmasyon ki anba yo pou kreye kont Eagle-J Connect ou.</p>
+
+    <h1>
+        Kreye Kont Ou
+    </h1>
+
+
+    <p>
+        Ranpli enfòmasyon ki anba yo
+        pou kreye kont Eagle-J Connect ou.
+    </p>
+
 
     <form class="business-form">
-        <input type="text" placeholder="Non konplè" required>
-        <input type="email" placeholder="Imèl" required>
-        <input type="tel" placeholder="Telefòn oswa WhatsApp" required>
+
+        <input
+            type="text"
+            placeholder="Non konplè"
+            required
+        >
+
+
+        <input
+            type="email"
+            placeholder="Imèl"
+            required
+        >
+
+
+        <input
+            type="tel"
+            placeholder="Telefòn oswa WhatsApp"
+            required
+        >
+
 
         <select>
-            <option>Chwazi kalite kont</option>
-            <option>Moun k ap chèche travay</option>
-            <option>Biznis</option>
+
+            <option>
+                Chwazi kalite kont
+            </option>
+
+            <option>
+                Moun k ap chèche travay
+            </option>
+
+            <option>
+                Biznis
+            </option>
+
         </select>
 
-        <input type="password" placeholder="Modpas" required>
-        <input type="password" placeholder="Konfime modpas" required>
 
-        <button type="submit">Kreye Kont</button>
+        <input
+            type="password"
+            placeholder="Modpas"
+            required
+        >
+
+
+        <input
+            type="password"
+            placeholder="Konfime modpas"
+            required
+        >
+
+
+        <button
+            type="submit"
+        >
+            Kreye Kont
+        </button>
+
     </form>
+
 </section>
 
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer>
-    <p>© 2026 Eagle-J Connect Bahamas + Ayiti</p>
+
+    <p>
+        © 2026 Eagle-J Connect Bahamas + Ayiti
+    </p>
+
 </footer>
+
+
+
+<!-- =========================
+     SCRIPT
+========================= -->
+
 <script src="script.js"></script>
+
+
 </body>
+
 </html>
