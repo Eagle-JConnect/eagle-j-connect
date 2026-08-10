@@ -105,70 +105,113 @@
 
 
     <p>
-        Ranpli enfòmasyon ki anba yo
-        pou kreye kont Eagle-J Connect ou.
+        Kreye kont ou sou Eagle-J Connect
+        pou jwenn oswa poste opòtinite travay.
     </p>
 
 
-    <form class="business-form">
+    <!-- REGISTER FORM -->
+
+    <form
+        id="registerForm"
+        class="business-form"
+    >
+
+
+        <!-- FULL NAME -->
 
         <input
             type="text"
+            id="fullName"
             placeholder="Non konplè"
             required
         >
 
 
+        <!-- EMAIL -->
+
         <input
             type="email"
+            id="email"
             placeholder="Imèl"
             required
         >
 
 
+        <!-- PHONE -->
+
         <input
             type="tel"
+            id="phone"
             placeholder="Telefòn oswa WhatsApp"
             required
         >
 
 
-        <select>
+        <!-- ACCOUNT TYPE -->
 
-            <option>
+        <select
+            id="accountType"
+            required
+        >
+
+            <option value="">
                 Chwazi kalite kont
             </option>
 
-            <option>
-                Moun k ap chèche travay
+            <option value="job_seeker">
+                👤 Moun k ap chèche travay
             </option>
 
-            <option>
-                Biznis
+            <option value="employer">
+                🏢 Anplwayè / Biznis
             </option>
 
         </select>
 
 
+        <!-- PASSWORD -->
+
         <input
             type="password"
+            id="password"
             placeholder="Modpas"
+            minlength="6"
             required
         >
 
+
+        <!-- CONFIRM PASSWORD -->
 
         <input
             type="password"
+            id="confirmPassword"
             placeholder="Konfime modpas"
+            minlength="6"
             required
         >
 
+
+        <!-- REGISTER MESSAGE -->
+
+        <div
+            id="registerMessage"
+            style="
+                margin:15px 0;
+                text-align:center;
+                font-weight:bold;
+            "
+        ></div>
+
+
+        <!-- SUBMIT -->
 
         <button
             type="submit"
         >
             Kreye Kont
         </button>
+
 
     </form>
 
