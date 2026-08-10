@@ -864,3 +864,21 @@ function escapeAttribute(value) {
     );
 
 } 
+function limitBusinessImages(input) {
+
+    const message =
+        document.getElementById("imageMessage");
+
+    if (input.files.length > 5) {
+
+        message.textContent =
+            "❌ Ou ka chwazi sèlman 5 foto.";
+
+        input.value = "";
+
+        return;
+    }
+
+    message.textContent =
+        "✅ " + input.files.length + " foto chwazi.";
+}
