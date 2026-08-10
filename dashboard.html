@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ht">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Eagle-J Connect</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="logo-area">
+
+            <img
+                src="Logo.jpg"
+                alt="Eagle-J Connect Logo"
+            >
+
+            <h2>
+                Eagle-J Connect
+            </h2>
+
+            <span>
+                Ayiti + Bahamas
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="menu-toggle"
+        onclick="toggleMenu()"
+        aria-label="Louvri meni"
+    >
+        ☰
+    </button>
+
+
+    <nav id="menu">
+
+        <a href="index.html">
+            Akèy
+        </a>
+
+        <a href="travay.html">
+            Travay
+        </a>
+
+        <a href="biznis.html">
+            Biznis
+        </a>
+
+        <a href="kontak.html">
+            Kontak
+        </a>
+
+        <a href="dashboard.html">
+            Pwofil mwen
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================
+     DASHBOARD
+========================= -->
+
+<section class="services">
+
+    <h1>
+        👋 Byenveni sou Eagle-J Connect
+    </h1>
+
+
+    <p>
+        Men espas pèsonèl kont ou.
+    </p>
+
+
+    <!-- LOADING -->
+
+    <div
+        id="dashboardLoading"
+        style="
+            text-align:center;
+            padding:20px;
+        "
+    >
+
+        ⏳ Nap chaje pwofil ou...
+
+    </div>
+
+
+    <!-- PROFILE -->
+
+    <div
+        id="profileCard"
+        class="card"
+        style="
+            max-width:600px;
+            margin:30px auto;
+            text-align:left;
+            display:none;
+        "
+    >
+
+        <h2>
+            👤 Enfòmasyon mwen
+        </h2>
+
+
+        <hr>
+
+
+        <p>
+            <strong>Non:</strong>
+            <span id="profileName"></span>
+        </p>
+
+
+        <p>
+            <strong>Imèl:</strong>
+            <span id="profileEmail"></span>
+        </p>
+
+
+        <p>
+            <strong>Telefòn:</strong>
+            <span id="profilePhone"></span>
+        </p>
+
+
+        <p>
+            <strong>Kalite kont:</strong>
+            <span id="profileType"></span>
+        </p>
+
+
+        <!-- SECRET CODE
+             Nou pa montre li isit la.
+        -->
+
+
+        <hr>
+
+
+        <!-- ACTIONS -->
+
+        <div
+            style="
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap;
+                margin-top:20px;
+            "
+        >
+
+            <a
+                href="travay.html"
+                style="
+                    text-decoration:none;
+                "
+            >
+
+                <button
+                    type="button"
+                >
+                    🔎 Chèche Travay
+                </button>
+
+            </a>
+
+
+            <a
+                href="biznis.html"
+                style="
+                    text-decoration:none;
+                "
+            >
+
+                <button
+                    type="button"
+                >
+                    🏢 Gade Biznis
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <!-- EMPLOYER ACTION -->
+
+        <div
+            id="employerActions"
+            style="
+                display:none;
+                margin-top:20px;
+            "
+        >
+
+            <h3>
+                🏢 Zòn Anplwayè
+            </h3>
+
+
+            <p>
+                Kòm anplwayè, ou kapab poste
+                opòtinite travay sou platfòm lan.
+            </p>
+
+
+            <a
+                href="poste-travay.html"
+                style="
+                    text-decoration:none;
+                "
+            >
+
+                <button
+                    type="button"
+                >
+                    ➕ Poste yon Travay
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <!-- JOB SEEKER ACTION -->
+
+        <div
+            id="jobSeekerActions"
+            style="
+                display:none;
+                margin-top:20px;
+            "
+        >
+
+            <h3>
+                👷 Zòn Moun k ap Chèche Travay
+            </h3>
+
+
+            <p>
+                Chèche opòtinite travay ki disponib
+                sou Eagle-J Connect.
+            </p>
+
+
+            <a
+                href="travay.html"
+                style="
+                    text-decoration:none;
+                "
+            >
+
+                <button
+                    type="button"
+                >
+                    🔎 Chèche Travay
+                </button>
+
+            </a>
+
+        </div>
+
+
+        <!-- LOGOUT -->
+
+        <button
+            type="button"
+            id="logoutButton"
+            style="
+                margin-top:25px;
+                background:#c62828;
+                color:white;
+                border:none;
+                padding:12px 22px;
+                border-radius:8px;
+                cursor:pointer;
+                font-weight:bold;
+            "
+        >
+
+            🚪 Dekonekte
+
+        </button>
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="dashboardError"
+        style="
+            text-align:center;
+            color:red;
+            padding:20px;
+            display:none;
+        "
+    ></div>
+
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <p>
+        © 2026 Eagle-J Connect Bahamas + Ayiti
+    </p>
+
+</footer>
+
+
+
+<!-- =========================
+     SCRIPT
+========================= -->
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
