@@ -1,7 +1,13 @@
 /* ======================================
    EAGLE-J CONNECT
-   SUPABASE BUSINESS + USER REGISTRATION
-   1 FOTO POU CHAK ANONS
+   SUPABASE
+   BUSINESS + REGISTRATION + LOGIN
+   EMPLOYER DASHBOARD + JOBS
+====================================== */
+
+
+/* ======================================
+   SUPABASE CONFIG
 ====================================== */
 
 const SUPABASE_URL =
@@ -23,22 +29,12 @@ window.toggleMenu = function () {
     const menu =
         document.getElementById("menu");
 
-    if (!menu) {
-
-        console.error(
-            "Menu #menu pa jwenn."
-        );
-
-        return;
-
-    }
+    if (!menu) return;
 
     menu.classList.toggle("show");
 
 };
 
-
-/* Fèmen menu a lè yon lyen klike */
 
 document.addEventListener(
     "click",
@@ -49,18 +45,12 @@ document.addEventListener(
 
         if (!menu) return;
 
-
         const link =
-            event.target.closest(
-                "#menu a"
-            );
-
+            event.target.closest("#menu a");
 
         if (link) {
 
-            menu.classList.remove(
-                "show"
-            );
+            menu.classList.remove("show");
 
         }
 
@@ -81,15 +71,12 @@ document.addEventListener(
         );
 
 
-        /* ======================================
-           BUSINESS FORM
-        ====================================== */
+        /* BUSINESS FORM */
 
         const businessForm =
             document.getElementById(
                 "businessForm"
             );
-
 
         if (businessForm) {
 
@@ -101,15 +88,12 @@ document.addEventListener(
         }
 
 
-        /* ======================================
-           BUSINESS LISTINGS
-        ====================================== */
+        /* BUSINESS LISTINGS */
 
         const businessListings =
             document.getElementById(
                 "businessListings"
             );
-
 
         if (businessListings) {
 
@@ -118,15 +102,12 @@ document.addEventListener(
         }
 
 
-        /* ======================================
-           REGISTER FORM
-        ====================================== */
+        /* REGISTER */
 
         const registerForm =
             document.getElementById(
                 "registerForm"
             );
-
 
         if (registerForm) {
 
@@ -137,12 +118,60 @@ document.addEventListener(
 
         }
 
+
+        /* LOGIN */
+
+        const loginForm =
+            document.getElementById(
+                "loginForm"
+            );
+
+        if (loginForm) {
+
+            loginForm.addEventListener(
+                "submit",
+                loginUser
+            );
+
+        }
+
+
+        /* EMPLOYER PAGE */
+
+        const employerName =
+            document.getElementById(
+                "employerName"
+            );
+
+        if (employerName) {
+
+            loadEmployerDashboard();
+
+        }
+
+
+        /* JOB FORM */
+
+        const jobForm =
+            document.getElementById(
+                "jobForm"
+            );
+
+        if (jobForm) {
+
+            jobForm.addEventListener(
+                "submit",
+                postJob
+            );
+
+        }
+
     }
 );
 
 
 /* ======================================
-   USER REGISTRATION
+   REGISTER USER
 ====================================== */
 
 async function registerUser(event) {
@@ -150,58 +179,42 @@ async function registerUser(event) {
     event.preventDefault();
 
 
-    /* ======================================
-       GET FORM VALUES
-    ====================================== */
-
     const fullName =
         document
-            .getElementById(
-                "fullName"
-            )
+            .getElementById("fullName")
             .value
             .trim();
 
 
     const email =
         document
-            .getElementById(
-                "email"
-            )
+            .getElementById("email")
             .value
             .trim();
 
 
     const phone =
         document
-            .getElementById(
-                "phone"
-            )
+            .getElementById("phone")
             .value
             .trim();
 
 
     const accountType =
         document
-            .getElementById(
-                "accountType"
-            )
+            .getElementById("accountType")
             .value;
 
 
     const password =
         document
-            .getElementById(
-                "password"
-            )
+            .getElementById("password")
             .value;
 
 
     const confirmPassword =
         document
-            .getElementById(
-                "confirmPassword"
-            )
+            .getElementById("confirmPassword")
             .value;
 
 
@@ -210,10 +223,6 @@ async function registerUser(event) {
             "registerMessage"
         );
 
-
-    /* ======================================
-       CHECK REQUIRED FIELDS
-    ====================================== */
 
     if (
         !fullName ||
@@ -234,10 +243,6 @@ async function registerUser(event) {
 
     }
 
-
-    /* ======================================
-       CHECK PASSWORD
-    ====================================== */
 
     if (
         password !==
@@ -270,19 +275,13 @@ async function registerUser(event) {
     }
 
 
-    /* ======================================
-       CHECK ACCOUNT TYPE
-    ====================================== */
-
     if (
-        accountType !==
-            "job_seeker" &&
-        accountType !==
-            "employer"
+        accountType !== "job_seeker" &&
+        accountType !== "employer"
     ) {
 
         message.textContent =
-            "❌ Tanpri chwazi yon kalite kont.";
+            "❌ Chwazi yon kalite kont.";
 
         message.style.color =
             "red";
@@ -291,10 +290,6 @@ async function registerUser(event) {
 
     }
 
-
-    /* ======================================
-       SHOW LOADING
-    ====================================== */
 
     message.textContent =
         "⏳ Nap kreye kont ou...";
@@ -305,19 +300,12 @@ async function registerUser(event) {
 
     try {
 
-
-        /* ======================================
-           STEP 1
-           CREATE SUPABASE AUTH ACCOUNT
-        ====================================== */
-
         const response =
             await fetch(
                 `${SUPABASE_URL}/auth/v1/signup`,
                 {
 
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
 
@@ -361,53 +349,22 @@ async function registerUser(event) {
             await response.json();
 
 
-        /* ======================================
-           AUTH ERROR
-        ====================================== */
-
-        if (
-            !response.ok
-        ) {
+        if (!response.ok) {
 
             console.error(
-                "REGISTER AUTH ERROR:",
+                "REGISTER ERROR:",
                 data
             );
 
 
-            let errorMessage =
-                "Nou pa kapab kreye kont lan.";
-
-
-            if (
-                data.msg
-            ) {
-
-                errorMessage =
-                    data.msg;
-
-            }
-            else if (
-                data.message
-            ) {
-
-                errorMessage =
-                    data.message;
-
-            }
-            else if (
-                data.error_description
-            ) {
-
-                errorMessage =
-                    data.error_description;
-
-            }
-
-
             message.textContent =
                 "❌ " +
-                errorMessage;
+                (
+                    data.msg ||
+                    data.message ||
+                    data.error_description ||
+                    "Nou pa kapab kreye kont lan."
+                );
 
             message.style.color =
                 "red";
@@ -418,21 +375,17 @@ async function registerUser(event) {
 
 
         /* ======================================
-           STEP 2
            SAVE PROFILE
         ====================================== */
 
-        if (
-            data.user
-        ) {
+        if (data.user) {
 
             const profileResponse =
                 await fetch(
                     `${SUPABASE_URL}/rest/v1/profiles`,
                     {
 
-                        method:
-                            "POST",
+                        method: "POST",
 
                         headers: {
 
@@ -471,40 +424,17 @@ async function registerUser(event) {
                 );
 
 
-            /* ======================================
-               PROFILE ERROR
-            ====================================== */
-
-            if (
-                !profileResponse.ok
-            ) {
-
-                const profileError =
-                    await profileResponse.text();
-
+            if (!profileResponse.ok) {
 
                 console.error(
                     "PROFILE ERROR:",
-                    profileError
+                    await profileResponse.text()
                 );
-
-
-                message.textContent =
-                    "⚠️ Kont lan kreye, men pwofil la pa t kapab sove.";
-
-                message.style.color =
-                    "orange";
-
-                return;
 
             }
 
         }
 
-
-        /* ======================================
-           SUCCESS
-        ====================================== */
 
         message.textContent =
             "✅ Kont ou kreye avèk siksè!";
@@ -513,24 +443,10 @@ async function registerUser(event) {
             "green";
 
 
-        const registerForm =
-            document.getElementById(
-                "registerForm"
-            );
+        document
+            .getElementById("registerForm")
+            .reset();
 
-
-        if (
-            registerForm
-        ) {
-
-            registerForm.reset();
-
-        }
-
-
-        /* ======================================
-           GO TO LOGIN
-        ====================================== */
 
         setTimeout(
             function () {
@@ -539,7 +455,7 @@ async function registerUser(event) {
                     "login.html";
 
             },
-            2000
+            1500
         );
 
     }
@@ -554,7 +470,7 @@ async function registerUser(event) {
 
 
         message.textContent =
-            "❌ Gen yon pwoblèm koneksyon. Eseye ankò.";
+            "❌ Gen yon pwoblèm koneksyon.";
 
         message.style.color =
             "red";
@@ -565,7 +481,850 @@ async function registerUser(event) {
 
 
 /* ======================================
-   CREATE BUSINESS
+   LOGIN
+====================================== */
+
+async function loginUser(event) {
+
+    event.preventDefault();
+
+
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+
+    const message =
+        document.getElementById(
+            "loginMessage"
+        );
+
+
+    message.textContent =
+        "⏳ Nap konekte...";
+
+    message.style.color =
+        "#003366";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_KEY
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            email:
+                                email,
+
+                            password:
+                                password
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(
+                "LOGIN ERROR:",
+                data
+            );
+
+
+            message.textContent =
+                "❌ " +
+                (
+                    data.error_description ||
+                    data.msg ||
+                    data.message ||
+                    "Email oswa modpas la pa bon."
+                );
+
+            message.style.color =
+                "red";
+
+            return;
+
+        }
+
+
+        /* ======================================
+           SAVE SESSION
+        ====================================== */
+
+        localStorage.setItem(
+            "supabase_access_token",
+            data.access_token
+        );
+
+
+        localStorage.setItem(
+            "supabase_refresh_token",
+            data.refresh_token
+        );
+
+
+        localStorage.setItem(
+            "supabase_user",
+            JSON.stringify(data.user)
+        );
+
+
+        message.textContent =
+            "✅ Ou konekte avèk siksè!";
+
+        message.style.color =
+            "green";
+
+
+        /* ======================================
+           GET PROFILE
+        ====================================== */
+
+        const profileResponse =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/profiles?id=eq.${data.user.id}&select=*`,
+                {
+
+                    headers: {
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${data.access_token}`
+
+                    }
+
+                }
+            );
+
+
+        const profiles =
+            await profileResponse.json();
+
+
+        const profile =
+            Array.isArray(profiles)
+                ? profiles[0]
+                : null;
+
+
+        if (
+            profile &&
+            profile.account_type ===
+                "employer"
+        ) {
+
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "employer.html";
+
+                },
+                800
+            );
+
+            return;
+
+        }
+
+
+        /* JOB SEEKER */
+
+        setTimeout(
+            function () {
+
+                window.location.href =
+                    "travay.html";
+
+            },
+            800
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "LOGIN SYSTEM ERROR:",
+            error
+        );
+
+
+        message.textContent =
+            "❌ Gen yon pwoblèm koneksyon.";
+
+        message.style.color =
+            "red";
+
+    }
+
+}
+
+
+/* ======================================
+   EMPLOYER DASHBOARD
+====================================== */
+
+async function loadEmployerDashboard() {
+
+    const token =
+        localStorage.getItem(
+            "supabase_access_token"
+        );
+
+
+    const userText =
+        localStorage.getItem(
+            "supabase_user"
+        );
+
+
+    if (
+        !token ||
+        !userText
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const user =
+        JSON.parse(
+            userText
+        );
+
+
+    try {
+
+        /* ======================================
+           LOAD PROFILE
+        ====================================== */
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=*`,
+                {
+
+                    headers: {
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
+                }
+            );
+
+
+        const profiles =
+            await response.json();
+
+
+        if (
+            !Array.isArray(profiles) ||
+            profiles.length === 0
+        ) {
+
+            alert(
+                "Nou pa jwenn pwofil ou."
+            );
+
+            return;
+
+        }
+
+
+        const profile =
+            profiles[0];
+
+
+        /* ======================================
+           SECURITY
+        ====================================== */
+
+        if (
+            profile.account_type !==
+            "employer"
+        ) {
+
+            alert(
+                "⛔ Paj sa a se pou anplwayè sèlman."
+            );
+
+            window.location.href =
+                "travay.html";
+
+            return;
+
+        }
+
+
+        /* ======================================
+           DISPLAY PROFILE
+        ====================================== */
+
+        const name =
+            document.getElementById(
+                "employerName"
+            );
+
+        const profileName =
+            document.getElementById(
+                "profileName"
+            );
+
+        const profileEmail =
+            document.getElementById(
+                "profileEmail"
+            );
+
+        const profilePhone =
+            document.getElementById(
+                "profilePhone"
+            );
+
+        const profileType =
+            document.getElementById(
+                "profileType"
+            );
+
+
+        if (name) {
+
+            name.textContent =
+                profile.full_name;
+
+        }
+
+
+        if (profileName) {
+
+            profileName.textContent =
+                profile.full_name;
+
+        }
+
+
+        if (profileEmail) {
+
+            profileEmail.textContent =
+                user.email || "—";
+
+        }
+
+
+        if (profilePhone) {
+
+            profilePhone.textContent =
+                profile.phone || "—";
+
+        }
+
+
+        if (profileType) {
+
+            profileType.textContent =
+                "🏢 Anplwayè";
+
+        }
+
+
+        /* ======================================
+           LOAD MY JOBS
+        ====================================== */
+
+        loadMyJobs(
+            user.id,
+            token
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "DASHBOARD ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+/* ======================================
+   POST JOB
+====================================== */
+
+async function postJob(event) {
+
+    event.preventDefault();
+
+
+    const token =
+        localStorage.getItem(
+            "supabase_access_token"
+        );
+
+
+    const userText =
+        localStorage.getItem(
+            "supabase_user"
+        );
+
+
+    const message =
+        document.getElementById(
+            "jobMessage"
+        );
+
+
+    if (
+        !token ||
+        !userText
+    ) {
+
+        message.textContent =
+            "❌ Ou dwe konekte anvan ou poste yon travay.";
+
+        message.style.color =
+            "red";
+
+        return;
+
+    }
+
+
+    const user =
+        JSON.parse(
+            userText
+        );
+
+
+    const title =
+        document
+            .getElementById("jobTitle")
+            .value
+            .trim();
+
+
+    const companyName =
+        document
+            .getElementById("jobCompany")
+            .value
+            .trim();
+
+
+    const location =
+        document
+            .getElementById("jobLocation")
+            .value
+            .trim();
+
+
+    const jobType =
+        document
+            .getElementById("jobType")
+            .value;
+
+
+    const salary =
+        document
+            .getElementById("jobSalary")
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById("jobDescription")
+            .value
+            .trim();
+
+
+    const contactPhone =
+        document
+            .getElementById("jobContact")
+            .value
+            .trim();
+
+
+    if (
+        !title ||
+        !companyName ||
+        !location ||
+        !jobType ||
+        !description ||
+        !contactPhone
+    ) {
+
+        message.textContent =
+            "⚠️ Tanpri ranpli tout chan obligatwa yo.";
+
+        message.style.color =
+            "red";
+
+        return;
+
+    }
+
+
+    message.textContent =
+        "⏳ Travay la ap pibliye...";
+
+    message.style.color =
+        "#003366";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/jobs`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${token}`,
+
+                        "Prefer":
+                            "return=representation"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            employer_id:
+                                user.id,
+
+                            title:
+                                title,
+
+                            company_name:
+                                companyName,
+
+                            location:
+                                location,
+
+                            job_type:
+                                jobType,
+
+                            salary:
+                                salary ||
+                                null,
+
+                            description:
+                                description,
+
+                            contact_phone:
+                                contactPhone
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(
+                "POST JOB ERROR:",
+                data
+            );
+
+
+            message.textContent =
+                "❌ Travay la pa t kapab pibliye.";
+
+            message.style.color =
+                "red";
+
+            return;
+
+        }
+
+
+        message.textContent =
+            "✅ Travay la pibliye avèk siksè!";
+
+        message.style.color =
+            "green";
+
+
+        document
+            .getElementById("jobForm")
+            .reset();
+
+
+        loadMyJobs(
+            user.id,
+            token
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "POST JOB SYSTEM ERROR:",
+            error
+        );
+
+
+        message.textContent =
+            "❌ Gen yon pwoblèm koneksyon.";
+
+        message.style.color =
+            "red";
+
+    }
+
+}
+
+
+/* ======================================
+   LOAD MY JOBS
+====================================== */
+
+async function loadMyJobs(
+    userId,
+    token
+) {
+
+    const container =
+        document.getElementById(
+            "myJobs"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML =
+        "<p>⏳ Travay yo ap chaje...</p>";
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/jobs?employer_id=eq.${userId}&select=*&order=created_at.desc`,
+                {
+
+                    headers: {
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
+                }
+            );
+
+
+        const jobs =
+            await response.json();
+
+
+        if (
+            !Array.isArray(jobs) ||
+            jobs.length === 0
+        ) {
+
+            container.innerHTML = `
+                <p>
+                    Ou poko poste okenn travay.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            "";
+
+
+        jobs.forEach(
+            function (job) {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "card";
+
+
+                card.style.margin =
+                    "15px 0";
+
+
+                card.style.textAlign =
+                    "left";
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        ${escapeHTML(job.title)}
+                    </h3>
+
+                    <p>
+                        🏢 ${escapeHTML(job.company_name)}
+                    </p>
+
+                    <p>
+                        📍 ${escapeHTML(job.location)}
+                    </p>
+
+                    <p>
+                        💼 ${escapeHTML(job.job_type)}
+                    </p>
+
+                    ${
+                        job.salary
+                        ? `
+                            <p>
+                                💰 ${escapeHTML(job.salary)}
+                            </p>
+                          `
+                        : ""
+                    }
+
+                    <p>
+                        ${escapeHTML(job.description)}
+                    </p>
+
+                    <p>
+                        📞 ${escapeHTML(job.contact_phone)}
+                    </p>
+
+                    <small>
+                        📅 ${new Date(
+                            job.created_at
+                        ).toLocaleDateString()}
+                    </small>
+
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "LOAD JOBS ERROR:",
+            error
+        );
+
+
+        container.innerHTML =
+            "<p>❌ Nou pa kapab chaje travay yo.</p>";
+
+    }
+
+}
+
+
+/* ======================================
+   LOGOUT
+====================================== */
+
+window.logoutUser = function () {
+
+    localStorage.removeItem(
+        "supabase_access_token"
+    );
+
+    localStorage.removeItem(
+        "supabase_refresh_token"
+    );
+
+    localStorage.removeItem(
+        "supabase_user"
+    );
+
+
+    window.location.href =
+        "login.html";
+
+};
+
+
+/* ======================================
+   BUSINESS
 ====================================== */
 
 async function submitBusiness(event) {
@@ -575,80 +1334,57 @@ async function submitBusiness(event) {
 
     const businessName =
         document
-            .getElementById(
-                "businessName"
-            )
+            .getElementById("businessName")
             .value
             .trim();
 
 
     const category =
         document
-            .getElementById(
-                "category"
-            )
+            .getElementById("category")
             .value;
 
 
     const location =
         document
-            .getElementById(
-                "location"
-            )
+            .getElementById("location")
             .value
             .trim();
 
 
     const phone =
         document
-            .getElementById(
-                "phone"
-            )
+            .getElementById("phone")
             .value
             .trim();
 
 
     const whatsapp =
         document
-            .getElementById(
-                "whatsapp"
-            )
+            .getElementById("whatsapp")
             .value
             .trim();
 
 
     const price =
         document
-            .getElementById(
-                "price"
-            )
+            .getElementById("price")
             .value
             .trim();
 
 
     const description =
         document
-            .getElementById(
-                "description"
-            )
+            .getElementById("description")
             .value
             .trim();
 
-
-    /* IMPORTANT:
-       HTML la dwe itilize:
-       id="businessImage"
-    */
 
     const imageInput =
         document.getElementById(
             "businessImage"
         );
 
-
-    /* ======================================
-       CHECK REQUIRED FIELDS
-    ====================================== */
 
     if (
         !businessName ||
@@ -667,21 +1403,15 @@ async function submitBusiness(event) {
     }
 
 
-    /* ======================================
-       GET ONE IMAGE
-    ====================================== */
-
     const file =
         imageInput &&
         imageInput.files &&
-        imageInput.files.length > 0
+        imageInput.files.length
             ? imageInput.files[0]
             : null;
 
 
-    if (
-        file
-    ) {
+    if (file) {
 
         if (
             !file.type.startsWith(
@@ -724,18 +1454,12 @@ async function submitBusiness(event) {
         );
 
 
-        /* ======================================
-           STEP 1
-           CREATE BUSINESS
-        ====================================== */
-
-        const businessResponse =
+        const response =
             await fetch(
                 `${SUPABASE_URL}/rest/v1/businesses`,
                 {
 
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
 
@@ -789,19 +1513,16 @@ async function submitBusiness(event) {
             );
 
 
-        const businessText =
-            await businessResponse.text();
+        const text =
+            await response.text();
 
 
-        if (
-            !businessResponse.ok
-        ) {
+        if (!response.ok) {
 
             console.error(
                 "BUSINESS ERROR:",
-                businessText
+                text
             );
-
 
             showMessage(
                 "❌ Anons lan pa t kapab pibliye.",
@@ -813,50 +1534,25 @@ async function submitBusiness(event) {
         }
 
 
-        const businessData =
-            JSON.parse(
-                businessText
-            );
+        const data =
+            JSON.parse(text);
 
 
         const business =
-            Array.isArray(
-                businessData
-            )
-                ? businessData[0]
-                : businessData;
+            Array.isArray(data)
+                ? data[0]
+                : data;
 
 
         const businessId =
             business.id;
 
 
-        if (
-            !businessId
-        ) {
-
-            showMessage(
-                "❌ Nou pa jwenn ID biznis la.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        /* ======================================
-           STEP 2
-           UPLOAD ONE IMAGE
-        ====================================== */
-
         let imageURL =
             null;
 
 
-        if (
-            file
-        ) {
+        if (file) {
 
             showMessage(
                 "⏳ Foto a ap monte...",
@@ -880,8 +1576,7 @@ async function submitBusiness(event) {
                     `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
                     {
 
-                        method:
-                            "POST",
+                        method: "POST",
 
                         headers: {
 
@@ -903,19 +1598,11 @@ async function submitBusiness(event) {
                 );
 
 
-            const uploadText =
-                await uploadResponse.text();
-
-
-            if (
-                !uploadResponse.ok
-            ) {
+            if (!uploadResponse.ok) {
 
                 console.error(
-                    "IMAGE UPLOAD ERROR:",
-                    uploadText
+                    await uploadResponse.text()
                 );
-
 
                 showMessage(
                     "❌ Foto a pa t kapab monte.",
@@ -927,32 +1614,18 @@ async function submitBusiness(event) {
             }
 
 
-            /* PUBLIC IMAGE URL */
-
             imageURL =
                 `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
-
-            console.log(
-                "IMAGE URL:",
-                imageURL
-            );
-
         }
 
-
-        /* ======================================
-           STEP 3
-           SAVE IMAGE URL
-        ====================================== */
 
         const updateResponse =
             await fetch(
                 `${SUPABASE_URL}/rest/v1/businesses?id=eq.${businessId}`,
                 {
 
-                    method:
-                        "PATCH",
+                    method: "PATCH",
 
                     headers: {
 
@@ -963,10 +1636,7 @@ async function submitBusiness(event) {
                             SUPABASE_KEY,
 
                         "Authorization":
-                            `Bearer ${SUPABASE_KEY}`,
-
-                        "Prefer":
-                            "return=minimal"
+                            `Bearer ${SUPABASE_KEY}`
 
                     },
 
@@ -982,19 +1652,11 @@ async function submitBusiness(event) {
             );
 
 
-        const updateText =
-            await updateResponse.text();
-
-
-        if (
-            !updateResponse.ok
-        ) {
+        if (!updateResponse.ok) {
 
             console.error(
-                "IMAGE URL ERROR:",
-                updateText
+                await updateResponse.text()
             );
-
 
             showMessage(
                 "⚠️ Anons lan kreye men foto a pa t konekte.",
@@ -1005,10 +1667,6 @@ async function submitBusiness(event) {
 
         }
 
-
-        /* ======================================
-           SUCCESS
-        ====================================== */
 
         showMessage(
             "✅ Anons ou a pibliye avèk siksè!",
@@ -1022,40 +1680,22 @@ async function submitBusiness(event) {
             );
 
 
-        if (
-            form
-        ) {
+        if (form) {
 
             form.reset();
 
         }
 
 
-        /* Reload listings */
-
-        const businessListings =
-            document.getElementById(
-                "businessListings"
-            );
-
-
-        if (
-            businessListings
-        ) {
-
-            loadBusinesses();
-
-        }
+        loadBusinesses();
 
     }
 
 
-    catch (
-        error
-    ) {
+    catch (error) {
 
         console.error(
-            "SUBMIT ERROR:",
+            "BUSINESS ERROR:",
             error
         );
 
@@ -1082,28 +1722,7 @@ async function loadBusinesses() {
         );
 
 
-    if (
-        !container
-    ) {
-
-        return;
-
-    }
-
-
-    container.innerHTML = `
-
-        <p style="
-            width:100%;
-            text-align:center;
-            color:#666;
-        ">
-
-            ⏳ Anons yo ap chaje...
-
-        </p>
-
-    `;
+    if (!container) return;
 
 
     try {
@@ -1112,9 +1731,6 @@ async function loadBusinesses() {
             await fetch(
                 `${SUPABASE_URL}/rest/v1/businesses?select=*&order=created_at.desc`,
                 {
-
-                    method:
-                        "GET",
 
                     headers: {
 
@@ -1130,74 +1746,29 @@ async function loadBusinesses() {
             );
 
 
-        const responseText =
-            await response.text();
-
-
-        if (
-            !response.ok
-        ) {
-
-            console.error(
-                "LOAD ERROR:",
-                responseText
-            );
-
-
-            showLoadError(
-                container
-            );
-
-            return;
-
-        }
-
-
         const businesses =
-            JSON.parse(
-                responseText
-            );
+            await response.json();
 
 
         if (
-            !Array.isArray(
-                businesses
-            ) ||
+            !Array.isArray(businesses) ||
             businesses.length === 0
         ) {
 
-            container.innerHTML = `
-
-                <p style="
-                    width:100%;
-                    text-align:center;
-                    color:#666;
-                ">
-
-                    Pa gen anons biznis pou kounye a.
-
-                </p>
-
-            `;
+            container.innerHTML =
+                "<p>Pa gen anons biznis pou kounye a.</p>";
 
             return;
 
         }
 
-
-        /* ======================================
-           DISPLAY BUSINESSES
-        ====================================== */
 
         container.innerHTML =
             "";
 
 
         businesses.forEach(
-            function (
-                business
-            ) {
-
+            function (business) {
 
                 const card =
                     document.createElement(
@@ -1209,10 +1780,6 @@ async function loadBusinesses() {
                     "card";
 
 
-                /* ======================================
-                   IMAGE
-                ====================================== */
-
                 let imageHTML =
                     "";
 
@@ -1223,56 +1790,26 @@ async function loadBusinesses() {
 
                     imageHTML = `
 
-                        <div style="
-                            width:100%;
-                            margin-bottom:18px;
-                        ">
-
-                            <div style="
+                        <img
+                            src="${escapeAttribute(
+                                business.image_url
+                            )}"
+                            alt="${escapeAttribute(
+                                business.business_name
+                            )}"
+                            style="
                                 width:100%;
                                 height:230px;
-                                background:#f5f5f5;
+                                object-fit:contain;
                                 border-radius:12px;
-                                overflow:hidden;
-                                display:flex;
-                                align-items:center;
-                                justify-content:center;
-                            ">
-
-                                <img
-                                    src="${escapeAttribute(
-                                        business.image_url
-                                    )}"
-                                    alt="${escapeAttribute(
-                                        business.business_name
-                                    )}"
-                                    style="
-                                        width:100%;
-                                        height:100%;
-                                        object-fit:contain;
-                                        display:block;
-                                    "
-                                    onerror="
-                                        console.error(
-                                            'Imaj pa ka afiche:',
-                                            this.src
-                                        );
-                                        this.style.display='none';
-                                    "
-                                >
-
-                            </div>
-
-                        </div>
+                                background:#f5f5f5;
+                            "
+                        >
 
                     `;
 
                 }
 
-
-                /* ======================================
-                   CONTACT BUTTONS
-                ====================================== */
 
                 let buttons =
                     "";
@@ -1288,19 +1825,10 @@ async function loadBusinesses() {
                             href="tel:${escapeAttribute(
                                 business.phone
                             )}"
-                            style="
-                                text-decoration:none;
-                            "
                         >
-
-                            <button
-                                type="button"
-                            >
-
+                            <button type="button">
                                 📞 Rele
-
                             </button>
-
                         </a>
 
                     `;
@@ -1320,9 +1848,7 @@ async function loadBusinesses() {
                             );
 
 
-                    if (
-                        number
-                    ) {
+                    if (number) {
 
                         buttons += `
 
@@ -1330,19 +1856,10 @@ async function loadBusinesses() {
                                 href="https://wa.me/${number}"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                style="
-                                    text-decoration:none;
-                                "
                             >
-
-                                <button
-                                    type="button"
-                                >
-
+                                <button type="button">
                                     💬 WhatsApp
-
                                 </button>
-
                             </a>
 
                         `;
@@ -1352,78 +1869,48 @@ async function loadBusinesses() {
                 }
 
 
-                /* ======================================
-                   BUSINESS CARD
-                ====================================== */
-
                 card.innerHTML = `
 
                     ${imageHTML}
 
-
                     <h3>
-
                         ${escapeHTML(
                             business.business_name
                         )}
-
                     </h3>
 
-
                     <p>
-
                         📂 ${escapeHTML(
                             business.category
                         )}
-
                     </p>
 
-
                     <p>
-
                         📍 ${escapeHTML(
                             business.location
                         )}
-
                     </p>
-
 
                     ${
                         business.price
                         ? `
-
                             <p>
-
                                 💰 ${escapeHTML(
                                     business.price
                                 )}
-
                             </p>
-
-                        `
+                          `
                         : ""
                     }
 
-
                     <p>
-
                         ${escapeHTML(
                             business.description
                         )}
-
                     </p>
 
-
-                    <div style="
-                        display:flex;
-                        gap:10px;
-                        justify-content:center;
-                        flex-wrap:wrap;
-                        margin-top:15px;
-                    ">
-
+                    <div>
                         ${buttons}
-
                     </div>
 
                 `;
@@ -1439,46 +1926,17 @@ async function loadBusinesses() {
     }
 
 
-    catch (
-        error
-    ) {
+    catch (error) {
 
         console.error(
-            "LOAD BUSINESSES ERROR:",
+            "LOAD BUSINESS ERROR:",
             error
         );
 
-
-        showLoadError(
-            container
-        );
+        container.innerHTML =
+            "<p>❌ Nou pa kapab chaje anons yo.</p>";
 
     }
-
-}
-
-
-/* ======================================
-   LOAD ERROR
-====================================== */
-
-function showLoadError(
-    container
-) {
-
-    container.innerHTML = `
-
-        <p style="
-            width:100%;
-            text-align:center;
-            color:red;
-        ">
-
-            ❌ Nou pa kapab chaje anons yo.
-
-        </p>
-
-    `;
 
 }
 
@@ -1498,13 +1956,9 @@ function showMessage(
         );
 
 
-    if (
-        !box
-    ) {
+    if (!box) {
 
-        alert(
-            message
-        );
+        alert(message);
 
         return;
 
@@ -1570,4 +2024,4 @@ function escapeAttribute(
             "&gt;"
         );
 
-} 
+}
