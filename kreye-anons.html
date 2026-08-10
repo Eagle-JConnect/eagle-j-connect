@@ -2,12 +2,14 @@
 <html lang="ht">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Eagle-J Connect | Kreye Anons</title>
+    <meta charset="UTF-8">
 
-<link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Eagle-J Connect | Kreye Anons</title>
+
+    <link rel="stylesheet" href="style.css">
 
 </head>
 
@@ -15,84 +17,255 @@
 <body>
 
 
+<!-- =========================
+     HEADER
+========================= -->
+
 <header class="header">
 
-<div class="brand">
+    <div class="brand">
 
-<div class="logo-area">
+        <div class="logo-area">
 
-<img src="Logo.jpg" alt="Eagle-J Connect Logo">
+            <img src="Logo.jpg" alt="Eagle-J Connect Logo">
 
-<h2>Eagle-J Connect</h2>
+            <h2>Eagle-J Connect</h2>
 
-<span>Ayiti + Bahamas</span>
+            <span>Ayiti + Bahamas</span>
 
-</div>
+        </div>
 
-</div>
+    </div>
 
 
-<nav>
+    <nav id="menu">
 
-<a href="index.html">Akèy</a>
-<a href="travay.html">Travay</a>
-<a href="biznis.html">Biznis</a>
+        <a href="index.html">Akèy</a>
 
-</nav>
+        <a href="travay.html">Travay</a>
 
+        <a href="biznis.html">Biznis</a>
+
+        <a href="kontak.html">Kontak</a>
+
+    </nav>
 
 </header>
 
 
 
-<section class="services">
+<!-- =========================
+     CREATE BUSINESS AD
+========================= -->
+
+<section class="create-ad">
+
+    <div class="create-ad-container">
+
+        <h1>Kreye yon Anons Biznis</h1>
+
+        <p class="create-ad-intro">
+
+            Fè plis moun konnen biznis ou,
+            pwodwi ou oswa sèvis ou yo.
+
+        </p>
 
 
-<h1>Kreye Anons Biznis</h1>
+        <form id="businessForm" class="business-form">
 
 
-<p>
-Prezante biznis ou bay kominote Eagle-J Connect la.
-</p>
+            <!-- NON BIZNIS -->
+
+            <label for="businessName">
+                Non biznis la
+            </label>
+
+            <input
+                type="text"
+                id="businessName"
+                name="businessName"
+                placeholder="Egzanp: Eagle-J Beauty Shop"
+                required
+            >
 
 
 
-<form class="business-form">
+            <!-- KATEGORI -->
+
+            <label for="category">
+                Kategori biznis
+            </label>
+
+            <select id="category" name="category" required>
+
+                <option value="">
+                    Chwazi yon kategori
+                </option>
+
+                <option value="restaurant">
+                    🍽 Restoran
+                </option>
+
+                <option value="commerce">
+                    🛒 Komès
+                </option>
+
+                <option value="service">
+                    🔧 Sèvis
+                </option>
+
+                <option value="beauty">
+                    🛍 Beauty / Bote
+                </option>
+
+                <option value="food">
+                    🍔 Manje
+                </option>
+
+                <option value="digital">
+                    💻 Digital Services
+                </option>
+
+                <option value="other">
+                    📦 Lòt
+                </option>
+
+            </select>
 
 
-<input type="text" placeholder="Non biznis ou" required>
+
+            <!-- LOKALIZASYON -->
+
+            <label for="location">
+                Lokalizasyon
+            </label>
+
+            <input
+                type="text"
+                id="location"
+                name="location"
+                placeholder="Egzanp: Nassau, Bahamas"
+                required
+            >
 
 
-<input type="text" placeholder="Kategori biznis la">
+
+            <!-- TELEFÒN -->
+
+            <label for="phone">
+                Telefòn
+            </label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Egzanp: +1 242 000 0000"
+            >
 
 
-<input type="text" placeholder="Telefòn oswa WhatsApp">
+
+            <!-- WHATSAPP -->
+
+            <label for="whatsapp">
+                WhatsApp
+            </label>
+
+            <input
+                type="tel"
+                id="whatsapp"
+                name="whatsapp"
+                placeholder="Egzanp: +1 242 000 0000"
+            >
 
 
-<textarea placeholder="Dekri sèvis ou yo"></textarea>
+
+            <!-- PRI -->
+
+            <label for="price">
+                Pri / Tarif
+            </label>
+
+            <input
+                type="text"
+                id="price"
+                name="price"
+                placeholder="Egzanp: $50 oswa Apati $25"
+            >
 
 
-<button type="submit">
-Pibliye Anons
-</button>
+
+            <!-- DESKRIPSYON -->
+
+            <label for="description">
+                Dekri biznis ou oswa sèvis ou
+            </label>
+
+            <textarea
+                id="description"
+                name="description"
+                placeholder="Ekri kèk detay sou sa biznis ou ofri..."
+                required
+            ></textarea>
 
 
-</form>
 
+            <!-- FOTO -->
+
+            <label for="businessImage">
+                Foto biznis / pwodwi
+            </label>
+
+            <input
+                type="file"
+                id="businessImage"
+                name="businessImage"
+                accept="image/*"
+            >
+
+
+
+            <!-- BOUTON -->
+
+            <button type="submit">
+
+                📢 Pibliye Anons
+
+            </button>
+
+
+        </form>
+
+
+        <!-- MESAJ -->
+
+        <div id="formMessage" class="form-message"></div>
+
+
+    </div>
 
 </section>
 
 
 
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer>
 
-<p>
-© 2026 Eagle-J Connect Bahamas + Ayiti
-</p>
+    <p>
+        © 2026 Eagle-J Connect Bahamas + Ayiti
+    </p>
 
 </footer>
 
+
+<script src="language.js"></script>
+
 <script src="script.js"></script>
+
 
 </body>
 
