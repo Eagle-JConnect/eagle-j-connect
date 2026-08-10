@@ -36,10 +36,6 @@ window.limitBusinessImages = function (input) {
     const message =
         document.getElementById("imageMessage");
 
-    if (!input || !input.files) {
-        return;
-    }
-
     if (input.files.length > 5) {
 
         if (message) {
@@ -68,7 +64,6 @@ window.limitBusinessImages = function (input) {
 
             message.style.color = "green";
         }
-
     }
 
 };
@@ -82,18 +77,13 @@ document.addEventListener(
     "DOMContentLoaded",
     function () {
 
-        console.log(
-            "Eagle-J Connect ap mache!"
-        );
+        console.log("Eagle-J Connect ap mache!");
 
 
         /* BUSINESS FORM */
 
         const businessForm =
-            document.getElementById(
-                "businessForm"
-            );
-
+            document.getElementById("businessForm");
 
         if (businessForm) {
 
@@ -108,10 +98,7 @@ document.addEventListener(
         /* BUSINESS LISTINGS */
 
         const businessListings =
-            document.getElementById(
-                "businessListings"
-            );
-
+            document.getElementById("businessListings");
 
         if (businessListings) {
 
@@ -132,99 +119,30 @@ async function submitBusiness(event) {
     event.preventDefault();
 
 
-    const businessNameElement =
-        document.getElementById(
-            "businessName"
-        );
-
-    const categoryElement =
-        document.getElementById(
-            "category"
-        );
-
-    const locationElement =
-        document.getElementById(
-            "location"
-        );
-
-    const phoneElement =
-        document.getElementById(
-            "phone"
-        );
-
-    const whatsappElement =
-        document.getElementById(
-            "whatsapp"
-        );
-
-    const priceElement =
-        document.getElementById(
-            "price"
-        );
-
-    const descriptionElement =
-        document.getElementById(
-            "description"
-        );
-
-
-    if (
-        !businessNameElement ||
-        !categoryElement ||
-        !locationElement ||
-        !descriptionElement
-    ) {
-
-        showMessage(
-            "❌ Gen yon chan ki manke nan fòm nan.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
     const businessName =
-        businessNameElement.value.trim();
+        document.getElementById("businessName").value.trim();
 
     const category =
-        categoryElement.value;
+        document.getElementById("category").value;
 
     const location =
-        locationElement.value.trim();
+        document.getElementById("location").value.trim();
 
     const phone =
-        phoneElement
-            ? phoneElement.value.trim()
-            : "";
+        document.getElementById("phone").value.trim();
 
     const whatsapp =
-        whatsappElement
-            ? whatsappElement.value.trim()
-            : "";
+        document.getElementById("whatsapp").value.trim();
 
     const price =
-        priceElement
-            ? priceElement.value.trim()
-            : "";
+        document.getElementById("price").value.trim();
 
     const description =
-        descriptionElement.value.trim();
+        document.getElementById("description").value.trim();
 
-
-    /* IMAGE INPUT */
 
     const imageInput =
-        document.getElementById(
-            "businessImages"
-        );
-
-
-    const files =
-        imageInput && imageInput.files
-            ? Array.from(imageInput.files)
-            : [];
+        document.getElementById("businessImages");
 
 
     /* REQUIRED FIELDS */
@@ -242,11 +160,16 @@ async function submitBusiness(event) {
         );
 
         return;
-
     }
 
 
-    /* MAX 5 IMAGES */
+    /* GET IMAGES */
+
+    const files =
+        imageInput && imageInput.files
+            ? Array.from(imageInput.files)
+            : [];
+
 
     if (files.length > 5) {
 
@@ -256,7 +179,6 @@ async function submitBusiness(event) {
         );
 
         return;
-
     }
 
 
@@ -269,8 +191,7 @@ async function submitBusiness(event) {
 
 
         /* ======================================
-           STEP 1
-           CREATE BUSINESS
+           STEP 1 — CREATE BUSINESS
         ====================================== */
 
         const businessResponse =
@@ -345,14 +266,11 @@ async function submitBusiness(event) {
             );
 
             return;
-
         }
 
 
         const businessData =
-            JSON.parse(
-                businessText
-            );
+            JSON.parse(businessText);
 
 
         const business =
@@ -367,18 +285,12 @@ async function submitBusiness(event) {
 
         if (!businessId) {
 
-            console.error(
-                "BUSINESS ID MISSING:",
-                businessData
-            );
-
             showMessage(
                 "❌ Nou pa jwenn ID biznis la.",
                 "error"
             );
 
             return;
-
         }
 
 
@@ -389,8 +301,7 @@ async function submitBusiness(event) {
 
 
         /* ======================================
-           STEP 2
-           UPLOAD IMAGES
+           STEP 2 — UPLOAD IMAGES
         ====================================== */
 
         let uploadedImages = [];
@@ -402,42 +313,36 @@ async function submitBusiness(event) {
             i++
         ) {
 
-            const file =
-                files[i];
+            const file = files[i];
 
 
-            /* CHECK IMAGE TYPE */
+            /* CHECK IMAGE */
 
             if (
-                !file.type.startsWith(
-                    "image/"
-                )
+                !file.type.startsWith("image/")
             ) {
 
                 showMessage(
-                    "❌ Tout fichye yo dwe imaj.",
+                    `❌ Foto ${i + 1} pa yon imaj.`,
                     "error"
                 );
 
                 return;
-
             }
 
 
-            /* CHECK FILE SIZE */
+            /* CHECK SIZE */
 
             if (
-                file.size >
-                5 * 1024 * 1024
+                file.size > 5 * 1024 * 1024
             ) {
 
                 showMessage(
-                    `❌ Foto ${i + 1} depase 5MB.`,
+                    `❌ Foto ${i + 1} twò gwo. Maksimòm 5MB.`,
                     "error"
                 );
 
                 return;
-
             }
 
 
@@ -464,9 +369,7 @@ async function submitBusiness(event) {
                     .substring(2)}.${extension}`;
 
 
-            /* ======================================
-               UPLOAD TO STORAGE
-            ====================================== */
+            /* UPLOAD */
 
             const uploadResponse =
                 await fetch(
@@ -501,7 +404,7 @@ async function submitBusiness(event) {
             if (!uploadResponse.ok) {
 
                 console.error(
-                    "IMAGE UPLOAD ERROR:",
+                    "UPLOAD ERROR:",
                     uploadText
                 );
 
@@ -511,7 +414,6 @@ async function submitBusiness(event) {
                 );
 
                 return;
-
             }
 
 
@@ -521,19 +423,19 @@ async function submitBusiness(event) {
                 `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
 
+            console.log(
+                "IMAGE URL:",
+                imageURL
+            );
+
+
             uploadedImages.push(
                 imageURL
             );
 
 
-            console.log(
-                "Uploaded image:",
-                imageURL
-            );
-
-
             /* ======================================
-               SAVE IMAGE IN BUSINESS_IMAGES
+               SAVE IMAGE IN business_images
             ====================================== */
 
             const imageResponse =
@@ -585,25 +487,21 @@ async function submitBusiness(event) {
                 );
 
                 showMessage(
-                    "❌ Foto a monte men li pa t kapab konekte ak anons lan.",
+                    "❌ Foto a monte men li pa t konekte ak anons lan.",
                     "error"
                 );
 
                 return;
-
             }
 
         }
 
 
         /* ======================================
-           SAVE FIRST IMAGE
-           IN BUSINESSES TABLE
+           SAVE FIRST IMAGE IN businesses
         ====================================== */
 
-        if (
-            uploadedImages.length > 0
-        ) {
+        if (uploadedImages.length > 0) {
 
             const firstImage =
                 uploadedImages[0];
@@ -611,9 +509,7 @@ async function submitBusiness(event) {
 
             const updateResponse =
                 await fetch(
-                    `${SUPABASE_URL}/rest/v1/businesses?id=eq.${encodeURIComponent(
-                        businessId
-                    )}`,
+                    `${SUPABASE_URL}/rest/v1/businesses?id=eq.${businessId}`,
                     {
 
                         method: "PATCH",
@@ -648,7 +544,7 @@ async function submitBusiness(event) {
             if (!updateResponse.ok) {
 
                 console.warn(
-                    "First image URL update failed."
+                    "First image update failed."
                 );
 
             }
@@ -673,9 +569,7 @@ async function submitBusiness(event) {
 
 
         if (form) {
-
             form.reset();
-
         }
 
 
@@ -686,13 +580,10 @@ async function submitBusiness(event) {
 
 
         if (imageMessage) {
-
             imageMessage.textContent = "";
-
         }
 
     }
-
 
     catch (error) {
 
@@ -700,7 +591,6 @@ async function submitBusiness(event) {
             "SUBMIT ERROR:",
             error
         );
-
 
         showMessage(
             "❌ Gen yon pwoblèm koneksyon.",
@@ -730,17 +620,13 @@ async function loadBusinesses() {
 
 
     container.innerHTML = `
-
         <p style="
             width:100%;
             text-align:center;
             color:#666;
         ">
-
             ⏳ Anons yo ap chaje...
-
         </p>
-
     `;
 
 
@@ -782,19 +668,14 @@ async function loadBusinesses() {
                 businessText
             );
 
-            showLoadError(
-                container
-            );
+            showLoadError(container);
 
             return;
-
         }
 
 
         const businesses =
-            JSON.parse(
-                businessText
-            );
+            JSON.parse(businessText);
 
 
         if (
@@ -803,26 +684,21 @@ async function loadBusinesses() {
         ) {
 
             container.innerHTML = `
-
                 <p style="
                     width:100%;
                     text-align:center;
                     color:#666;
                 ">
-
                     Pa gen anons biznis pou kounye a.
-
                 </p>
-
             `;
 
             return;
-
         }
 
 
         /* ======================================
-           GET BUSINESS IMAGES
+           GET ALL IMAGES
         ====================================== */
 
         const imageResponse =
@@ -857,7 +733,7 @@ async function loadBusinesses() {
         } else {
 
             console.error(
-                "IMAGE LIST ERROR:",
+                "IMAGE LOAD ERROR:",
                 await imageResponse.text()
             );
 
@@ -865,7 +741,7 @@ async function loadBusinesses() {
 
 
         /* ======================================
-           GROUP IMAGES BY BUSINESS
+           GROUP IMAGES
         ====================================== */
 
         const imagesByBusiness = {};
@@ -898,7 +774,7 @@ async function loadBusinesses() {
 
 
         /* ======================================
-           DISPLAY BUSINESSES
+           DISPLAY
         ====================================== */
 
         container.innerHTML = "";
@@ -908,9 +784,7 @@ async function loadBusinesses() {
             function (business) {
 
                 const card =
-                    document.createElement(
-                        "div"
-                    );
+                    document.createElement("div");
 
 
                 card.className =
@@ -950,30 +824,26 @@ async function loadBusinesses() {
 
                     galleryHTML = `
 
-                        <div
-                            style="
-                                width:100%;
-                                margin-bottom:18px;
-                            "
-                        >
+                        <div style="
+                            width:100%;
+                            margin-bottom:18px;
+                        ">
 
-                            <div
-                                style="
-                                    width:100%;
-                                    height:220px;
-                                    background:#f5f5f5;
-                                    border-radius:12px;
-                                    display:flex;
-                                    align-items:center;
-                                    justify-content:center;
-                                    overflow:hidden;
-                                "
-                            >
+                            <!-- MAIN IMAGE -->
+
+                            <div style="
+                                width:100%;
+                                height:250px;
+                                background:#f5f5f5;
+                                border-radius:12px;
+                                overflow:hidden;
+                                display:flex;
+                                align-items:center;
+                                justify-content:center;
+                            ">
 
                                 <img
-                                    id="main-image-${escapeAttribute(
-                                        business.id
-                                    )}"
+                                    id="main-image-${business.id}"
                                     src="${escapeAttribute(
                                         businessImages[0]
                                     )}"
@@ -984,25 +854,27 @@ async function loadBusinesses() {
                                         width:100%;
                                         height:100%;
                                         object-fit:contain;
+                                        display:block;
                                     "
+                                    onerror="this.style.display='none';"
                                 >
 
                             </div>
 
 
+                            <!-- THUMBNAILS -->
+
                             ${
                                 businessImages.length > 1
                                 ? `
 
-                                    <div
-                                        style="
-                                            display:flex;
-                                            gap:8px;
-                                            overflow-x:auto;
-                                            margin-top:10px;
-                                            padding-bottom:5px;
-                                        "
-                                    >
+                                    <div style="
+                                        display:flex;
+                                        gap:8px;
+                                        overflow-x:auto;
+                                        margin-top:10px;
+                                        padding:5px;
+                                    ">
 
                                         ${businessImages.map(
                                             function (
@@ -1018,16 +890,15 @@ async function loadBusinesses() {
                                                         )}"
                                                         alt="Foto ${index + 1}"
                                                         onclick="changeBusinessImage(
-                                                            '${escapeAttribute(
-                                                                business.id
-                                                            )}',
-                                                            '${escapeAttribute(
-                                                                image
-                                                            )}'
+                                                            ${business.id},
+                                                            this.dataset.image
                                                         )"
+                                                        data-image="${escapeAttribute(
+                                                            image
+                                                        )}"
                                                         style="
-                                                            width:65px;
-                                                            height:65px;
+                                                            width:70px;
+                                                            height:70px;
                                                             object-fit:cover;
                                                             border-radius:8px;
                                                             cursor:pointer;
@@ -1074,12 +945,8 @@ async function loadBusinesses() {
                             "
                         >
 
-                            <button
-                                type="button"
-                            >
-
+                            <button type="button">
                                 📞 Rele
-
                             </button>
 
                         </a>
@@ -1111,12 +978,8 @@ async function loadBusinesses() {
                                 "
                             >
 
-                                <button
-                                    type="button"
-                                >
-
+                                <button type="button">
                                     💬 WhatsApp
-
                                 </button>
 
                             </a>
@@ -1129,7 +992,7 @@ async function loadBusinesses() {
 
 
                 /* ======================================
-                   BUSINESS CARD
+                   CARD CONTENT
                 ====================================== */
 
                 card.innerHTML = `
@@ -1138,67 +1001,53 @@ async function loadBusinesses() {
 
 
                     <h3>
-
                         ${escapeHTML(
                             business.business_name
                         )}
-
                     </h3>
 
 
                     <p>
-
                         📂 ${escapeHTML(
                             business.category
                         )}
-
                     </p>
 
 
                     <p>
-
                         📍 ${escapeHTML(
                             business.location
                         )}
-
                     </p>
 
 
                     ${
                         business.price
                         ? `
-
                             <p>
-
                                 💰 ${escapeHTML(
                                     business.price
                                 )}
-
                             </p>
-
                         `
                         : ""
                     }
 
 
                     <p>
-
                         ${escapeHTML(
                             business.description
                         )}
-
                     </p>
 
 
-                    <div
-                        style="
-                            display:flex;
-                            gap:10px;
-                            justify-content:center;
-                            flex-wrap:wrap;
-                            margin-top:15px;
-                        "
-                    >
+                    <div style="
+                        display:flex;
+                        gap:10px;
+                        justify-content:center;
+                        flex-wrap:wrap;
+                        margin-top:15px;
+                    ">
 
                         ${buttons}
 
@@ -1207,15 +1056,12 @@ async function loadBusinesses() {
                 `;
 
 
-                container.appendChild(
-                    card
-                );
+                container.appendChild(card);
 
             }
         );
 
     }
-
 
     catch (error) {
 
@@ -1235,7 +1081,7 @@ async function loadBusinesses() {
 
 
 /* ======================================
-   CHANGE GALLERY IMAGE
+   CHANGE MAIN IMAGE
 ====================================== */
 
 window.changeBusinessImage =
@@ -1255,6 +1101,9 @@ window.changeBusinessImage =
             mainImage.src =
                 imageURL;
 
+            mainImage.style.display =
+                "block";
+
         }
 
     };
@@ -1264,9 +1113,7 @@ window.changeBusinessImage =
    LOAD ERROR
 ====================================== */
 
-function showLoadError(
-    container
-) {
+function showLoadError(container) {
 
     container.innerHTML = `
 
@@ -1286,7 +1133,7 @@ function showLoadError(
 
 
 /* ======================================
-   FORM MESSAGE
+   MESSAGE
 ====================================== */
 
 function showMessage(
@@ -1305,7 +1152,6 @@ function showMessage(
         alert(message);
 
         return;
-
     }
 
 
@@ -1328,9 +1174,7 @@ function showMessage(
 function escapeHTML(value) {
 
     const div =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     div.textContent =
@@ -1344,28 +1188,9 @@ function escapeHTML(value) {
 
 function escapeAttribute(value) {
 
-    return String(
-        value ?? ""
-    )
-    .replace(
-        /&/g,
-        "&amp;"
-    )
-    .replace(
-        /"/g,
-        "&quot;"
-    )
-    .replace(
-        /'/g,
-        "&#39;"
-    )
-    .replace(
-        /</g,
-        "&lt;"
-    )
-    .replace(
-        />/g,
-        "&gt;"
-    );
-
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
 } 
