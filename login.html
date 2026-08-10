@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="ht">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Konekte | Eagle-J Connect</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="logo-area">
+
+            <img
+                src="Logo.jpg"
+                alt="Eagle-J Connect Logo"
+            >
+
+            <h2>
+                Eagle-J Connect
+            </h2>
+
+            <span>
+                Ayiti + Bahamas
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="menu-toggle"
+        onclick="toggleMenu()"
+        aria-label="Louvri meni"
+    >
+        ☰
+    </button>
+
+
+    <nav id="menu">
+
+        <a href="index.html">
+            Akèy
+        </a>
+
+        <a href="travay.html">
+            Travay
+        </a>
+
+        <a href="biznis.html">
+            Biznis
+        </a>
+
+        <a href="kontak.html">
+            Kontak
+        </a>
+
+        <a href="enskri.html">
+            Enskri
+        </a>
+
+        <a href="login.html">
+            Konekte
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- =========================
+     LOGIN SECTION
+========================= -->
+
+<section class="services">
+
+    <h1>
+        🔐 Konekte sou kont ou
+    </h1>
+
+
+    <p>
+        Antre imèl ak modpas ou pou
+        jwenn aksè ak espas pèsonèl ou.
+    </p>
+
+
+    <form
+        id="loginForm"
+        class="business-form"
+    >
+
+
+        <!-- EMAIL -->
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Imèl"
+            autocomplete="email"
+            required
+        >
+
+
+        <!-- PASSWORD -->
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Modpas"
+            autocomplete="current-password"
+            required
+        >
+
+
+        <!-- MESSAGE -->
+
+        <p
+            id="loginMessage"
+            style="
+                text-align:center;
+                font-weight:bold;
+                margin:10px 0;
+            "
+        ></p>
+
+
+        <!-- LOGIN BUTTON -->
+
+        <button
+            type="submit"
+        >
+            🔐 Konekte
+        </button>
+
+
+    </form>
+
+
+    <!-- REGISTER LINK -->
+
+    <p
+        style="
+            text-align:center;
+            margin-top:20px;
+        "
+    >
+
+        Ou poko gen kont?
+
+        <a
+            href="enskri.html"
+        >
+            Kreye Kont
+        </a>
+
+    </p>
+
+
+</section>
+
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+    <p>
+        © 2026 Eagle-J Connect Bahamas + Ayiti
+    </p>
+
+</footer>
+
+
+
+<!-- =========================
+     SCRIPT
+========================= -->
+
+<script src="script.js"></script>
+
+
+<script>
+
+/* ======================================
+   LOGIN USER
+====================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        const loginForm =
+            document.getElementById(
+                "loginForm"
+            );
+
+
+        if (!loginForm) {
+
+            return;
+
+        }
+
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const email =
+                    document
+                        .getElementById(
+                            "loginEmail"
+                        )
+                        .value
+                        .trim();
+
+
+                const password =
+                    document
+                        .getElementById(
+                            "loginPassword"
+                        )
+                        .value;
+
+
+                const message =
+                    document.getElementById(
+                        "loginMessage"
+                    );
+
+
+                /* ======================================
+                   CHECK FIELDS
+                ====================================== */
+
+                if (
+                    !email ||
+                    !password
+                ) {
+
+                    message.textContent =
+                        "⚠️ Tanpri antre imèl ak modpas ou.";
+
+                    message.style.color =
+                        "red";
+
+                    return;
+
+                }
+
+
+                /* ======================================
+                   LOADING
+                ====================================== */
+
+                message.textContent =
+                    "⏳ Nap verifye kont ou...";
+
+                message.style.color =
+                    "#003366";
+
+
+                try {
+
+
+                    /* ======================================
+                       SUPABASE LOGIN
+                    ====================================== */
+
+                    const response =
+                        await fetch(
+                            `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+                            {
+
+                                method:
+                                    "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json",
+
+                                    "apikey":
+                                        SUPABASE_KEY
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        email:
+                                            email,
+
+                                        password:
+                                            password
+
+                                    })
+
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    /* ======================================
+                       LOGIN ERROR
+                    ====================================== */
+
+                    if (
+                        !response.ok
+                    ) {
+
+                        console.error(
+                            "LOGIN ERROR:",
+                            data
+                        );
+
+
+                        let errorMessage =
+                            "Imèl oswa modpas la pa kòrèk.";
+
+
+                        if (
+                            data.error_description
+                        ) {
+
+                            errorMessage =
+                                data.error_description;
+
+                        }
+                        else if (
+                            data.msg
+                        ) {
+
+                            errorMessage =
+                                data.msg;
+
+                        }
+                        else if (
+                            data.message
+                        ) {
+
+                            errorMessage =
+                                data.message;
+
+                        }
+
+
+                        message.textContent =
+                            "❌ " +
+                            errorMessage;
+
+                        message.style.color =
+                            "red";
+
+                        return;
+
+                    }
+
+
+                    /* ======================================
+                       SAVE ACCESS TOKEN
+                    ====================================== */
+
+                    if (
+                        data.access_token
+                    ) {
+
+                        localStorage.setItem(
+                            "eaglej_access_token",
+                            data.access_token
+                        );
+
+                    }
+
+
+                    if (
+                        data.refresh_token
+                    ) {
+
+                        localStorage.setItem(
+                            "eaglej_refresh_token",
+                            data.refresh_token
+                        );
+
+                    }
+
+
+                    /* ======================================
+                       SUCCESS
+                    ====================================== */
+
+                    message.textContent =
+                        "✅ Koneksyon reyisi! Nap ouvri pwofil ou...";
+
+                    message.style.color =
+                        "green";
+
+
+                    /* ======================================
+                       GO TO DASHBOARD
+                    ====================================== */
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "dashboard.html";
+
+                        },
+                        1000
+                    );
+
+                }
+
+
+                catch (
+                    error
+                ) {
+
+                    console.error(
+                        "LOGIN SYSTEM ERROR:",
+                        error
+                    );
+
+
+                    message.textContent =
+                        "❌ Gen yon pwoblèm koneksyon. Eseye ankò.";
+
+                    message.style.color =
+                        "red";
+
+                }
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
