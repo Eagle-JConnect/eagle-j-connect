@@ -1,32 +1,43 @@
 /* ======================================
    EAGLE-J CONNECT
-   SCRIPT.JS
+   SUPABASE BUSINESS SYSTEM
 ====================================== */
 
+
+/* ======================================
+   SUPABASE CONNECTION
+====================================== */
+
+const SUPABASE_URL =
+    "https://glwyqrvufmjscjbbszzz.supabase.co";
+
+const SUPABASE_KEY =
+    "YOUR_PUBLISHABLE_KEY";
+
+
+/* ======================================
+   MOBILE MENU
+====================================== */
+
+window.toggleMenu = function () {
+
+    const menu =
+        document.getElementById("menu");
+
+    if (menu) {
+        menu.classList.toggle("show");
+    }
+
+};
+
+
+/* ======================================
+   BUSINESS FORM
+====================================== */
 
 document.addEventListener("DOMContentLoaded", function () {
 
     console.log("Eagle-J Connect ap mache!");
-
-
-    /* ======================================
-       MOBILE MENU
-    ====================================== */
-
-    const menu = document.getElementById("menu");
-
-    window.toggleMenu = function () {
-
-        if (menu) {
-            menu.classList.toggle("show");
-        }
-
-    };
-
-
-    /* ======================================
-       BUSINESS FORM
-    ====================================== */
 
     const businessForm =
         document.getElementById("businessForm");
@@ -34,181 +45,231 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (businessForm) {
 
-        businessForm.addEventListener("submit", function (e) {
-
-            e.preventDefault();
-
-
-            /* =========================
-               GET FORM INFORMATION
-            ========================= */
-
-            const businessName =
-                document.getElementById("businessName").value.trim();
-
-            const category =
-                document.getElementById("category").value;
-
-            const location =
-                document.getElementById("location").value.trim();
-
-            const phone =
-                document.getElementById("phone").value.trim();
-
-            const whatsapp =
-                document.getElementById("whatsapp").value.trim();
-
-            const price =
-                document.getElementById("price").value.trim();
-
-            const description =
-                document.getElementById("description").value.trim();
-
-            const imageInput =
-                document.getElementById("businessImage");
-
-
-            /* =========================
-               CHECK REQUIRED FIELDS
-            ========================= */
-
-            if (
-                !businessName ||
-                !category ||
-                !location ||
-                !description
-            ) {
-
-                showMessage(
-                    "⚠️ Tanpri ranpli tout chan ki obligatwa yo.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            /* =========================
-               CREATE BUSINESS
-            ========================= */
-
-            const business = {
-
-                id: Date.now(),
-
-                businessName: businessName,
-
-                category: category,
-
-                location: location,
-
-                phone: phone,
-
-                whatsapp: whatsapp,
-
-                price: price,
-
-                description: description,
-
-                image: "",
-
-                date: new Date().toLocaleDateString()
-
-            };
-
-
-            /* =========================
-               IMAGE
-            ========================= */
-
-            if (
-                imageInput &&
-                imageInput.files &&
-                imageInput.files.length > 0
-            ) {
-
-                const file =
-                    imageInput.files[0];
-
-                const reader =
-                    new FileReader();
-
-
-                reader.onload = function () {
-
-                    business.image =
-                        reader.result;
-
-                    saveBusiness(business);
-
-                };
-
-
-                reader.readAsDataURL(file);
-
-            } else {
-
-                saveBusiness(business);
-
-            }
-
-        });
+        businessForm.addEventListener(
+            "submit",
+            submitBusiness
+        );
 
     }
 
 
-    /* ======================================
-       DISPLAY BUSINESS ADS
-    ====================================== */
+    /* Load businesses */
 
     const businessListings =
-        document.getElementById("businessListings");
-
+        document.getElementById(
+            "businessListings"
+        );
 
     if (businessListings) {
 
-        displayBusinesses();
+        loadBusinesses();
 
     }
-
 
 });
 
 
 /* ======================================
-   SAVE BUSINESS
+   SUBMIT BUSINESS
 ====================================== */
 
-function saveBusiness(business) {
+async function submitBusiness(event) {
 
-    let businesses =
-        JSON.parse(
-            localStorage.getItem("eagleJBusinesses")
-        ) || [];
+    event.preventDefault();
 
 
-    businesses.push(business);
+    const businessName =
+        document
+            .getElementById("businessName")
+            .value
+            .trim();
 
 
-    localStorage.setItem(
-        "eagleJBusinesses",
-        JSON.stringify(businesses)
-    );
+    const category =
+        document
+            .getElementById("category")
+            .value;
 
 
-    showMessage(
-        "✅ Anons ou a pibliye avèk siksè!",
-        "success"
-    );
+    const location =
+        document
+            .getElementById("location")
+            .value
+            .trim();
 
 
-    const form =
-        document.getElementById("businessForm");
+    const phone =
+        document
+            .getElementById("phone")
+            .value
+            .trim();
 
 
-    if (form) {
+    const whatsapp =
+        document
+            .getElementById("whatsapp")
+            .value
+            .trim();
 
-        form.reset();
+
+    const price =
+        document
+            .getElementById("price")
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById("description")
+            .value
+            .trim();
+
+
+    const imageInput =
+        document.getElementById(
+            "businessImage"
+        );
+
+
+    /* Required fields */
+
+    if (
+        !businessName ||
+        !category ||
+        !location ||
+        !description
+    ) {
+
+        showMessage(
+            "⚠️ Tanpri ranpli tout chan obligatwa yo.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* ======================================
+       INSERT INTO SUPABASE
+    ====================================== */
+
+    try {
+
+        showMessage(
+            "⏳ Anons lan ap pibliye...",
+            "success"
+        );
+
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/businesses`,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${SUPABASE_KEY}`,
+
+                        "Prefer":
+                            "return=representation"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        business_name:
+                            businessName,
+
+                        category:
+                            category,
+
+                        location:
+                            location,
+
+                        phone:
+                            phone || null,
+
+                        whatsapp:
+                            whatsapp || null,
+
+                        price:
+                            price || null,
+
+                        description:
+                            description,
+
+                        image_url:
+                            null
+
+                    })
+
+                }
+            );
+
+
+        /* Check response */
+
+        if (!response.ok) {
+
+            const error =
+                await response.text();
+
+            console.error(
+                "Supabase error:",
+                error
+            );
+
+            showMessage(
+                "❌ Anons lan pa t kapab pibliye. Verifye koneksyon Supabase la.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        /* Success */
+
+        const data =
+            await response.json();
+
+        console.log(
+            "Business saved:",
+            data
+        );
+
+
+        showMessage(
+            "✅ Anons ou a pibliye avèk siksè!",
+            "success"
+        );
+
+
+        document
+            .getElementById("businessForm")
+            .reset();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "❌ Gen yon pwoblèm koneksyon.",
+            "error"
+        );
 
     }
 
@@ -216,13 +277,229 @@ function saveBusiness(business) {
 
 
 /* ======================================
-   SHOW MESSAGE
+   LOAD BUSINESSES
 ====================================== */
 
-function showMessage(message, type) {
+async function loadBusinesses() {
+
+    const container =
+        document.getElementById(
+            "businessListings"
+        );
+
+
+    if (!container) return;
+
+
+    try {
+
+        container.innerHTML = `
+            <p style="
+                width:100%;
+                text-align:center;
+            ">
+                ⏳ Anons yo ap chaje...
+            </p>
+        `;
+
+
+        const response =
+            await fetch(
+                `${SUPABASE_URL}/rest/v1/businesses?select=*&order=created_at.desc`,
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "apikey":
+                            SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${SUPABASE_KEY}`
+
+                    }
+
+                }
+            );
+
+
+        if (!response.ok) {
+
+            const error =
+                await response.text();
+
+            console.error(
+                "Supabase error:",
+                error
+            );
+
+            container.innerHTML = `
+                <p style="
+                    width:100%;
+                    text-align:center;
+                    color:red;
+                ">
+                    ❌ Nou pa kapab chaje anons yo.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        const businesses =
+            await response.json();
+
+
+        if (!businesses.length) {
+
+            container.innerHTML = `
+                <p style="
+                    width:100%;
+                    text-align:center;
+                    color:#666;
+                ">
+                    Pa gen anons biznis pou kounye a.
+                </p>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = "";
+
+
+        businesses.forEach(
+            function (business) {
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "card";
+
+
+                card.innerHTML = `
+
+                    <h3>
+                        ${escapeHTML(
+                            business.business_name
+                        )}
+                    </h3>
+
+                    <p>
+                        📂 ${escapeHTML(
+                            business.category
+                        )}
+                    </p>
+
+                    <p>
+                        📍 ${escapeHTML(
+                            business.location
+                        )}
+                    </p>
+
+                    ${
+                        business.price
+                        ? `
+                            <p>
+                                💰 ${escapeHTML(
+                                    business.price
+                                )}
+                            </p>
+                        `
+                        : ""
+                    }
+
+                    <p>
+                        ${escapeHTML(
+                            business.description
+                        )}
+                    </p>
+
+                    ${
+                        business.phone
+                        ? `
+                            <p>
+                                📞 ${escapeHTML(
+                                    business.phone
+                                )}
+                            </p>
+                        `
+                        : ""
+                    }
+
+                    ${
+                        business.whatsapp
+                        ? `
+                            <a
+                                href="https://wa.me/${business.whatsapp.replace(/\D/g, "")}"
+                                target="_blank"
+                                rel="noopener"
+                                style="
+                                    text-decoration:none;
+                                "
+                            >
+                                <button
+                                    type="button"
+                                >
+                                    💬 WhatsApp
+                                </button>
+                            </a>
+                        `
+                        : ""
+                    }
+
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML = `
+            <p style="
+                width:100%;
+                text-align:center;
+                color:red;
+            ">
+                ❌ Erè koneksyon.
+            </p>
+        `;
+
+    }
+
+}
+
+
+/* ======================================
+   MESSAGE
+====================================== */
+
+function showMessage(
+    message,
+    type
+) {
 
     const messageBox =
-        document.getElementById("formMessage");
+        document.getElementById(
+            "formMessage"
+        );
 
 
     if (!messageBox) {
@@ -238,215 +515,28 @@ function showMessage(message, type) {
         message;
 
 
-    if (type === "success") {
-
-        messageBox.style.color =
-            "green";
-
-    } else {
-
-        messageBox.style.color =
-            "red";
-
-    }
+    messageBox.style.color =
+        type === "success"
+        ? "green"
+        : "red";
 
 }
 
 
 /* ======================================
-   DISPLAY BUSINESSES
+   SECURITY
 ====================================== */
 
-function displayBusinesses() {
+function escapeHTML(value) {
 
-    const businessListings =
-        document.getElementById("businessListings");
+    const div =
+        document.createElement(
+            "div"
+        );
 
+    div.textContent =
+        value ?? "";
 
-    if (!businessListings) return;
-
-
-    const businesses =
-        JSON.parse(
-            localStorage.getItem("eagleJBusinesses")
-        ) || [];
-
-
-    if (businesses.length === 0) {
-
-        businessListings.innerHTML = `
-
-            <p style="
-                text-align:center;
-                width:100%;
-                color:#666;
-            ">
-
-                Pa gen nouvo anons pou kounye a.
-
-            </p>
-
-        `;
-
-        return;
-
-    }
-
-
-    businessListings.innerHTML = "";
-
-
-    /* Nouvo anons yo parèt an premye */
-
-    businesses
-        .slice()
-        .reverse()
-        .forEach(function (business) {
-
-
-            let imageHTML = "";
-
-
-            if (business.image) {
-
-                imageHTML = `
-
-                    <img
-                        src="${business.image}"
-                        alt="${business.businessName}"
-                        style="
-                            width:100%;
-                            height:180px;
-                            object-fit:cover;
-                            border-radius:10px;
-                            margin-bottom:15px;
-                        "
-                    >
-
-                `;
-
-            }
-
-
-            let whatsappButton = "";
-
-
-            if (business.whatsapp) {
-
-                const whatsappNumber =
-                    business.whatsapp.replace(/\D/g, "");
-
-
-                whatsappButton = `
-
-                    <a
-                        href="https://wa.me/${whatsappNumber}"
-                        target="_blank"
-                        rel="noopener"
-                        style="text-decoration:none;"
-                    >
-
-                        <button type="button">
-                            💬 WhatsApp
-                        </button>
-
-                    </a>
-
-                `;
-
-            }
-
-
-            let phoneButton = "";
-
-
-            if (business.phone) {
-
-                phoneButton = `
-
-                    <a
-                        href="tel:${business.phone}"
-                        style="text-decoration:none;"
-                    >
-
-                        <button type="button">
-                            📞 Rele Biznis
-                        </button>
-
-                    </a>
-
-                `;
-
-            }
-
-
-            businessListings.innerHTML += `
-
-                <div class="card">
-
-                    ${imageHTML}
-
-
-                    <h3>
-                        ${business.businessName}
-                    </h3>
-
-
-                    <p>
-                        📂 ${business.category}
-                    </p>
-
-
-                    <p>
-                        📍 ${business.location}
-                    </p>
-
-
-                    ${
-                        business.price
-                        ? `
-                            <p>
-                                💰 ${business.price}
-                            </p>
-                        `
-                        : ""
-                    }
-
-
-                    <p>
-                        ${business.description}
-                    </p>
-
-
-                    <div style="
-                        display:flex;
-                        gap:10px;
-                        justify-content:center;
-                        flex-wrap:wrap;
-                        margin-top:15px;
-                    ">
-
-                        ${whatsappButton}
-
-                        ${phoneButton}
-
-                    </div>
-
-
-                    <small style="
-                        display:block;
-                        margin-top:15px;
-                        color:#888;
-                    ">
-
-                        📅 ${business.date}
-
-                    </small>
-
-                </div>
-
-            `;
-
-        });
+    return div.innerHTML;
 
 }
