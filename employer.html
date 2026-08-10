@@ -1,0 +1,496 @@
+<!DOCTYPE html><html lang="ht"><head><meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Kont Anplwayè | Eagle-J Connect</title>
+
+<link rel="stylesheet"
+      href="style.css">
+
+</head><body><!-- =========================
+     HEADER
+========================= --><header class="header"><div class="brand">
+
+    <div class="logo-area">
+
+        <img
+            src="Logo.jpg"
+            alt="Eagle-J Connect Logo"
+        >
+
+        <h2>
+            Eagle-J Connect
+        </h2>
+
+        <span>
+            Ayiti + Bahamas
+        </span>
+
+    </div>
+
+</div>
+
+
+<button
+    type="button"
+    class="menu-toggle"
+    onclick="toggleMenu()"
+    aria-label="Louvri meni"
+>
+    ☰
+</button>
+
+
+<nav id="menu">
+
+    <a href="index.html">
+        Akèy
+    </a>
+
+    <a href="travay.html">
+        Travay
+    </a>
+
+    <a href="biznis.html">
+        Biznis
+    </a>
+
+    <a href="kontak.html">
+        Kontak
+    </a>
+
+    <a href="employer.html">
+        Kont Mwen
+    </a>
+
+    <a
+        href="#"
+        onclick="logoutUser(); return false;"
+    >
+        Dekonekte
+    </a>
+
+</nav>
+
+</header><!-- =========================
+     EMPLOYER ACCOUNT
+========================= --><section class="services"><h1>
+    👋 Byenveni
+</h1>
+
+
+<p
+    id="welcomeMessage"
+    style="
+        text-align:center;
+        font-size:18px;
+        font-weight:bold;
+        color:#003366;
+    "
+>
+    Ap chaje pwofil ou...
+</p>
+
+
+<!-- =========================
+     PROFILE CARD
+========================= -->
+
+<div
+    class="card"
+    style="
+        max-width:650px;
+        margin:30px auto;
+        text-align:left;
+    "
+>
+
+    <h2
+        style="
+            color:#003366;
+            text-align:center;
+        "
+    >
+        👤 Pwofil Anplwayè
+    </h2>
+
+
+    <p>
+        <strong>Non konplè:</strong>
+        <span id="profileName">
+            ...
+        </span>
+    </p>
+
+
+    <p>
+        <strong>Imèl:</strong>
+        <span id="profileEmail">
+            ...
+        </span>
+    </p>
+
+
+    <p>
+        <strong>Telefòn:</strong>
+        <span id="profilePhone">
+            ...
+        </span>
+    </p>
+
+
+    <p>
+        <strong>Kalite kont:</strong>
+        <span id="profileType">
+            Anplwayè
+        </span>
+    </p>
+
+</div>
+
+
+
+<!-- =========================
+     EMPLOYER ACTIONS
+========================= -->
+
+<div
+    class="cards"
+    style="
+        max-width:900px;
+        margin:auto;
+    "
+>
+
+
+    <!-- POST JOB -->
+
+    <div class="card">
+
+        <h3>
+            📢 Pibliye yon travay
+        </h3>
+
+        <p>
+            Mete yon nouvo opòtinite travay
+            pou moun k ap chèche travay yo.
+        </p>
+
+        <a
+            href="poste-travay.html"
+            style="
+                text-decoration:none;
+            "
+        >
+
+            <button
+                type="button"
+            >
+                ➕ Pibliye travay
+            </button>
+
+        </a>
+
+    </div>
+
+
+
+    <!-- MY JOBS -->
+
+    <div class="card">
+
+        <h3>
+            💼 Travay mwen yo
+        </h3>
+
+        <p>
+            Gade travay ou deja pibliye yo.
+        </p>
+
+        <a
+            href="travay.html"
+            style="
+                text-decoration:none;
+            "
+        >
+
+            <button
+                type="button"
+            >
+                👀 Gade travay
+            </button>
+
+        </a>
+
+    </div>
+
+
+</div>
+
+</section><!-- =========================
+     FOOTER
+========================= --><footer><h3>
+    Eagle-J Connect
+</h3>
+
+<p>
+    Konekte Opòtinite ant Ayiti ak Bahamas.
+</p>
+
+<p>
+    © 2026 Eagle-J Connect
+</p>
+
+</footer><!-- =========================
+     SUPABASE + SCRIPT
+========================= --><script src="script.js"></script><script>
+
+/* ======================================
+   SUPABASE
+====================================== */
+
+const EMPLOYER_SUPABASE_URL =
+    "https://glwyqrvufmjscjbbszzz.supabase.co";
+
+const EMPLOYER_SUPABASE_KEY =
+    "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
+
+
+/* ======================================
+   LOAD EMPLOYER PROFILE
+====================================== */
+
+async function loadEmployerProfile() {
+
+    const token =
+        localStorage.getItem(
+            "supabase_access_token"
+        );
+
+
+    const userId =
+        localStorage.getItem(
+            "supabase_user_id"
+        );
+
+
+    const email =
+        localStorage.getItem(
+            "supabase_user_email"
+        );
+
+
+    /* ======================================
+       CHECK LOGIN
+    ====================================== */
+
+    if (
+        !token ||
+        !userId
+    ) {
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `${EMPLOYER_SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=*`,
+                {
+
+                    method: "GET",
+
+                    headers: {
+
+                        "apikey":
+                            EMPLOYER_SUPABASE_KEY,
+
+                        "Authorization":
+                            `Bearer ${token}`
+
+                    }
+
+                }
+            );
+
+
+        const profiles =
+            await response.json();
+
+
+        if (
+            !response.ok
+        ) {
+
+            console.error(
+                "PROFILE ERROR:",
+                profiles
+            );
+
+            document.getElementById(
+                "welcomeMessage"
+            ).textContent =
+                "❌ Nou pa kapab chaje pwofil la.";
+
+            return;
+
+        }
+
+
+        if (
+            !profiles ||
+            profiles.length === 0
+        ) {
+
+            document.getElementById(
+                "welcomeMessage"
+            ).textContent =
+                "⚠️ Pwofil ou pa jwenn.";
+
+            return;
+
+        }
+
+
+        const profile =
+            profiles[0];
+
+
+        /* ======================================
+           SECURITY CHECK
+        ====================================== */
+
+        if (
+            profile.account_type !==
+            "employer"
+        ) {
+
+            document.getElementById(
+                "welcomeMessage"
+            ).textContent =
+                "⚠️ Kont sa a pa yon kont anplwayè.";
+
+            return;
+
+        }
+
+
+        /* ======================================
+           DISPLAY PROFILE
+        ====================================== */
+
+        document.getElementById(
+            "profileName"
+        ).textContent =
+            profile.full_name || "Pa disponib";
+
+
+        document.getElementById(
+            "profileEmail"
+        ).textContent =
+            email || "Pa disponib";
+
+
+        document.getElementById(
+            "profilePhone"
+        ).textContent =
+            profile.phone || "Pa disponib";
+
+
+        document.getElementById(
+            "profileType"
+        ).textContent =
+            "Anplwayè";
+
+
+        document.getElementById(
+            "welcomeMessage"
+        ).textContent =
+            "👋 Byenveni, " +
+            (profile.full_name || "Anplwayè") +
+            "!";
+
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "EMPLOYER PROFILE ERROR:",
+            error
+        );
+
+
+        document.getElementById(
+            "welcomeMessage"
+        ).textContent =
+            "❌ Gen yon pwoblèm koneksyon.";
+
+    }
+
+}
+
+
+/* ======================================
+   LOGOUT
+====================================== */
+
+function logoutUser() {
+
+    localStorage.removeItem(
+        "supabase_access_token"
+    );
+
+    localStorage.removeItem(
+        "supabase_refresh_token"
+    );
+
+    localStorage.removeItem(
+        "supabase_user_id"
+    );
+
+    localStorage.removeItem(
+        "supabase_user_email"
+    );
+
+    localStorage.removeItem(
+        "user_full_name"
+    );
+
+    localStorage.removeItem(
+        "user_phone"
+    );
+
+    localStorage.removeItem(
+        "user_account_type"
+    );
+
+
+    window.location.href =
+        "login.html";
+
+}
+
+
+/* ======================================
+   PAGE READY
+====================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        loadEmployerProfile();
+
+    }
+);
+
+</script></body></html>
