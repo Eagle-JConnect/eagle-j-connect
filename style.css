@@ -581,3 +581,125 @@ footer p{
 .language select:hover {
     border-color: #F4B400;
 }
+/* ======================================
+   EAGLE-J CONNECT
+   BUSINESS AD SECTION
+====================================== */
+
+.business-ad{
+    background:var(--secondary);
+    padding:60px 20px;
+    text-align:center;
+    margin-top:20px;
+}
+
+.business-ad h2{
+    color:var(--primary);
+    font-size:32px;
+    margin-bottom:15px;
+}
+
+.business-ad p{
+    color:var(--dark);
+    font-size:18px;
+    line-height:1.7;
+    max-width:650px;
+    margin:0 auto 25px;
+}
+
+.business-ad a{
+    text-decoration:none;
+}
+
+.business-ad button{
+    background:var(--primary);
+    color:var(--white);
+    border:none;
+    padding:15px 30px;
+    border-radius:8px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.business-ad button:hover{
+    transform:scale(1.05);
+    background:#002244;
+}
+
+
+/* ======================================
+   BUSINESS PAGE TITLE
+====================================== */
+
+.services > h1{
+    color:var(--primary);
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.services > p{
+    max-width:750px;
+    margin:0 auto 25px;
+    line-height:1.8;
+    color:#555;
+}
+
+
+/* ======================================
+   BUSINESS CARDS IMPROVEMENT
+====================================== */
+
+.card{
+    min-height:250px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.card h3{
+    font-size:22px;
+}
+
+.card button{
+    align-self:center;
+}
+
+
+/* ======================================
+   MOBILE BUSINESS PAGE
+====================================== */
+
+@media(max-width:768px){
+
+    .services{
+        padding:50px 15px;
+    }
+
+    .services > h1{
+        font-size:30px;
+    }
+
+    .services > p{
+        font-size:16px;
+    }
+
+    .business-ad{
+        padding:45px 20px;
+    }
+
+    .business-ad h2{
+        font-size:26px;
+    }
+
+    .business-ad p{
+        font-size:16px;
+    }
+
+    .business-ad button{
+        width:100%;
+        max-width:320px;
+    }
+
+}
