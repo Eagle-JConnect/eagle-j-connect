@@ -1,6 +1,390 @@
-<!DOCTYPE html><html lang="ht"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Travay | Eagle-J Connect</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="header"><div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo"><div><h2>Eagle-J Connect</h2><span>Ayiti + Bahamas</span></div></div><button class="menu-toggle" type="button" aria-label="Meni">☰</button><nav id="menu"><a id="nav-home" href="index.html">Akèy</a><a id="nav-jobs" href="travay.html">Travay</a><a id="nav-business" href="biznis.html">Biznis</a><a id="nav-contact" href="kontak.html">Kontak</a><a id="nav-register" href="enskri.html">Enskri</a><div class="language"><select id="languageSelect" onchange="changeLanguage()"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div></nav></header>
-<section class="hero"><h1 data-i18n="jobs-title">Opòtinite Travay</h1><p data-i18n="jobs-description">Jwenn travay ki disponib nan Bahamas ak Ayiti.</p></section>
-<section class="services"><h2 data-i18n="category-title">Travay ki disponib</h2><div class="job-toolbar"><input id="searchJob" class="search-box" data-i18n-placeholder="search-job" placeholder="Chèche pa tit, konpayi oswa lokalizasyon..."><select id="jobFilter" class="search-box"><option value="">Tout kalite travay</option><option value="full_time">Full-time</option><option value="part_time">Part-time</option><option value="contract">Contract</option><option value="temporary">Temporary</option></select></div><div id="jobListings" class="cards listing-grid"><p>⏳</p></div></section>
-<section class="about"><h2 data-i18n="how-title">Kijan sa mache?</h2><div class="cards"><article class="card"><h3 data-i18n="step-one">1️⃣ Kreye Kont</h3><p>Enskri sou platfòm lan.</p></article><article class="card"><h3 data-i18n="step-two">2️⃣ Chèche Travay</h3><p>Chèche selon tit, konpayi oswa lokalizasyon.</p></article><article class="card"><h3 data-i18n="step-three">3️⃣ Aplike</h3><p>Rele oswa voye WhatsApp bay kontak travay la.</p></article></div></section>
-<footer><h3>Eagle-J Connect</h3><p>Konekte Opòtinite ant Ayiti ak Bahamas.</p><p>© 2026 Eagle-J Connect</p></footer><script src="language.js?v=3"></script><script src="script.js?v=9"></script><script src="menu.js?v=6"></script></body></html>
+<!DOCTYPE html>
+<html lang="ht">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Travay | Eagle-J Connect
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="header">
+
+  <div class="logo-area">
+
+    <a
+      href="index.html"
+      style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;"
+    >
+
+      <img
+        src="Logo.jpg"
+        alt="Eagle-J Connect Logo"
+      >
+
+      <div>
+
+        <h2>
+          Eagle-J Connect
+        </h2>
+
+        <span>
+          Ayiti + Bahamas
+        </span>
+
+      </div>
+
+    </a>
+
+  </div>
+
+
+  <button
+    id="menuToggle"
+    class="menu-toggle"
+    type="button"
+    aria-label="Meni"
+    aria-expanded="false"
+  >
+    ☰
+  </button>
+
+
+  <nav
+    id="navMenu"
+  >
+
+    <a
+      href="index.html"
+      data-i18n="nav-home"
+    >
+      Akèy
+    </a>
+
+
+    <a
+      href="travay.html"
+      data-i18n="nav-jobs"
+    >
+      Travay
+    </a>
+
+
+    <a
+      href="biznis.html"
+      data-i18n="nav-business"
+    >
+      Biznis
+    </a>
+
+
+    <a
+      href="kontak.html"
+      data-i18n="nav-contact"
+    >
+      Kontak
+    </a>
+
+
+    <a
+      href="enskri.html"
+      data-i18n="nav-register"
+    >
+      Enskri
+    </a>
+
+
+    <a
+      href="login.html"
+      data-i18n="nav-login"
+    >
+      Konekte
+    </a>
+
+
+    <a
+      href="account.html"
+      data-i18n="nav-account"
+    >
+      Kont Mwen
+    </a>
+
+
+    <a
+      href="#"
+      id="logoutBtn"
+      data-i18n="nav-logout"
+    >
+      Dekonekte
+    </a>
+
+
+    <div class="language-box">
+
+      <select
+        id="languageSelect"
+        aria-label="Select language"
+      >
+
+        <option value="ht">
+          🇭🇹 Kreyòl
+        </option>
+
+        <option value="en">
+          🇺🇸 English
+        </option>
+
+        <option value="fr">
+          🇫🇷 Français
+        </option>
+
+      </select>
+
+    </div>
+
+  </nav>
+
+</header>
+
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero">
+
+  <div class="container">
+
+    <h1
+      data-i18n="jobs-title"
+    >
+      Opòtinite Travay
+    </h1>
+
+
+    <p
+      data-i18n="jobs-description"
+    >
+      Jwenn travay ki disponib nan Bahamas ak Ayiti.
+    </p>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     JOB SEARCH
+===================================================== -->
+
+<section class="services">
+
+  <div class="container">
+
+    <h2
+      data-i18n="category-title"
+    >
+      Travay ki disponib
+    </h2>
+
+
+    <div class="job-toolbar">
+
+
+      <input
+        type="text"
+        id="searchJob"
+        class="search-box"
+        data-i18n-placeholder="search-job"
+        placeholder="Chèche pa tit, konpayi oswa lokalizasyon..."
+      >
+
+
+      <select
+        id="jobFilter"
+        class="search-box"
+      >
+
+        <option value="">
+          Tout kalite travay
+        </option>
+
+        <option value="full_time">
+          Full-time
+        </option>
+
+        <option value="part_time">
+          Part-time
+        </option>
+
+        <option value="contract">
+          Contract
+        </option>
+
+        <option value="temporary">
+          Temporary
+        </option>
+
+      </select>
+
+    </div>
+
+
+
+    <!-- =================================================
+         JOB LIST
+    ================================================= -->
+
+    <div
+      id="jobsList"
+      class="cards listing-grid"
+    >
+
+      <p>
+        ⏳ Ap chaje travay yo...
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     HOW IT WORKS
+===================================================== -->
+
+<section class="about">
+
+  <div class="container">
+
+    <h2
+      data-i18n="how-title"
+    >
+      Kijan sa mache?
+    </h2>
+
+
+    <div class="cards">
+
+
+      <article class="card">
+
+        <h3
+          data-i18n="step-one"
+        >
+          1️⃣ Kreye Kont
+        </h3>
+
+        <p>
+          Enskri sou platfòm lan.
+        </p>
+
+      </article>
+
+
+
+      <article class="card">
+
+        <h3
+          data-i18n="step-two"
+        >
+          2️⃣ Chèche Travay
+        </h3>
+
+        <p>
+          Chèche selon tit, konpayi oswa lokalizasyon.
+        </p>
+
+      </article>
+
+
+
+      <article class="card">
+
+        <h3
+          data-i18n="step-three"
+        >
+          3️⃣ Aplike
+        </h3>
+
+        <p>
+          Rele oswa voye WhatsApp bay kontak travay la.
+        </p>
+
+      </article>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+  <div class="container">
+
+    <h3>
+      Eagle-J Connect
+    </h3>
+
+    <p>
+      Konekte Opòtinite ant Ayiti ak Bahamas.
+    </p>
+
+    <p>
+      © 2026 Eagle-J Connect
+    </p>
+
+  </div>
+
+</footer>
+
+
+
+<!-- =====================================================
+     SCRIPTS
+===================================================== -->
+
+<script src="language.js?v=5"></script>
+
+<script src="script.js?v=11"></script>
+
+<script src="menu.js?v=7"></script>
+
+
+</body>
+
+</html>
