@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anons | Eagle-J Connect</title>
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+<header class="header">
+  <div class="logo-area"><a href="index.html"><img src="Logo.jpg" alt="Eagle-J Connect Logo"></a><div><h2>Eagle-J Connect</h2><span>Ayiti + Bahamas</span></div></div>
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false">☰</button>
+  <nav id="menu">
+    <a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a><a href="enskri.html">Enskri</a>
+    <div class="language"><select id="languageSelect" onchange="changeLanguage()"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div>
+  </nav>
+</header>
+<main>
+<section class="hero"><h1>📢 Tout Anons</h1><p>Gade biznis, pwofesyonèl, sèvis ak byen moun ap pibliye sou Eagle-J Connect.</p><div class="actions" style="justify-content:center"><a class="btn" href="kreye-anons.html">📢 Kreye yon Anons</a><a class="btn" href="biznis.html">🛍️ Biznis & Sèvis</a></div></section>
+<section class="services marketplace-tools">
+<div class="marketplace-categories"><button class="market-tab active" type="button" data-filter="all">🌎 Tout</button><button class="market-tab" type="button" data-filter="employee">👷 Anplwaye</button><button class="market-tab" type="button" data-filter="employer">🏢 Anplwayè</button><button class="market-tab" type="button" data-filter="professional">👨🏾‍🔧 Pwofesyonèl</button><button class="market-tab" type="button" data-filter="service">🛠️ Sèvis</button><button class="market-tab" type="button" data-filter="business">🛍️ Biznis</button><button class="market-tab" type="button" data-filter="property">🏠 Byen</button></div>
+<div class="market-search-row"><input id="marketSearch" type="search" placeholder="🔎 Chèche nan anons yo..."><select id="marketLocation"><option value="">📍 Tout lokalizasyon</option><option value="bahamas">🇧🇸 Bahamas</option><option value="ayiti">🇭🇹 Ayiti</option></select></div>
+<p id="marketResultCount" class="market-result-count"></p><div id="businessListings" class="cards listing-grid"><p class="notice">⏳ Anons yo ap chaje...</p></div>
+</section></main>
+<footer><h3>Eagle-J Connect</h3><p>Konekte Opòtinite ant Ayiti ak Bahamas.</p><p>© 2026 Eagle-J Connect</p></footer>
+<script src="language.js?v=3"></script><script src="script.js?v=7"></script><script src="menu.js?v=5"></script>
+</body></html>

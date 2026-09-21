@@ -2023,6 +2023,16 @@ document.addEventListener(
 
       loadBusinesses();
 
+      qs("marketSearch")?.addEventListener("input", renderBusinesses);
+      qs("marketLocation")?.addEventListener("change", renderBusinesses);
+      document.querySelectorAll(".market-tab").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          document.querySelectorAll(".market-tab").forEach(b=>b.classList.remove("active"));
+          btn.classList.add("active");
+          renderBusinesses();
+        });
+      });
+
     }
 
     /* =====================================================

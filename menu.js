@@ -11,7 +11,6 @@
     // Avoid attaching the handler more than once.
     if (button.dataset.eagleMenuReady === '1') return;
     button.dataset.eagleMenuReady = '1';
-    button.type = 'button';
 
     function closeMenu() {
       menu.classList.remove('show');
