@@ -1457,9 +1457,21 @@ async function submitBusiness(e){
 
         body:JSON.stringify({
 
-          ...values,
+          business_name: values.business_name,
 
+          /* listing_type is kept in the existing category column so the
+             current Supabase businesses table does not need a new column. */
           category: `${values.listing_type}:${values.category}`,
+
+          location: values.location,
+
+          phone: values.phone,
+
+          whatsapp: values.whatsapp,
+
+          price: values.price,
+
+          description: values.description,
 
           image_url:null
 
