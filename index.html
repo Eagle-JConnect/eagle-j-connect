@@ -1,6 +1,14 @@
-<!DOCTYPE html><html lang="ht"><head>
+<!DOCTYPE html>
+<html lang="ht">
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Eagle-J Connect | Ayiti + Bahamas</title><link rel="stylesheet" href="style.css?v=2"><style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Eagle-J Connect</title>
+
+<link rel="stylesheet" href="style.css?v=2">
+
+<style>
 /* MENU FIX - MOBILE */
 @media (max-width: 768px){
 
@@ -25,269 +33,419 @@
   }
 
 }
+
+.stat-link{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+
+.stat-link:hover{
+  transform:translateY(-2px);
+}
+
+.stat-link:active{
+  transform:translateY(0);
+}
 </style>
-<style>
-.stat-link{display:block;text-decoration:none;color:inherit;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;}
-.stat-link:hover{transform:translateY(-2px);}
-.stat-link:active{transform:translateY(0);}
-</style>
-</head><body><header class="header">  <div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo">
 
-<div>
-  <h2>Eagle-J Connect</h2>
-  <span>Ayiti + Bahamas</span>
-</div>
+</head>
 
-  </div><button
-class="menu-toggle"
-id="menuToggle"
-type="button"
-aria-label="Ouvri meni"
-aria-expanded="false">
-☰
-</button>
+<body>
 
-  <nav id="menu"><a id="nav-home" href="index.html">
-  Akèy
-</a>
+<header class="header">
 
-<a id="nav-jobs" href="travay.html">
-  Travay
-</a>
+  <div class="logo-area">
 
-<a id="nav-business" href="biznis.html">
-  Biznis
-</a>
+    <img src="Logo.jpg" alt="Eagle-J Connect Logo">
 
-<a id="nav-contact" href="kontak.html">
-  Kontak
-</a>
+    <div>
+      <h2>Eagle-J Connect</h2>
+      <span>Connect • Discover • Grow</span>
+    </div>
 
-<a id="nav-register" href="enskri.html">
-  Enskri
-</a>
+  </div>
 
-<div class="language">
+  <button
+    class="menu-toggle"
+    id="menuToggle"
+    type="button"
+    aria-label="Ouvri meni"
+    aria-expanded="false">
+    ☰
+  </button>
 
-  <select
-    id="languageSelect"
-    onchange="changeLanguage()">
+  <nav id="menu">
 
-    <option value="ht">
-      🇭🇹 Kreyòl
-    </option>
+    <a id="nav-home" href="index.html">
+      Akèy
+    </a>
 
-    <option value="en">
-      🇺🇸 English
-    </option>
+    <a id="nav-jobs" href="travay.html">
+      Travay
+    </a>
 
-    <option value="fr">
-      🇫🇷 Français
-    </option>
+    <a id="nav-business" href="biznis.html">
+      Biznis
+    </a>
 
-  </select>
+    <a id="nav-contact" href="kontak.html">
+      Kontak
+    </a>
 
-</div>
+    <a id="nav-register" href="enskri.html">
+      Enskri
+    </a>
 
-  </nav></header><section class="hero">  <h1 data-i18n="hero-title">
-    Konekte Opòtinite ant Ayiti ak Bahamas
-  </h1>  <p data-i18n="hero-text">
-    Jwenn anplwaye, anplwayè, pwofesyonèl, sèvis, biznis ak byen, epi konekte ak kominote a.
-  </p>  <div class="hero-buttons"><a
-  href="enskri.html"
-  class="btn btn-primary"
-  data-i18n="create-account">
-  Kreye Kont
-</a>
+    <div class="language">
 
-<a
-  href="travay.html"
-  class="btn btn-secondary"
-  data-i18n="find-job">
-  Chèche Travay
-</a>
+      <select
+        id="languageSelect"
+        onchange="changeLanguage()">
 
-  </div></section><section
+        <option value="ht">
+          🇭🇹 Kreyòl
+        </option>
+
+        <option value="en">
+          🇺🇸 English
+        </option>
+
+        <option value="fr">
+          🇫🇷 Français
+        </option>
+
+      </select>
+
+    </div>
+
+  </nav>
+
+</header>
+
+
+<!-- HERO -->
+
+<section class="hero">
+
+  <h1 data-i18n="hero-title">
+    OPEN THE WAY. CREATE WEALTH.
+  </h1>
+
+  <p data-i18n="hero-text">
+    Connect with people, discover opportunities, grow your network, and create new possibilities.
+  </p>
+
+  <div class="hero-buttons">
+
+    <a
+      href="enskri.html"
+      class="btn btn-primary"
+      data-i18n="create-account">
+      Kreye Kont
+    </a>
+
+    <a
+      href="travay.html"
+      class="btn btn-secondary"
+      data-i18n="find-job">
+      Chèche Travay
+    </a>
+
+  </div>
+
+</section>
+
+
+<!-- BUSINESS PROMOTION -->
+
+<section
   style="
     background:#F4B400;
     padding:50px 20px;
     text-align:center;
-  ">  <h2>
+  ">
+
+  <h2>
     🚀 Ou gen yon biznis?
-  </h2>  <p
+  </h2>
+
+  <p
     style="
       max-width:700px;
       margin:12px auto 22px;
-    ">Mete biznis ou sou Eagle-J Connect
-pou kominote Ayiti ak Bahamas ka dekouvri
-pwodwi ak sèvis ou yo.
-
-  </p><a
-href="kreye-anons.html"
-class="btn"
-style="
-background:#003366;
-color:white;
-text-decoration:none;
-">
-
-📢 KREYE YON ANONS
-
-  </a></section><section id="stats" class="stats">  <a href="travay.html" class="stat-box stat-link" aria-label="Gade travay"><h2 id="stat-jobs">
-  0
-</h2>
-
-<p>
-  Travay
-</p>
-
-  </a>  <a href="biznis.html" class="stat-box stat-link" aria-label="Gade biznis"><h2 id="stat-business">
-  0
-</h2>
-
-<p>
-  Biznis
-</p>
-
-  </a>  <div class="stat-box"><h2 id="stat-users">
-  0
-</h2>
-
-<p>
-  Itilizatè
-</p>
-
-  </div>  <a href="anons-list.html" class="stat-box stat-link" aria-label="Gade tout anons"><h2 id="stat-ads">
-  0
-</h2>
-
-<p>
-  Anons
-</p>
-
-  </a></section><section class="services">  <h2 data-i18n="services-title">
-    Sèvis Eagle-J Connect
-  </h2>  <div class="cards"><article class="card">
-
-  <h3>
-    💼 Travay
-  </h3>
-
-  <p>
-    Jwenn travay oswa pibliye opòtinite travay.
-  </p>
-
-  <a
-    href="travay.html"
-    class="btn"
-    style="
-      text-decoration:none;
-      display:inline-block;
     ">
 
-    Gade Travay
+    Mete biznis ou sou Eagle-J Connect
+    pou kominote a ka dekouvri
+    pwodwi ak sèvis ou yo.
 
-  </a>
-
-</article>
-
-
-<article class="card">
-
-  <h3>
-    🏢 Biznis
-  </h3>
-
-  <p>
-    Dekouvri biznis ak sèvis nan kominote a.
-  </p>
-
-  <a
-    href="biznis.html"
-    class="btn"
-    style="
-      text-decoration:none;
-      display:inline-block;
-    ">
-
-    Vizite
-
-  </a>
-
-</article>
-
-
-<article class="card">
-
-  <h3>
-    📢 Anons
-  </h3>
-
-  <p>
-    Pibliye pwodwi oswa sèvis ou pou jwenn plis vizibilite.
   </p>
 
   <a
     href="kreye-anons.html"
     class="btn"
     style="
+      background:#003366;
+      color:white;
       text-decoration:none;
-      display:inline-block;
     ">
 
-    Kreye Anons
+    📢 KREYE YON ANONS
 
   </a>
 
-</article>
+</section>
 
-  </div></section><section class="about">  <h2 data-i18n="about-title">
+
+<!-- STATS -->
+
+<section id="stats" class="stats">
+
+  <a
+    href="travay.html"
+    class="stat-box stat-link"
+    aria-label="Gade travay">
+
+    <h2 id="stat-jobs">
+      0
+    </h2>
+
+    <p>
+      Travay
+    </p>
+
+  </a>
+
+
+  <a
+    href="biznis.html"
+    class="stat-box stat-link"
+    aria-label="Gade biznis">
+
+    <h2 id="stat-business">
+      0
+    </h2>
+
+    <p>
+      Biznis
+    </p>
+
+  </a>
+
+
+  <div class="stat-box">
+
+    <h2 id="stat-users">
+      0
+    </h2>
+
+    <p>
+      Itilizatè
+    </p>
+
+  </div>
+
+
+  <a
+    href="anons-list.html"
+    class="stat-box stat-link"
+    aria-label="Gade tout anons">
+
+    <h2 id="stat-ads">
+      0
+    </h2>
+
+    <p>
+      Anons
+    </p>
+
+  </a>
+
+</section>
+
+
+<!-- SERVICES -->
+
+<section class="services">
+
+  <h2 data-i18n="services-title">
+    Sèvis Eagle-J Connect
+  </h2>
+
+  <div class="cards">
+
+
+    <article class="card">
+
+      <h3>
+        💼 Travay
+      </h3>
+
+      <p>
+        Jwenn travay oswa pibliye opòtinite travay.
+      </p>
+
+      <a
+        href="travay.html"
+        class="btn"
+        style="
+          text-decoration:none;
+          display:inline-block;
+        ">
+
+        Gade Travay
+
+      </a>
+
+    </article>
+
+
+    <article class="card">
+
+      <h3>
+        🏢 Biznis
+      </h3>
+
+      <p>
+        Dekouvri biznis ak sèvis nan kominote a.
+      </p>
+
+      <a
+        href="biznis.html"
+        class="btn"
+        style="
+          text-decoration:none;
+          display:inline-block;
+        ">
+
+        Vizite
+
+      </a>
+
+    </article>
+
+
+    <article class="card">
+
+      <h3>
+        📢 Anons
+      </h3>
+
+      <p>
+        Pibliye pwodwi oswa sèvis ou pou jwenn plis vizibilite.
+      </p>
+
+      <a
+        href="kreye-anons.html"
+        class="btn"
+        style="
+          text-decoration:none;
+          display:inline-block;
+        ">
+
+        Kreye Anons
+
+      </a>
+
+    </article>
+
+  </div>
+
+</section>
+
+
+<!-- ABOUT -->
+
+<section class="about">
+
+  <h2 data-i18n="about-title">
     Poukisa Eagle-J Connect?
-  </h2>  <p>
-    Nou kreye Eagle-J Connect pou ede moun ak biznis
-    konekte ak nouvo opòtinite ant Ayiti ak Bahamas.
-  </p>  <div class="cards"><article class="card">
-
-  <h3>
-    🌍 Kominote
-  </h3>
+  </h2>
 
   <p>
-    Konekte moun, sèvis ak opòtinite.
+    Eagle-J Connect ede moun ak biznis
+    konekte ak nouvo opòtinite,
+    dekouvri posiblite epi grandi.
   </p>
 
-</article>
+
+  <div class="cards">
 
 
-<article class="card">
+    <article class="card">
+
+      <h3>
+        🌍 Kominote
+      </h3>
+
+      <p>
+        Konekte moun, sèvis ak opòtinite.
+      </p>
+
+    </article>
+
+
+    <article class="card">
+
+      <h3>
+        ⚡ Senp
+      </h3>
+
+      <p>
+        Chèche travay ak biznis fasil sou telefòn ou.
+      </p>
+
+    </article>
+
+
+    <article class="card">
+
+      <h3>
+        🔒 Konfyans
+      </h3>
+
+      <p>
+        Kont ak done yo jere atravè Supabase.
+      </p>
+
+    </article>
+
+  </div>
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer>
 
   <h3>
-    ⚡ Senp
-  </h3>
-
-  <p>
-    Chèche travay ak biznis fasil sou telefòn ou.
-  </p>
-
-</article>
-
-
-<article class="card">
-
-  <h3>
-    🔒 Konfyans
-  </h3>
-
-  <p>
-    Kont ak done yo jere atravè Supabase.
-  </p>
-
-</article>
-
-  </div></section><footer>  <h3>
     Eagle-J Connect
-  </h3>  <p>
-    Konekte Opòtinite ant Ayiti ak Bahamas.
-  </p>  <p>
+  </h3>
+
+  <p>
+    OPEN THE WAY. CREATE WEALTH.
+  </p>
+
+  <p>
     © 2026 Eagle-J Connect
-  </p></footer><!-- LANGUAGE --><script src="language.js?v=3"></script><!-- MAIN JAVASCRIPT --><script src="script.js?v=9"></script><script src="menu.js?v=6"></script></body></html>
+  </p>
+
+</footer>
+
+
+<!-- LANGUAGE -->
+
+<script src="language.js?v=3"></script>
+
+<!-- MAIN JAVASCRIPT -->
+
+<script src="script.js?v=9"></script>
+
+<script src="menu.js?v=6"></script>
+
+</body>
+</html> 
