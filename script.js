@@ -1714,10 +1714,10 @@ async function loadBusinesses(){
 
   }catch(err){
 
-    console.error(err);
+    console.error("Business listings error:",err);
 
     box.innerHTML=
-      "<p>❌ Nou pa kapab chaje anons yo.</p>";
+      `<div class="notice error">❌ Nou pa kapab chaje anons biznis yo.<br><small>${esc(err?.message || "Tanpri verifye koneksyon an epi eseye ankò.")}</small><br><button type="button" onclick="loadBusinesses()">🔄 Eseye ankò</button></div>`;
 
   }
 
@@ -1987,13 +1987,6 @@ function initContact(){
 document.addEventListener(
   "DOMContentLoaded",
   ()=>{
-
-
-    /* =====================================================
-       MOBILE MENU
-    ===================================================== */
-
-    setupMobileMenu();
 
 
     /* =====================================================
