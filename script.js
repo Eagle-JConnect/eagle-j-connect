@@ -474,6 +474,13 @@ async function registerUser(e){
           email,
           password,
 
+          // Apre konfimasyon imèl la, Supabase dwe retounen
+          // sou paj login ki nan GitHub Pages la, pa sou yon URL 404.
+          email_redirect_to:new URL(
+            "login.html",
+            window.location.href
+          ).href,
+
           data:{
             full_name:fullName,
             phone,

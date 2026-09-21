@@ -23,3 +23,7 @@ The site uses the Supabase publishable key in the browser. Database/storage Row 
 - Added the missing `anons.html` business-detail page used by business cards.
 - Added business-detail loading from `?id=...`.
 - Added responsive business-detail image/card styling.
+
+
+## Fix konfimasyon imèl
+Enskripsyon an voye `email_redirect_to` sou `login.html` nan menm GitHub Pages path la. Nan Supabase Dashboard > Authentication > URL Configuration, ajoute URL GitHub Pages login lan nan Redirect URLs: `https://eagle-jconnect.github.io/eagle-j-connect/login.html`.
