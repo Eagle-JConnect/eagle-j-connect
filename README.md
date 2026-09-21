@@ -15,3 +15,11 @@ Ayiti + Bahamas — jobs, business listings and community connections.
 `profiles`, `jobs`, `businesses` and storage bucket `business-images`.
 
 The site uses the Supabase publishable key in the browser. Database/storage Row Level Security policies should remain enabled.
+
+
+## Fixed in this version
+- Unified the Biznis page with the site's responsive mobile hamburger menu.
+- Connected the Biznis page to the Supabase business listings loader.
+- Added the missing `anons.html` business-detail page used by business cards.
+- Added business-detail loading from `?id=...`.
+- Added responsive business-detail image/card styling.

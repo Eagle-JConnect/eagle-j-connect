@@ -1747,6 +1747,89 @@ window.openBusinessAd=function(id){
 };
 
 
+
+/* =========================================================
+   BUSINESS DETAIL
+========================================================= */
+
+async function loadBusinessDetail(){
+
+  const box=qs("businessDetail");
+
+  if(!box)return;
+
+  const params=new URLSearchParams(location.search);
+  const id=params.get("id");
+
+  if(!id){
+    box.innerHTML="<p class='notice'>❌ Anons sa pa gen ID.</p>";
+    return;
+  }
+
+  try{
+
+    const rows=await api(
+      `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&select=*`
+    );
+
+    const b=rows?.[0];
+
+    if(!b){
+      box.innerHTML="<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib.</p>";
+      return;
+    }
+
+    const phone=attr(b.phone || "");
+    const wa=waNumber(b.whatsapp);
+
+    box.innerHTML=`
+      ${
+        b.image_url
+          ? `<img class="business-detail-image" src="${attr(b.image_url)}" alt="${attr(b.business_name)}">`
+          : `<div class="business-detail-placeholder">🏢</div>`
+      }
+
+      <h1>${esc(b.business_name)}</h1>
+
+      <div class="meta">
+        <span class="badge">📂 ${esc(b.category)}</span>
+        <span class="badge">📍 ${esc(b.location)}</span>
+      </div>
+
+      ${
+        b.price
+          ? `<p><strong>💰 Pri:</strong> ${esc(b.price)}</p>`
+          : ""
+      }
+
+      <p style="white-space:pre-line">${esc(b.description)}</p>
+
+      <div class="actions">
+        ${
+          phone
+            ? `<a href="tel:${phone}"><button type="button">📞 Rele</button></a>`
+            : ""
+        }
+        ${
+          wa
+            ? `<a target="_blank" rel="noopener" href="https://wa.me/${wa}"><button type="button">💬 WhatsApp</button></a>`
+            : ""
+        }
+      </div>
+    `;
+
+  }catch(err){
+
+    console.error(err);
+
+    box.innerHTML=
+      "<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p>";
+
+  }
+
+}
+
+
 /* =========================================================
    HOMEPAGE STATISTICS
 ========================================================= */
@@ -1975,6 +2058,16 @@ document.addEventListener(
     if(qs("businessListings")){
 
       loadBusinesses();
+
+    }
+
+    /* =====================================================
+       BUSINESS DETAIL
+    ===================================================== */
+
+    if(qs("businessDetail")){
+
+      loadBusinessDetail();
 
     }
 
