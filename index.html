@@ -1,31 +1,6 @@
 <!DOCTYPE html><html lang="ht"><head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Eagle-J Connect | Ayiti + Bahamas</title><link rel="stylesheet" href="style.css?v=2"><style>
-/* MENU FIX - MOBILE */
-@media (max-width: 768px){
-
-  .menu-toggle{
-    display:block !important;
-    background:transparent !important;
-    border:0 !important;
-    color:white !important;
-    font-size:32px !important;
-    padding:8px 12px !important;
-    cursor:pointer !important;
-    position:relative !important;
-    z-index:10002 !important;
-  }
-
-  #menu{
-    display:none !important;
-  }
-
-  #menu.show{
-    display:flex !important;
-  }
-
-}
-</style></head><body><header class="header">  <div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Eagle-J Connect | Ayiti + Bahamas</title><link rel="stylesheet" href="style.css?v=2"></head><body><header class="header">  <div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo">
 
 <div>
   <h2>Eagle-J Connect</h2>
@@ -284,52 +259,5 @@ text-decoration:none;
     Konekte Opòtinite ant Ayiti ak Bahamas.
   </p>  <p>
     © 2026 Eagle-J Connect
-  </p></footer><!-- LANGUAGE --><script src="language.js?v=2"></script><!-- MAIN JAVASCRIPT --><script src="script.js?v=2"></script><!-- MENU DIRECT FIX --><script>
-
-document.addEventListener("DOMContentLoaded", function(){
-
-  const menuButton = document.getElementById("menuToggle");
-  const menu = document.getElementById("menu");
-
-  if(!menuButton || !menu){
-    console.error("Menu Eagle-J Connect pa jwenn.");
-    return;
-  }
-
-  menuButton.addEventListener("click", function(){
-
-    menu.classList.toggle("show");
-
-    const isOpen = menu.classList.contains("show");
-
-    menuButton.setAttribute(
-      "aria-expanded",
-      isOpen ? "true" : "false"
-    );
-
-  });
-
-
-  /* Fè meni an fèmen lè moun klike sou yon lyen */
-
-  const links = menu.querySelectorAll("a");
-
-  links.forEach(function(link){
-
-    link.addEventListener("click", function(){
-
-      menu.classList.remove("show");
-
-      menuButton.setAttribute(
-        "aria-expanded",
-        "false"
-      );
-
-    });
-
-  });
-
-});
-
-</script><script src="menu.js?v=4"></script></body>
+  </p></footer><!-- LANGUAGE --><script src="language.js?v=3"></script><!-- MAIN JAVASCRIPT --><script src="script.js?v=7"></script><script src="menu.js?v=5"></script></body>
 </html>
