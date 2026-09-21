@@ -11,6 +11,11 @@
 
   <title>Travay | Eagle-J Connect</title>
 
+  <meta
+    name="description"
+    content="Dekouvri opòtinite travay ki disponib sou Eagle-J Connect."
+  >
+
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -162,19 +167,13 @@
 
     <div class="container hero-content">
 
-      <h1
-        class="hero-title-main"
-        data-i18n="jobs-title"
-      >
+      <h1 class="hero-title-main">
         Opòtinite Travay
       </h1>
 
-
-      <p
-        class="hero-subtitle-main"
-        data-i18n="jobs-description"
-      >
-        Jwenn travay ki disponib nan Bahamas ak Ayiti.
+      <p class="hero-subtitle-main">
+        Dekouvri travay ki disponib epi jwenn
+        opòtinite ki koresponn ak konpetans ou.
       </p>
 
     </div>
@@ -190,21 +189,17 @@
 
     <div class="container">
 
-      <h2
-        class="section-title"
-        data-i18n="category-title"
-      >
+      <h2 class="section-title">
         Travay ki disponib
       </h2>
 
-
       <p class="section-description">
-        Chèche travay selon tit, konpayi,
-        lokalizasyon oswa kalite travay.
+        Chèche opòtinite travay selon tit,
+        konpayi, lokalizasyon oswa kalite travay.
       </p>
 
 
-      <!-- SEARCH TOOLBAR -->
+      <!-- SEARCH + FILTER -->
 
       <div class="job-toolbar">
 
@@ -212,14 +207,15 @@
           type="text"
           id="searchJob"
           class="search-box"
-          data-i18n-placeholder="search-job"
-          placeholder="Chèche pa tit, konpayi oswa lokalizasyon..."
+          placeholder="Chèche travay pa tit, konpayi oswa lokalizasyon..."
+          aria-label="Chèche travay"
         >
 
 
         <select
           id="jobFilter"
           class="search-box"
+          aria-label="Filtre travay"
         >
 
           <option value="">
@@ -247,7 +243,9 @@
       </div>
 
 
-      <!-- JOB LIST -->
+      <!-- =========================
+           JOB LIST
+      ========================== -->
 
       <div
         id="jobsList"
@@ -273,7 +271,7 @@
 
     <div class="container">
 
-      <h2 data-i18n="how-title">
+      <h2>
         Kijan sa mache?
       </h2>
 
@@ -285,13 +283,13 @@
 
         <article class="card">
 
-          <h3 data-i18n="step-one">
+          <h3>
             1️⃣ Kreye Kont
           </h3>
 
           <p>
-            Enskri sou platfòm lan pou kreye
-            pwofil ou.
+            Kreye kont ou sou Eagle-J Connect
+            pou jwenn aksè ak opòtinite yo.
           </p>
 
           <a
@@ -308,20 +306,21 @@
 
         <article class="card">
 
-          <h3 data-i18n="step-two">
+          <h3>
             2️⃣ Chèche Travay
           </h3>
 
           <p>
-            Chèche selon tit, konpayi
-            oswa lokalizasyon.
+            Chèche travay selon tit,
+            konpayi, lokalizasyon oswa
+            kalite travay.
           </p>
 
           <a
-            href="travay.html"
+            href="#jobsList"
             class="btn btn-primary"
           >
-            Chèche Travay
+            Gade Travay
           </a>
 
         </article>
@@ -331,13 +330,14 @@
 
         <article class="card">
 
-          <h3 data-i18n="step-three">
+          <h3>
             3️⃣ Aplike
           </h3>
 
           <p>
-            Rele oswa voye WhatsApp bay
-            kontak travay la.
+            Lè ou jwenn yon travay ki enterese
+            w, itilize enfòmasyon kontak yo
+            pou aplike.
           </p>
 
           <a
@@ -349,6 +349,46 @@
 
         </article>
 
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       EMPLOYER CTA
+  ========================== -->
+
+  <section class="cta">
+
+    <div class="container">
+
+      <h2>
+        Ou gen yon travay pou poste?
+      </h2>
+
+      <p>
+        Pibliye opòtinite travay ou pou moun
+        k ap chèche travay kapab dekouvri li.
+      </p>
+
+      <div class="hero-buttons">
+
+        <a
+          href="poste-travay.html"
+          class="btn btn-primary"
+        >
+          Poste yon Travay
+        </a>
+
+        <a
+          href="enskri.html"
+          class="btn btn-secondary"
+        >
+          Kreye Kont
+        </a>
 
       </div>
 
@@ -370,7 +410,11 @@
       </h3>
 
       <p>
-        Konekte Opòtinite ant Ayiti ak Bahamas.
+        Konekte moun ak opòtinite.
+      </p>
+
+      <p>
+        CONNECT • DISCOVER • GROW
       </p>
 
 
@@ -425,6 +469,7 @@
   <script src="script.js?v=11"></script>
 
   <script src="menu.js?v=7"></script>
+
 
 </body>
 
