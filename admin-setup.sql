@@ -38,4 +38,4 @@ with check (exists (select 1 from public.admin_users a where a.user_id = auth.ui
 
 -- To make YOUR account an administrator, first get your Auth user UUID
 -- from Supabase Dashboard -> Authentication -> Users, then run:
--- insert into public.admin_users(user_id) values ('YOUR-USER-UUID-HERE');
+insert into public.admin_users(user_id) values ('9b134154-a1b6-4d1a-a91a-dcd8f139d7ff') on conflict (user_id) do nothing;
