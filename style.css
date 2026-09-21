@@ -309,3 +309,13 @@ main{min-height:calc(100vh - 82px)}
   .stat-card,.stat-box{padding:17px 10px}
   .stat-card h2,.stat-box h2{font-size:26px}
 }
+
+
+/* ---------------- Final 2026 navigation polish ---------------- */
+.header .container{height:100%}
+#menu a[aria-current="page"]{background:rgba(255,255,255,.12);color:var(--gold-2)}
+.footer-grid{width:min(100%,var(--max));margin:auto;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:start;text-align:left}
+.footer-grid>div:first-child{max-width:520px}
+.footer-grid .footer-links{justify-content:flex-end;margin:0}
+.notice,.form-message{max-width:720px;margin:14px auto;padding:12px 15px;border-radius:10px}
+@media(max-width:768px){.footer-grid{grid-template-columns:1fr;text-align:center}.footer-grid .footer-links{justify-content:center}}

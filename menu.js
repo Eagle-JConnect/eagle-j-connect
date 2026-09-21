@@ -1,368 +1,79 @@
-/* Eagle-J Connect - Mobile Menu + Admin navigation */
-(function () {
+/* Eagle-J Connect — final navigation controller */
+(function(){
+  const SUPABASE_URL="https://glwyqrvufmjscjbbszzz.supabase.co";
+  const SUPABASE_KEY="sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 
-  const SUPABASE_URL = "https://glwyqrvufmjscjbbszzz.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
-
-  function getToken() {
-    return localStorage.getItem("supabase_access_token") || "";
+  function getSession(){
+    const token=localStorage.getItem("supabase_access_token");
+    const raw=localStorage.getItem("supabase_user");
+    if(!token||!raw)return null;
+    try{return {token,user:JSON.parse(raw)};}catch(e){return null;}
   }
 
-  function getUserId() {
-    const raw = localStorage.getItem("supabase_user");
-
-    if (raw) {
-      try {
-        return JSON.parse(raw).id || "";
-      } catch (e) {}
-    }
-
-    return localStorage.getItem("supabase_user_id") || "";
+  function closeMenu(){
+    const menu=document.getElementById("menu");
+    const button=document.getElementById("menuToggle");
+    if(menu)menu.classList.remove("show");
+    if(button)button.setAttribute("aria-expanded","false");
   }
 
+  function initMenu(){
+    const menu=document.getElementById("menu");
+    const button=document.getElementById("menuToggle");
+    if(!menu||!button||button.dataset.menuReady==="1")return;
+    button.dataset.menuReady="1";
+    button.addEventListener("click",e=>{
+      e.preventDefault(); e.stopPropagation();
+      const open=!menu.classList.contains("show");
+      menu.classList.toggle("show",open);
+      button.setAttribute("aria-expanded",open?"true":"false");
+    });
+    menu.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{
+      if(a.id!=="logoutBtn")closeMenu();
+    }));
+    document.addEventListener("click",e=>{
+      if(!menu.classList.contains("show"))return;
+      if(!menu.contains(e.target)&&!button.contains(e.target))closeMenu();
+    });
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMenu();});
+  }
 
-  /* =========================================================
-     MOBILE MENU
-  ========================================================= */
-
-  function initMenu() {
-
-    const button =
-      document.getElementById("menuToggle") ||
-      document.querySelector(".menu-toggle");
-
-    const menu =
-      document.getElementById("navMenu") ||
-      document.getElementById("menu");
-
-    if (!button || !menu) {
-      console.warn(
-        "Eagle-J Menu: #menuToggle oswa #navMenu pa jwenn."
-      );
-      return;
+  function syncAuthNav(){
+    const logged=!!getSession();
+    document.querySelectorAll('[data-auth="guest"]').forEach(el=>el.hidden=logged);
+    document.querySelectorAll('[data-auth="user"]').forEach(el=>el.hidden=!logged);
+    const logout=document.getElementById("logoutBtn");
+    if(logout && !logout.dataset.logoutReady){
+      logout.dataset.logoutReady="1";
+      logout.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();window.logoutUser?.();});
     }
+  }
 
-    if (button.dataset.eagleMenuReady === "1") {
-      return;
-    }
+  function setActiveLink(){
+    const current=(location.pathname.split('/').pop()||'index.html').toLowerCase();
+    document.querySelectorAll('#menu a[href]').forEach(a=>{
+      const href=a.getAttribute('href');
+      if(href && href!=='#' && href.toLowerCase()===current){a.setAttribute('aria-current','page');}
+    });
+  }
 
-    button.dataset.eagleMenuReady = "1";
-
-    function closeMenu() {
-
-      menu.classList.remove("show");
-
-      button.setAttribute(
-        "aria-expanded",
-        "false"
-      );
-
-    }
-
-    function toggleMenu(event) {
-
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
+  async function addAdminLink(){
+    const menu=document.getElementById("menu"); const s=getSession();
+    if(!menu||!s||menu.querySelector('[data-admin-link="1"]'))return;
+    try{
+      const r=await fetch(`${SUPABASE_URL}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(s.user.id)}&select=user_id`,{headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${s.token}`}});
+      const rows=r.ok?await r.json():[];
+      if(Array.isArray(rows)&&rows.length){
+        localStorage.setItem('eagle_j_is_admin','1');
+        const a=document.createElement('a'); a.href='admin.html'; a.textContent='🛡️ Admin'; a.dataset.adminLink='1';
+        const lang=menu.querySelector('.language'); if(lang)menu.insertBefore(a,lang); else menu.appendChild(a);
       }
-
-      const open =
-        !menu.classList.contains("show");
-
-      menu.classList.toggle(
-        "show",
-        open
-      );
-
-      button.setAttribute(
-        "aria-expanded",
-        open ? "true" : "false"
-      );
-
-    }
-
-    button.setAttribute(
-      "aria-expanded",
-      "false"
-    );
-
-    button.addEventListener(
-      "click",
-      toggleMenu,
-      false
-    );
-
-
-    /* Close menu after clicking a link */
-
-    menu
-      .querySelectorAll("a")
-      .forEach(link => {
-
-        link.addEventListener(
-          "click",
-          closeMenu,
-          false
-        );
-
-      });
-
-
-    /* Close when clicking outside */
-
-    document.addEventListener(
-      "click",
-      event => {
-
-        if (!menu.classList.contains("show")) {
-          return;
-        }
-
-        if (
-          menu.contains(event.target) ||
-          button.contains(event.target)
-        ) {
-          return;
-        }
-
-        closeMenu();
-
-      },
-      false
-    );
-
-
-    /* Close with ESC */
-
-    document.addEventListener(
-      "keydown",
-      event => {
-
-        if (event.key === "Escape") {
-          closeMenu();
-        }
-
-      },
-      false
-    );
-
+    }catch(e){}
   }
 
-
-  /* =========================================================
-     ADMIN LINK
-  ========================================================= */
-
-  function addAdminLink() {
-
-    const menu =
-      document.getElementById("navMenu") ||
-      document.getElementById("menu");
-
-    if (!menu) {
-      return;
-    }
-
-    if (
-      menu.querySelector(
-        'a[data-admin-link="1"]'
-      )
-    ) {
-      return;
-    }
-
-    const link =
-      document.createElement("a");
-
-    link.href = "admin.html";
-
-    link.dataset.adminLink = "1";
-
-    link.textContent =
-      "🛡️ Admin Dashboard";
-
-    menu.insertBefore(
-      link,
-      menu.querySelector(".language-box") ||
-      menu.querySelector(".language") ||
-      null
-    );
-
-  }
-
-
-  /* =========================================================
-     CHECK ADMIN
-  ========================================================= */
-
-  async function checkAdminAndShowMenu() {
-
-    const userId = getUserId();
-    const token = getToken();
-
-    if (!userId || !token) {
-      return false;
-    }
-
-
-    /* Use saved admin status first */
-
-    if (
-      localStorage.getItem(
-        "eagle_j_is_admin"
-      ) === "1"
-    ) {
-
-      addAdminLink();
-
-      return true;
-    }
-
-
-    /* Verify directly with Supabase */
-
-    try {
-
-      const response = await fetch(
-
-        `${SUPABASE_URL}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`,
-
-        {
-          headers: {
-
-            apikey: SUPABASE_KEY,
-
-            Authorization:
-              `Bearer ${token}`,
-
-            "Content-Type":
-              "application/json"
-
-          }
-        }
-
-      );
-
-
-      if (!response.ok) {
-
-        console.warn(
-          "Admin verification failed:",
-          response.status
-        );
-
-        return false;
-      }
-
-
-      const rows =
-        await response.json();
-
-
-      const isAdmin =
-        Array.isArray(rows) &&
-        rows.length > 0;
-
-
-      localStorage.setItem(
-        "eagle_j_is_admin",
-        isAdmin ? "1" : "0"
-      );
-
-
-      if (isAdmin) {
-        addAdminLink();
-      }
-
-
-      return isAdmin;
-
-    } catch (e) {
-
-      console.warn(
-        "Admin menu check failed:",
-        e
-      );
-
-      return false;
-    }
-
-  }
-
-
-  /* =========================================================
-     ADMIN REDIRECT
-  ========================================================= */
-
-  function redirectAdminFromNormalDashboard() {
-
-    const page =
-      (
-        location.pathname
-          .split("/")
-          .pop() || ""
-      ).toLowerCase();
-
-
-    if (
-      page !== "dashboard.html" &&
-      page !== "employer.html"
-    ) {
-      return;
-    }
-
-
-    if (
-      localStorage.getItem(
-        "eagle_j_is_admin"
-      ) === "1"
-    ) {
-
-      location.replace(
-        "admin.html"
-      );
-
-    }
-
-  }
-
-
-  /* =========================================================
-     START
-  ========================================================= */
-
-  function start() {
-
-    initMenu();
-
-
-    checkAdminAndShowMenu()
-      .then(isAdmin => {
-
-        if (isAdmin) {
-
-          redirectAdminFromNormalDashboard();
-
-        }
-
-      });
-
-  }
-
-
-  if (
-    document.readyState === "loading"
-  ) {
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      start
-    );
-
-  } else {
-
-    start();
-
-  }
-
+  window.toggleMenu=function(){
+    const button=document.getElementById('menuToggle'); if(button)button.click();
+  };
+
+  document.addEventListener('DOMContentLoaded',()=>{initMenu();syncAuthNav();setActiveLink();addAdminLink();});
 })();

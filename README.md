@@ -50,3 +50,12 @@ Do not expose a Supabase service-role key in the browser. The project uses the e
 - `employer.html` — employer area
 - `kontak.html` — contact
 - `admin.html` — admin dashboard
+
+
+## Final 2026 navigation fixes
+- One shared professional navigation shell across every page.
+- One mobile-menu controller (`menu.js`) to prevent double-toggle conflicts.
+- Login/logout navigation state is synchronized automatically.
+- Admin link appears only for verified admin users.
+- Business detail links and marketplace filters are wired consistently.
+- Haiti/Haiti and Bahamas/Nassau location aliases are supported by marketplace filtering.

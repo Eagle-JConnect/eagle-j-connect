@@ -4,53 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Enskri | Eagle-J Connect</title>
-<link rel="stylesheet" href="style.css?v=final1">
+<link rel="stylesheet" href="style.css?v=final2">
 </head>
 
 <body>
 
 <header class="header">
-
-  <div class="logo-area">
-    <img src="Logo.jpg" alt="Eagle-J Connect Logo">
-
-    <div>
-      <h2>Eagle-J Connect</h2>
-      <span>Ayiti + Bahamas</span>
-    </div>
+  <div class="container nav-container">
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect logo">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false" aria-controls="menu">☰</button>
+    <nav id="menu" aria-label="Navigasyon prensipal">
+      <a href="index.html" data-i18n="nav-home">Akèy</a>
+      <a href="travay.html" data-i18n="nav-jobs">Travay</a>
+      <a href="biznis.html" data-i18n="nav-business">Biznis</a>
+      <a href="kontak.html" data-i18n="nav-contact">Kontak</a>
+      <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a>
+      <a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a>
+      <a href="profil.html" data-i18n="nav-account" data-auth="user">Kont Mwen</a>
+      <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
+      <div class="language">
+        <select id="languageSelect" aria-label="Chwazi lang">
+          <option value="ht">🇭🇹 Kreyòl</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="fr">🇫🇷 Français</option>
+        </select>
+      </div>
+    </nav>
   </div>
-
-  <button
-    class="menu-toggle"
-    type="button"
-    aria-label="Meni"
-  >
-    ☰
-  </button>
-
-  <nav id="menu">
-
-    <a id="nav-home" href="index.html">Akèy</a>
-    <a id="nav-jobs" href="travay.html">Travay</a>
-    <a id="nav-business" href="biznis.html">Biznis</a>
-    <a id="nav-contact" href="kontak.html">Kontak</a>
-    <a id="nav-register" href="enskri.html">Enskri</a>
-
-    <div class="language">
-
-      <select
-        id="languageSelect"
-        onchange="changeLanguage()"
-      >
-        <option value="ht">🇭🇹 Kreyòl</option>
-        <option value="en">🇺🇸 English</option>
-        <option value="fr">🇫🇷 Français</option>
-      </select>
-
-    </div>
-
-  </nav>
-
 </header>
 
 
@@ -193,23 +176,19 @@
 
 
 <footer>
-
-  <h3>Eagle-J Connect</h3>
-
-  <p>
-    Konekte Opòtinite ant Ayiti ak Bahamas.
-  </p>
-
-  <p>
-    © 2026 Eagle-J Connect
-  </p>
-
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>Eagle-J Connect</h3><p>Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.</p></div>
+      <div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a><a href="enskri.html">Enskri</a></div>
+    </div>
+    <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
+  </div>
 </footer>
 
 
-<script src="language.js?v=final1"></script>
-<script src="script.js?v=final1"></script>
-<script src="menu.js?v=final1"></script>
+<script src="language.js?v=final2"></script>
+<script src="script.js?v=final2"></script>
+<script src="menu.js?v=final2"></script>
 
 </body>
 </html>

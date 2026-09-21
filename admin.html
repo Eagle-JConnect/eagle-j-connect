@@ -4,21 +4,34 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin Dashboard | Eagle-J Connect</title>
-<link rel="stylesheet" href="style.css?v=final1">
-<style>
-.admin-wrap{max-width:1100px;margin:30px auto;padding:0 16px}.admin-card{background:#fff;border-radius:18px;padding:20px;margin-bottom:20px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
-.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.admin-stat{padding:18px;border-radius:14px;background:#eef5fb;text-align:center}.admin-stat strong{display:block;font-size:30px;color:#073b67}.admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.admin-actions input,.admin-actions select{padding:12px;border:1px solid #ccc;border-radius:10px;min-width:180px}.admin-table-wrap{overflow-x:auto}.admin-table{width:100%;border-collapse:collapse;min-width:760px}.admin-table th,.admin-table td{padding:12px;border-bottom:1px solid #ddd;text-align:left}.admin-table th{background:#073b67;color:#fff}.admin-table button{padding:8px 11px;border:0;border-radius:8px;cursor:pointer}.edit-btn{background:#f5b900;color:#073b67}.save-btn{background:#0b7a4b;color:#fff}.cancel-btn{background:#ddd}.danger-btn{background:#c62828;color:#fff}.notice-admin{padding:14px;border-radius:10px;margin:12px 0}.notice-admin.error{background:#ffeded;color:#a00}.notice-admin.success{background:#e9f8ef;color:#176b3a}.hidden{display:none!important}
-@media(max-width:700px){.admin-grid{grid-template-columns:1fr}.admin-wrap{margin-top:20px}}
-</style>
+<link rel="stylesheet" href="style.css?v=final2">
 </head>
 <body>
 <header class="header">
-  <div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo"><div><h2>Eagle-J Connect</h2><span>Ayiti + Bahamas</span></div></div>
-  <button class="menu-toggle" type="button" aria-label="Meni">☰</button>
-  <nav id="menu">
-    <a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a><a href="dashboard.html">Pwofil</a>
-    <div class="language"><select id="languageSelect" onchange="changeLanguage()"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div>
-  </nav>
+  <div class="container nav-container">
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect logo">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false" aria-controls="menu">☰</button>
+    <nav id="menu" aria-label="Navigasyon prensipal">
+      <a href="index.html" data-i18n="nav-home">Akèy</a>
+      <a href="travay.html" data-i18n="nav-jobs">Travay</a>
+      <a href="biznis.html" data-i18n="nav-business">Biznis</a>
+      <a href="kontak.html" data-i18n="nav-contact">Kontak</a>
+      <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a>
+      <a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a>
+      <a href="profil.html" data-i18n="nav-account" data-auth="user">Kont Mwen</a>
+      <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
+      <div class="language">
+        <select id="languageSelect" aria-label="Chwazi lang">
+          <option value="ht">🇭🇹 Kreyòl</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="fr">🇫🇷 Français</option>
+        </select>
+      </div>
+    </nav>
+  </div>
 </header>
 <main class="admin-wrap">
   <div class="admin-card">
@@ -43,10 +56,18 @@
     </div>
   </div>
 </main>
-<footer><h3>Eagle-J Connect</h3><p>Konekte Opòtinite ant Ayiti ak Bahamas.</p><p>© 2026 Eagle-J Connect</p></footer>
-<script src="language.js?v=final1"></script>
-<script src="script.js?v=final1"></script>
-<script src="menu.js?v=final1"></script>
-<script src="admin.js?v=final1"></script>
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>Eagle-J Connect</h3><p>Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.</p></div>
+      <div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a><a href="enskri.html">Enskri</a></div>
+    </div>
+    <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
+  </div>
+</footer>
+<script src="language.js?v=final2"></script>
+<script src="script.js?v=final2"></script>
+<script src="menu.js?v=final2"></script>
+<script src="admin.js?v=final2"></script>
 </body>
 </html>

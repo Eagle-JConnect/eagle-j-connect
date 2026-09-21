@@ -118,145 +118,14 @@ window.logoutUser=()=>{
    Works on ALL pages
 ========================================================= */
 
-function setupMobileMenu(){
-
-  const menu=document.getElementById("navMenu") || document.getElementById("menu");
-  const button=document.getElementById("menuToggle") || document.querySelector(".menu-toggle");
-
-  if(!menu || !button){
-
-    console.log(
-      "Mobile menu: #menu oswa .menu-toggle pa jwenn."
-    );
-
-    return;
-
-  }
-
-
-  /* Prevent duplicate initialization */
-
-  if(button.dataset.menuReady==="true"){
-
-    return;
-
-  }
-
-  button.dataset.menuReady="true";
-
-
-  /* Accessibility */
-
-  button.setAttribute(
-    "aria-expanded",
-    "false"
-  );
-
-
-  /* Open / close menu */
-
-  button.addEventListener(
-    "click",
-    function(e){
-
-      e.preventDefault();
-      e.stopPropagation();
-
-      menu.classList.toggle("show");
-
-      const opened=
-        menu.classList.contains("show");
-
-      button.setAttribute(
-        "aria-expanded",
-        opened ? "true" : "false"
-      );
-
-    }
-  );
-
-
-  /* Close menu after clicking a link */
-
-  menu.querySelectorAll("a").forEach(
-    link=>{
-
-      link.addEventListener(
-        "click",
-        function(){
-
-          menu.classList.remove("show");
-
-          button.setAttribute(
-            "aria-expanded",
-            "false"
-          );
-
-        }
-      );
-
-    }
-  );
-
-
-  /* Close menu when clicking outside */
-
-  document.addEventListener(
-    "click",
-    function(e){
-
-      if(
-        !menu.contains(e.target) &&
-        !button.contains(e.target)
-      ){
-
-        menu.classList.remove("show");
-
-        button.setAttribute(
-          "aria-expanded",
-          "false"
-        );
-
-      }
-
-    }
-  );
-
-}
+function setupMobileMenu(){ /* menu.js owns the final navigation controller */ }
 
 
 /* Compatibility with pages using onclick="toggleMenu()" */
 
 window.toggleMenu=function(){
-
-  const menu=document.getElementById("navMenu") || document.getElementById("menu");
-  const button=document.getElementById("menuToggle") || document.querySelector(".menu-toggle");
-
-  if(!menu){
-
-    console.error(
-      "Menu #menu pa jwenn."
-    );
-
-    return;
-
-  }
-
-
-  menu.classList.toggle("show");
-
-
-  if(button){
-
-    button.setAttribute(
-      "aria-expanded",
-      menu.classList.contains("show")
-        ? "true"
-        : "false"
-    );
-
-  }
-
+  const button=document.getElementById("menuToggle");
+  if(button)button.click();
 };
 
 
@@ -1071,7 +940,15 @@ function renderBusinesses(){
   }
 
   if(location){
-    rows=rows.filter(b=>String(b.location || "").toLowerCase().includes(location));
+    const aliases={
+      ayiti:["ayiti","haiti","haïti"],
+      bahamas:["bahamas","nassau","new providence"]
+    };
+    const terms=aliases[location] || [location];
+    rows=rows.filter(b=>{
+      const value=String(b.location || "").toLowerCase();
+      return terms.some(term=>value.includes(term));
+    });
   }
 
   const count=qs("marketResultCount");
@@ -1094,7 +971,7 @@ function renderBusinesses(){
       <article class="business-card card" onclick="openBusinessAd('${attr(b.id)}')" role="button" tabindex="0"
         onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBusinessAd('${attr(b.id)}')}">
         ${b.image_url
-          ? `<img src="${attr(b.image_url)}" alt="${attr(b.business_name)}" loading="lazy">`
+          ? `<img src="${attr(b.image_url)}" alt="${attr(b.business_name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling?.classList.remove('hidden')">`
           : `<div class="business-card-placeholder">🏢</div>`}
         <div class="business-card-body">
           <div class="card-kicker">${esc(businessTypeLabel(type))}</div>
