@@ -1,12 +1,335 @@
-<!DOCTYPE html><html lang="ht"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Eagle-J Connect | Ayiti + Bahamas</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="header"><div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo"><div><h2>Eagle-J Connect</h2><span>Ayiti + Bahamas</span></div></div><button class="menu-toggle" type="button" onclick="toggleMenu()" aria-label="Meni">☰</button><nav id="menu"><a id="nav-home" href="index.html">Akèy</a><a id="nav-jobs" href="travay.html">Travay</a><a id="nav-business" href="biznis.html">Biznis</a><a id="nav-contact" href="kontak.html">Kontak</a><a id="nav-register" href="enskri.html">Enskri</a><div class="language"><select id="languageSelect" onchange="changeLanguage()"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div></nav></header>
-<section class="hero"><h1 data-i18n="hero-title">Konekte Opòtinite ant Ayiti ak Bahamas</h1><p data-i18n="hero-text">Jwenn travay, devlope biznis ou, pataje sèvis ou epi konekte ak kominote a.</p><div class="hero-buttons"><a href="enskri.html" class="btn btn-primary" data-i18n="create-account">Kreye Kont</a><a href="travay.html" class="btn btn-secondary" data-i18n="find-job">Chèche Travay</a></div></section>
-<section style="background:#F4B400;padding:50px 20px;text-align:center"><h2>🚀 Ou gen yon biznis?</h2><p style="max-width:700px;margin:12px auto 22px">Mete biznis ou sou Eagle-J Connect pou kominote Ayiti ak Bahamas ka dekouvri pwodwi ak sèvis ou yo.</p><a href="kreye-anons.html" class="btn" style="background:#003366;color:white;text-decoration:none">📢 KREYE YON ANONS</a></section>
-<section id="stats" class="stats"><div class="stat-box"><h2 id="stat-jobs">0</h2><p>Travay</p></div><div class="stat-box"><h2 id="stat-business">0</h2><p>Biznis</p></div><div class="stat-box"><h2 id="stat-users">0</h2><p>Itilizatè</p></div><div class="stat-box"><h2 id="stat-ads">0</h2><p>Anons</p></div></section>
-<section class="services"><h2 data-i18n="services-title">Sèvis Eagle-J Connect</h2><div class="cards">
-<article class="card"><h3>💼 Travay</h3><p>Jwenn travay oswa pibliye opòtinite travay.</p><a href="travay.html" class="btn" style="text-decoration:none;display:inline-block">Gade Travay</a></article>
-<article class="card"><h3>🏢 Biznis</h3><p>Dekouvri biznis ak sèvis nan kominote a.</p><a href="biznis.html" class="btn" style="text-decoration:none;display:inline-block">Vizite</a></article>
-<article class="card"><h3>📢 Anons</h3><p>Pibliye pwodwi oswa sèvis ou pou jwenn plis vizibilite.</p><a href="kreye-anons.html" class="btn" style="text-decoration:none;display:inline-block">Kreye Anons</a></article>
-</div></section>
-<section class="about"><h2 data-i18n="about-title">Poukisa Eagle-J Connect?</h2><p>Nou kreye Eagle-J Connect pou ede moun ak biznis konekte ak nouvo opòtinite ant Ayiti ak Bahamas.</p><div class="cards"><article class="card"><h3>🌍 Kominote</h3><p>Konekte moun, sèvis ak opòtinite.</p></article><article class="card"><h3>⚡ Senp</h3><p>Chèche travay ak biznis fasil sou telefòn ou.</p></article><article class="card"><h3>🔒 Konfyans</h3><p>Kont ak done yo jere atravè Supabase.</p></article></div></section>
-<footer><h3>Eagle-J Connect</h3><p>Konekte Opòtinite ant Ayiti ak Bahamas.</p><p>© 2026 Eagle-J Connect</p></footer><script src="language.js"></script><script src="script.js"></script></body></html>
+<!DOCTYPE html><html lang="ht"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Eagle-J Connect | Ayiti + Bahamas</title><link rel="stylesheet" href="style.css?v=2"><style>
+/* MENU FIX - MOBILE */
+@media (max-width: 768px){
+
+  .menu-toggle{
+    display:block !important;
+    background:transparent !important;
+    border:0 !important;
+    color:white !important;
+    font-size:32px !important;
+    padding:8px 12px !important;
+    cursor:pointer !important;
+    position:relative !important;
+    z-index:10002 !important;
+  }
+
+  #menu{
+    display:none !important;
+  }
+
+  #menu.show{
+    display:flex !important;
+  }
+
+}
+</style></head><body><header class="header">  <div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo">
+
+<div>
+  <h2>Eagle-J Connect</h2>
+  <span>Ayiti + Bahamas</span>
+</div>
+
+  </div><button
+class="menu-toggle"
+id="menuToggle"
+type="button"
+aria-label="Ouvri meni"
+aria-expanded="false">
+☰
+</button>
+
+  <nav id="menu"><a id="nav-home" href="index.html">
+  Akèy
+</a>
+
+<a id="nav-jobs" href="travay.html">
+  Travay
+</a>
+
+<a id="nav-business" href="biznis.html">
+  Biznis
+</a>
+
+<a id="nav-contact" href="kontak.html">
+  Kontak
+</a>
+
+<a id="nav-register" href="enskri.html">
+  Enskri
+</a>
+
+<div class="language">
+
+  <select
+    id="languageSelect"
+    onchange="changeLanguage()">
+
+    <option value="ht">
+      🇭🇹 Kreyòl
+    </option>
+
+    <option value="en">
+      🇺🇸 English
+    </option>
+
+    <option value="fr">
+      🇫🇷 Français
+    </option>
+
+  </select>
+
+</div>
+
+  </nav></header><section class="hero">  <h1 data-i18n="hero-title">
+    Konekte Opòtinite ant Ayiti ak Bahamas
+  </h1>  <p data-i18n="hero-text">
+    Jwenn travay, devlope biznis ou, pataje sèvis ou epi konekte ak kominote a.
+  </p>  <div class="hero-buttons"><a
+  href="enskri.html"
+  class="btn btn-primary"
+  data-i18n="create-account">
+  Kreye Kont
+</a>
+
+<a
+  href="travay.html"
+  class="btn btn-secondary"
+  data-i18n="find-job">
+  Chèche Travay
+</a>
+
+  </div></section><section
+  style="
+    background:#F4B400;
+    padding:50px 20px;
+    text-align:center;
+  ">  <h2>
+    🚀 Ou gen yon biznis?
+  </h2>  <p
+    style="
+      max-width:700px;
+      margin:12px auto 22px;
+    ">Mete biznis ou sou Eagle-J Connect
+pou kominote Ayiti ak Bahamas ka dekouvri
+pwodwi ak sèvis ou yo.
+
+  </p><a
+href="kreye-anons.html"
+class="btn"
+style="
+background:#003366;
+color:white;
+text-decoration:none;
+">
+
+📢 KREYE YON ANONS
+
+  </a></section><section id="stats" class="stats">  <div class="stat-box"><h2 id="stat-jobs">
+  0
+</h2>
+
+<p>
+  Travay
+</p>
+
+  </div>  <div class="stat-box"><h2 id="stat-business">
+  0
+</h2>
+
+<p>
+  Biznis
+</p>
+
+  </div>  <div class="stat-box"><h2 id="stat-users">
+  0
+</h2>
+
+<p>
+  Itilizatè
+</p>
+
+  </div>  <div class="stat-box"><h2 id="stat-ads">
+  0
+</h2>
+
+<p>
+  Anons
+</p>
+
+  </div></section><section class="services">  <h2 data-i18n="services-title">
+    Sèvis Eagle-J Connect
+  </h2>  <div class="cards"><article class="card">
+
+  <h3>
+    💼 Travay
+  </h3>
+
+  <p>
+    Jwenn travay oswa pibliye opòtinite travay.
+  </p>
+
+  <a
+    href="travay.html"
+    class="btn"
+    style="
+      text-decoration:none;
+      display:inline-block;
+    ">
+
+    Gade Travay
+
+  </a>
+
+</article>
+
+
+<article class="card">
+
+  <h3>
+    🏢 Biznis
+  </h3>
+
+  <p>
+    Dekouvri biznis ak sèvis nan kominote a.
+  </p>
+
+  <a
+    href="biznis.html"
+    class="btn"
+    style="
+      text-decoration:none;
+      display:inline-block;
+    ">
+
+    Vizite
+
+  </a>
+
+</article>
+
+
+<article class="card">
+
+  <h3>
+    📢 Anons
+  </h3>
+
+  <p>
+    Pibliye pwodwi oswa sèvis ou pou jwenn plis vizibilite.
+  </p>
+
+  <a
+    href="kreye-anons.html"
+    class="btn"
+    style="
+      text-decoration:none;
+      display:inline-block;
+    ">
+
+    Kreye Anons
+
+  </a>
+
+</article>
+
+  </div></section><section class="about">  <h2 data-i18n="about-title">
+    Poukisa Eagle-J Connect?
+  </h2>  <p>
+    Nou kreye Eagle-J Connect pou ede moun ak biznis
+    konekte ak nouvo opòtinite ant Ayiti ak Bahamas.
+  </p>  <div class="cards"><article class="card">
+
+  <h3>
+    🌍 Kominote
+  </h3>
+
+  <p>
+    Konekte moun, sèvis ak opòtinite.
+  </p>
+
+</article>
+
+
+<article class="card">
+
+  <h3>
+    ⚡ Senp
+  </h3>
+
+  <p>
+    Chèche travay ak biznis fasil sou telefòn ou.
+  </p>
+
+</article>
+
+
+<article class="card">
+
+  <h3>
+    🔒 Konfyans
+  </h3>
+
+  <p>
+    Kont ak done yo jere atravè Supabase.
+  </p>
+
+</article>
+
+  </div></section><footer>  <h3>
+    Eagle-J Connect
+  </h3>  <p>
+    Konekte Opòtinite ant Ayiti ak Bahamas.
+  </p>  <p>
+    © 2026 Eagle-J Connect
+  </p></footer><!-- LANGUAGE --><script src="language.js?v=2"></script><!-- MAIN JAVASCRIPT --><script src="script.js?v=2"></script><!-- MENU DIRECT FIX --><script>
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  const menuButton = document.getElementById("menuToggle");
+  const menu = document.getElementById("menu");
+
+  if(!menuButton || !menu){
+    console.error("Menu Eagle-J Connect pa jwenn.");
+    return;
+  }
+
+  menuButton.addEventListener("click", function(){
+
+    menu.classList.toggle("show");
+
+    const isOpen = menu.classList.contains("show");
+
+    menuButton.setAttribute(
+      "aria-expanded",
+      isOpen ? "true" : "false"
+    );
+
+  });
+
+
+  /* Fè meni an fèmen lè moun klike sou yon lyen */
+
+  const links = menu.querySelectorAll("a");
+
+  links.forEach(function(link){
+
+    link.addEventListener("click", function(){
+
+      menu.classList.remove("show");
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+    });
+
+  });
+
+});
+
+</script></body>
+</html>
