@@ -16,7 +16,12 @@ Eagle-J Connect is a responsive marketplace/job platform for the Haiti + Bahamas
 - Business listing type is stored in the existing `category` field as `type:category`, so no schema migration is required.
 - Image upload remains connected to the `business-images` Supabase bucket.
 - Added accessibility improvements to navigation, buttons and cards.
-- Added cache-busting `?v=final3` to frontend assets.
+- Added cache-busting `?v=final6` to frontend assets.
+- Added the missing public jobs loader/filter renderer so `travay.html` now reads and displays rows from Supabase `jobs`.
+- Added `jobs-rls-fix.sql` for public job reads and employer-owned job writes.
+- Removed the problematic `ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY` from the business SQL migration; Supabase Storage already manages that table.
+- Fixed the public users directory to use the project's existing HTML escaping helper.
+- Standardized the main navigation with an **Anons** link and added translations for it.
 
 ## Deployment
 
@@ -73,3 +78,20 @@ The frontend now sends the signed-in user's UUID as `user_id` when publishing an
 
 
 FINAL v5: hardened Supabase business creation session handling and explicit Authorization on business INSERT.
+
+
+## v6 review / fixes
+
+The project was reviewed page-by-page and the main runtime issues found were corrected:
+
+1. **Jobs page:** `travay.html` was calling `loadJobs()` and `renderJobs()` even though those functions were missing. They are now implemented in `script.js`.
+2. **Jobs filtering:** search and job-type filtering now operate on the loaded Supabase rows.
+3. **Empty/error states:** the jobs page now clearly distinguishes between no jobs and a loading/API error.
+4. **Users directory:** fixed an undefined `escapeHtml()` call by using the existing `esc()` helper.
+5. **Navigation:** added the Anons link consistently to the main navigation where applicable and added HT/EN/FR translations.
+6. **Supabase jobs security:** added `jobs-rls-fix.sql` without changing Storage ownership/RLS settings.
+7. **Browser cache:** frontend references now use `final6` so old JavaScript is less likely to remain cached.
+
+### Supabase action for jobs
+
+If the Jobs page still shows an API/RLS error after uploading this version, run `jobs-rls-fix.sql` in the Supabase SQL Editor. The frontend itself is now wired to the `jobs` table.

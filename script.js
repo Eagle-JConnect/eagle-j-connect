@@ -732,6 +732,92 @@ async function postJob(e){
 }
 
 /* =========================================================
+   PUBLIC JOBS
+========================================================= */
+
+let publicJobs = [];
+
+function jobTypeLabel(type){
+  const map = {
+    full_time: "Full-time",
+    part_time: "Part-time",
+    contract: "Contract",
+    temporary: "Temporary",
+    fulltime: "Full-time",
+    parttime: "Part-time"
+  };
+  return map[String(type || "").toLowerCase()] || String(type || "").replace(/_/g," ") || "—";
+}
+
+async function loadJobs(){
+  const box = qs("jobsList") || qs("jobListings");
+  if(!box) return;
+
+  box.innerHTML = '<div class="loading-state"><span>⏳</span><p>Travay yo ap chaje...</p></div>';
+
+  try{
+    const rows = await api("/rest/v1/jobs?select=*&order=created_at.desc");
+    publicJobs = Array.isArray(rows) ? rows : [];
+    renderJobs();
+  }catch(err){
+    console.error("Public jobs:", err);
+    publicJobs = [];
+    box.innerHTML = `<div class="notice">❌ Nou pa kapab chaje travay yo kounye a.<br><small>${esc(err.message || "Request failed")}</small></div>`;
+  }
+}
+
+function renderJobs(){
+  const box = qs("jobsList") || qs("jobListings");
+  if(!box) return;
+
+  const search = (qs("searchJob")?.value || "").trim().toLowerCase();
+  const filter = qs("jobFilter")?.value || "";
+
+  const jobs = publicJobs.filter(job => {
+    const haystack = [
+      job.title,
+      job.company,
+      job.company_name,
+      job.location,
+      job.description,
+      job.job_type,
+      job.type,
+      job.employment_type
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    const type = job.job_type || job.employment_type || job.type || "";
+    return (!search || haystack.includes(search)) && (!filter || type === filter);
+  });
+
+  if(!jobs.length){
+    box.innerHTML = `<div class="empty-state"><div class="empty-icon">💼</div><h3>${publicJobs.length ? "Pa gen travay ki koresponn" : "Pa gen travay ki disponib"}</h3><p>${publicJobs.length ? "Eseye yon lòt rechèch oswa yon lòt kalite travay." : "Lè yon anplwayè poste yon travay, li ap parèt isit la."}</p></div>`;
+    return;
+  }
+
+  box.innerHTML = jobs.map(job => {
+    const title = job.title || "Travay";
+    const company = job.company || job.company_name || "Konpayi";
+    const location = job.location || "Lokalizasyon pa presize";
+    const type = job.job_type || job.employment_type || job.type || "";
+    const salary = job.salary || job.pay || job.rate || "";
+    const contact = job.contact || job.phone || job.whatsapp || "";
+
+    return `<article class="job-card card">
+      <div class="card-kicker">OPÒTINITE TRAVAY</div>
+      <h3>${esc(title)}</h3>
+      <p><strong>${esc(company)}</strong></p>
+      <div class="meta">
+        <span class="badge">📍 ${esc(location)}</span>
+        ${type ? `<span class="badge">💼 ${esc(jobTypeLabel(type))}</span>` : ""}
+        ${salary ? `<span class="badge">💰 ${esc(salary)}</span>` : ""}
+      </div>
+      ${job.description ? `<p>${esc(job.description)}</p>` : ""}
+      ${contact ? `<p class="job-contact"><strong>Kontak:</strong> ${esc(contact)}</p>` : ""}
+    </article>`;
+  }).join("");
+}
+
+/* =========================================================
    MY JOBS
 ========================================================= */
 
@@ -1280,10 +1366,10 @@ async function loadUsersDirectory(){
     }
 
     box.innerHTML=users.map((u)=>{
-      const name=escapeHtml(u.full_name || "Itilizatè Eagle-J");
-      const type=escapeHtml(formatAccountType(u.account_type));
+      const name=esc(u.full_name || "Itilizatè Eagle-J");
+      const type=esc(formatAccountType(u.account_type));
       return `<article class="user-card">
-        <div class="user-avatar">${escapeHtml((u.full_name||"EJ").trim().slice(0,1).toUpperCase())}</div>
+        <div class="user-avatar">${esc((u.full_name||"EJ").trim().slice(0,1).toUpperCase())}</div>
         <div class="user-card-body">
           <h3>${name}</h3>
           <p>${type}</p>

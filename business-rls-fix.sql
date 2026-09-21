@@ -51,8 +51,6 @@ INSERT INTO storage.buckets (id, name, public)
 VALUES ('business-images', 'business-images', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
-ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
-
 -- Anyone may read objects from this public marketplace bucket.
 DROP POLICY IF EXISTS "business_images_public_read" ON storage.objects;
 CREATE POLICY "business_images_public_read"
