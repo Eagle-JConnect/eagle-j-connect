@@ -398,6 +398,42 @@ async function api(path,options={}){
 
 
 /* =========================================================
+   PUBLIC API
+   Used for public marketplace listings so an old/expired
+   user session cannot interfere with public SELECT queries.
+========================================================= */
+
+async function publicApi(path, options={}){
+  const headers=Object.assign({
+    "apikey":SUPABASE_KEY,
+    "Content-Type":"application/json"
+  }, options.headers || {});
+
+  // Deliberately do not attach the logged-in user's Bearer token.
+  // Public marketplace rows are read using the anon/publishable key.
+  delete headers.Authorization;
+
+  const r=await fetch(SUPABASE_URL+path,{
+    ...options,
+    headers
+  });
+
+  const text=await r.text();
+  let data=null;
+  try{ data=text ? JSON.parse(text) : null; }catch(e){ data=text; }
+
+  if(!r.ok){
+    throw new Error(
+      data?.message || data?.msg || data?.error_description ||
+      `Public request failed (${r.status})`
+    );
+  }
+
+  return data;
+}
+
+
+/* =========================================================
    REGISTRATION
 ========================================================= */
 
@@ -1610,7 +1646,7 @@ async function loadBusinesses(){
   box.innerHTML="<p>⏳ Anons yo ap chaje...</p>";
 
   try{
-    const rows=await api("/rest/v1/businesses?select=*&order=created_at.desc");
+    const rows=await publicApi("/rest/v1/businesses?select=*&order=created_at.desc");
     window.__marketplaceRows=Array.isArray(rows)?rows:[];
     renderMarketplaceListings();
   }catch(err){
@@ -1740,7 +1776,7 @@ async function loadBusinessDetail(){
   try{
 
     const cleanId=String(id).trim();
-    const rows=await api(
+    const rows=await publicApi(
       `/rest/v1/businesses?id=eq.${encodeURIComponent(cleanId)}&select=*`
     );
 
