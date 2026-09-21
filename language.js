@@ -1,6 +1,14 @@
-/* Eagle-J Connect - Multilingual UI */
+/* =========================================================
+   EAGLE-J CONNECT
+   MULTILINGUAL LANGUAGE SYSTEM
+   Haitian Creole / English / French
+   ========================================================= */
 
 const translations = {
+
+  /* =======================================================
+     HAITIAN CREOLE
+     ======================================================= */
 
   ht: {
 
@@ -13,42 +21,106 @@ const translations = {
     "nav-account": "Kont Mwen",
     "nav-logout": "Dekonekte",
 
-    "hero-title": "OPEN THE WAY. CREATE WEALTH.",
-    "hero-text": "Konekte ak moun, dekouvri opòtinite, grandi rezo ou epi kreye nouvo posiblite.",
+    "hero-text":
+      "Konekte ak moun, dekouvri opòtinite, devlope rezo ou, epi kreye nouvo posiblite.",
 
     "create-account": "Kreye Kont",
     "find-job": "Chèche Travay",
 
-    "services-title": "Sèvis Eagle-J Connect",
-    "about-title": "Poukisa Eagle-J Connect?",
+    "business-promo-title":
+      "Fè biznis ou jwenn plis kliyan",
 
-    "footer-text": "OPEN THE WAY. CREATE WEALTH.",
+    "business-promo-text":
+      "Mete biznis ou, sèvis ou oswa pwodwi ou sou Eagle-J Connect epi fè plis moun dekouvri sa ou ofri.",
 
-    "jobs-title": "Opòtinite Travay",
-    "jobs-description": "Jwenn travay ki disponib nan diferan kominote ak mache.",
-    "category-title": "Travay ki disponib",
-    "search-job": "Chèche pa tit, konpayi oswa lokalizasyon...",
+    "create-ad":
+      "Kreye yon Anons",
 
-    "all-jobs": "Tout Travay",
-    "apply-button": "Aplike",
-    "no-jobs": "Pa gen travay ki disponib pou kounye a.",
+    "stats-jobs": "Travay",
+    "stats-business": "Biznis",
+    "stats-users": "Itilizatè",
+    "stats-ads": "Anons",
 
-    "how-title": "Kijan sa mache?",
-    "step-one": "1️⃣ Kreye Kont",
-    "step-two": "2️⃣ Chèche Travay",
-    "step-three": "3️⃣ Aplike",
+    "services-title":
+      "Sèvis Eagle-J Connect",
 
-    "business-title": "Biznis ak Sèvis",
-    "create-ad": "Kreye yon Anons",
+    "service-jobs-title":
+      "Travay",
 
-    "login": "Konekte",
-    "register": "Kreye yon kont",
+    "service-jobs-text":
+      "Chèche travay epi dekouvri nouvo opòtinite.",
 
-    "profile": "Pwofil mwen",
-    "employer": "Anplwayè",
-    "job-seeker": "Moun k ap chèche travay"
+    "service-business-title":
+      "Biznis",
+
+    "service-business-text":
+      "Fè moun dekouvri biznis, pwodwi ak sèvis ou.",
+
+    "service-network-title":
+      "Rezo",
+
+    "service-network-text":
+      "Konekte ak moun ki ka ede ou grandi.",
+
+    "service-opportunity-title":
+      "Opòtinite",
+
+    "service-opportunity-text":
+      "Dekouvri nouvo fason pou devlope tèt ou ak biznis ou.",
+
+    "how-title":
+      "Kijan sa mache?",
+
+    "step-one-title":
+      "Kreye Kont",
+
+    "step-one-text":
+      "Enskri sou Eagle-J Connect.",
+
+    "step-two-title":
+      "Chèche",
+
+    "step-two-text":
+      "Chèche travay, biznis ak sèvis.",
+
+    "step-three-title":
+      "Konekte",
+
+    "step-three-text":
+      "Kontakte moun epi kreye opòtinite.",
+
+    "about-title":
+      "Poukisa Eagle-J Connect?",
+
+    "about-text":
+      "Eagle-J Connect se yon platfòm ki fèt pou ede moun konekte, dekouvri opòtinite, fè biznis epi grandi ansanm.",
+
+    "about-connect-title":
+      "Konekte",
+
+    "about-connect-text":
+      "Konekte ak moun, biznis ak pwofesyonèl.",
+
+    "about-discover-title":
+      "Dekouvri",
+
+    "about-discover-text":
+      "Dekouvri travay, sèvis ak nouvo opòtinite.",
+
+    "about-grow-title":
+      "Grandi",
+
+    "about-grow-text":
+      "Devlope rezo ou epi kreye plis posiblite.",
+
+    "footer-text":
+      "Konekte ak moun, dekouvri opòtinite epi grandi ansanm."
   },
 
+
+  /* =======================================================
+     ENGLISH
+     ======================================================= */
 
   en: {
 
@@ -61,42 +133,116 @@ const translations = {
     "nav-account": "My Account",
     "nav-logout": "Logout",
 
-    "hero-title": "OPEN THE WAY. CREATE WEALTH.",
-    "hero-text": "Connect with people, discover opportunities, grow your network, and create new possibilities.",
+    "hero-text":
+      "Connect with people, discover opportunities, grow your network, and create new possibilities.",
 
-    "create-account": "Create Account",
-    "find-job": "Find Jobs",
+    "create-account":
+      "Create Account",
 
-    "services-title": "Eagle-J Connect Services",
-    "about-title": "Why Eagle-J Connect?",
+    "find-job":
+      "Find Jobs",
 
-    "footer-text": "OPEN THE WAY. CREATE WEALTH.",
+    "business-promo-title":
+      "Help Your Business Reach More Customers",
 
-    "jobs-title": "Job Opportunities",
-    "jobs-description": "Find available jobs across different communities and markets.",
-    "category-title": "Available Jobs",
-    "search-job": "Search by title, company or location...",
+    "business-promo-text":
+      "List your business, service, or product on Eagle-J Connect and let more people discover what you offer.",
 
-    "all-jobs": "All Jobs",
-    "apply-button": "Apply",
-    "no-jobs": "No jobs are available right now.",
+    "create-ad":
+      "Create an Ad",
 
-    "how-title": "How does it work?",
-    "step-one": "1️⃣ Create Account",
-    "step-two": "2️⃣ Search Jobs",
-    "step-three": "3️⃣ Apply",
+    "stats-jobs":
+      "Jobs",
 
-    "business-title": "Businesses & Services",
-    "create-ad": "Create an Ad",
+    "stats-business":
+      "Businesses",
 
-    "login": "Login",
-    "register": "Create an account",
+    "stats-users":
+      "Users",
 
-    "profile": "My Account",
-    "employer": "Employer",
-    "job-seeker": "Job Seeker"
+    "stats-ads":
+      "Ads",
+
+    "services-title":
+      "Eagle-J Connect Services",
+
+    "service-jobs-title":
+      "Jobs",
+
+    "service-jobs-text":
+      "Find jobs and discover new opportunities.",
+
+    "service-business-title":
+      "Business",
+
+    "service-business-text":
+      "Help people discover your business, products, and services.",
+
+    "service-network-title":
+      "Networking",
+
+    "service-network-text":
+      "Connect with people who can help you grow.",
+
+    "service-opportunity-title":
+      "Opportunities",
+
+    "service-opportunity-text":
+      "Discover new ways to develop yourself and your business.",
+
+    "how-title":
+      "How Does It Work?",
+
+    "step-one-title":
+      "Create an Account",
+
+    "step-one-text":
+      "Register on Eagle-J Connect.",
+
+    "step-two-title":
+      "Search",
+
+    "step-two-text":
+      "Search for jobs, businesses, and services.",
+
+    "step-three-title":
+      "Connect",
+
+    "step-three-text":
+      "Connect with people and create opportunities.",
+
+    "about-title":
+      "Why Eagle-J Connect?",
+
+    "about-text":
+      "Eagle-J Connect is a platform designed to help people connect, discover opportunities, do business, and grow together.",
+
+    "about-connect-title":
+      "Connect",
+
+    "about-connect-text":
+      "Connect with people, businesses, and professionals.",
+
+    "about-discover-title":
+      "Discover",
+
+    "about-discover-text":
+      "Discover jobs, services, and new opportunities.",
+
+    "about-grow-title":
+      "Grow",
+
+    "about-grow-text":
+      "Grow your network and create more possibilities.",
+
+    "footer-text":
+      "Connect with people, discover opportunities, and grow together."
   },
 
+
+  /* =======================================================
+     FRENCH
+     ======================================================= */
 
   fr: {
 
@@ -109,129 +255,225 @@ const translations = {
     "nav-account": "Mon compte",
     "nav-logout": "Déconnexion",
 
-    "hero-title": "OUVREZ LA VOIE. CRÉEZ DE LA RICHESSE.",
-    "hero-text": "Connectez-vous aux personnes, découvrez des opportunités, développez votre réseau et créez de nouvelles possibilités.",
+    "hero-text":
+      "Connectez-vous avec les gens, découvrez des opportunités, développez votre réseau et créez de nouvelles possibilités.",
 
-    "create-account": "Créer un compte",
-    "find-job": "Chercher un emploi",
+    "create-account":
+      "Créer un compte",
 
-    "services-title": "Services Eagle-J Connect",
-    "about-title": "Pourquoi Eagle-J Connect ?",
+    "find-job":
+      "Chercher un emploi",
 
-    "footer-text": "OUVREZ LA VOIE. CRÉEZ DE LA RICHESSE.",
+    "business-promo-title":
+      "Faites connaître votre entreprise à plus de clients",
 
-    "jobs-title": "Opportunités d'emploi",
-    "jobs-description": "Trouvez des emplois disponibles dans différentes communautés et différents marchés.",
-    "category-title": "Emplois disponibles",
-    "search-job": "Rechercher par titre, entreprise ou lieu...",
+    "business-promo-text":
+      "Présentez votre entreprise, vos services ou vos produits sur Eagle-J Connect et permettez à plus de personnes de découvrir ce que vous proposez.",
 
-    "all-jobs": "Tous les emplois",
-    "apply-button": "Postuler",
-    "no-jobs": "Aucun emploi disponible pour le moment.",
+    "create-ad":
+      "Créer une annonce",
 
-    "how-title": "Comment ça marche ?",
-    "step-one": "1️⃣ Créer un compte",
-    "step-two": "2️⃣ Chercher un emploi",
-    "step-three": "3️⃣ Postuler",
+    "stats-jobs":
+      "Emplois",
 
-    "business-title": "Entreprises et services",
-    "create-ad": "Créer une annonce",
+    "stats-business":
+      "Entreprises",
 
-    "login": "Connexion",
-    "register": "Créer un compte",
+    "stats-users":
+      "Utilisateurs",
 
-    "profile": "Mon compte",
-    "employer": "Employeur",
-    "job-seeker": "Chercheur d'emploi"
+    "stats-ads":
+      "Annonces",
+
+    "services-title":
+      "Services Eagle-J Connect",
+
+    "service-jobs-title":
+      "Emplois",
+
+    "service-jobs-text":
+      "Trouvez un emploi et découvrez de nouvelles opportunités.",
+
+    "service-business-title":
+      "Entreprise",
+
+    "service-business-text":
+      "Faites découvrir votre entreprise, vos produits et vos services.",
+
+    "service-network-title":
+      "Réseau",
+
+    "service-network-text":
+      "Connectez-vous avec des personnes qui peuvent vous aider à grandir.",
+
+    "service-opportunity-title":
+      "Opportunités",
+
+    "service-opportunity-text":
+      "Découvrez de nouvelles façons de développer votre parcours et votre entreprise.",
+
+    "how-title":
+      "Comment ça marche ?",
+
+    "step-one-title":
+      "Créer un compte",
+
+    "step-one-text":
+      "Inscrivez-vous sur Eagle-J Connect.",
+
+    "step-two-title":
+      "Rechercher",
+
+    "step-two-text":
+      "Recherchez des emplois, des entreprises et des services.",
+
+    "step-three-title":
+      "Se connecter",
+
+    "step-three-text":
+      "Connectez-vous avec des personnes et créez des opportunités.",
+
+    "about-title":
+      "Pourquoi Eagle-J Connect ?",
+
+    "about-text":
+      "Eagle-J Connect est une plateforme conçue pour aider les personnes à se connecter, découvrir des opportunités, faire des affaires et grandir ensemble.",
+
+    "about-connect-title":
+      "Connecter",
+
+    "about-connect-text":
+      "Connectez-vous avec des personnes, des entreprises et des professionnels.",
+
+    "about-discover-title":
+      "Découvrir",
+
+    "about-discover-text":
+      "Découvrez des emplois, des services et de nouvelles opportunités.",
+
+    "about-grow-title":
+      "Grandir",
+
+    "about-grow-text":
+      "Développez votre réseau et créez davantage de possibilités.",
+
+    "footer-text":
+      "Connectez-vous avec les gens, découvrez des opportunités et grandissez ensemble."
   }
 
 };
 
 
-/* ==============================
+/* =========================================================
    APPLY LANGUAGE
-============================== */
+   ========================================================= */
 
 function applyLanguage(lang) {
 
-  const dict = translations[lang] || translations.ht;
+  if (!translations[lang]) {
+    lang = "ht";
+  }
 
-  document.documentElement.lang =
-    lang === "ht" ? "ht" : lang;
+  const dict = translations[lang];
 
+  /* Change HTML language */
+  document.documentElement.lang = lang;
 
-  /* TEXT */
+  /* Translate normal text */
+  document.querySelectorAll("[data-i18n]").forEach(function (element) {
 
-  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = element.getAttribute("data-i18n");
 
-    const key = el.getAttribute("data-i18n");
-
-    if (dict[key]) {
-      el.textContent = dict[key];
+    if (dict[key] !== undefined) {
+      element.textContent = dict[key];
     }
 
   });
 
 
-  /* PLACEHOLDER */
+  /* Translate placeholders */
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(function (element) {
 
-  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = element.getAttribute("data-i18n-placeholder");
 
-    const key = el.getAttribute("data-i18n-placeholder");
-
-    if (dict[key]) {
-      el.placeholder = dict[key];
+    if (dict[key] !== undefined) {
+      element.placeholder = dict[key];
     }
 
   });
 
 
-  /* LANGUAGE SELECTOR */
-
-  const selector =
-    document.getElementById("languageSelect");
+  /* Update selector */
+  const selector = document.getElementById("languageSelect");
 
   if (selector) {
     selector.value = lang;
   }
 
+
+  /* Save selected language */
+  localStorage.setItem("selectedLanguage", lang);
 }
 
 
-/* ==============================
+/* =========================================================
    CHANGE LANGUAGE
-============================== */
+   ========================================================= */
 
-function changeLanguage() {
+function changeLanguage(lang) {
+
+  if (!lang) {
+
+    const selector =
+      document.getElementById("languageSelect");
+
+    if (selector) {
+      lang = selector.value;
+    } else {
+      lang = "ht";
+    }
+
+  }
+
+  applyLanguage(lang);
+}
+
+
+/* Make function available globally */
+window.changeLanguage = changeLanguage;
+
+
+/* =========================================================
+   START LANGUAGE SYSTEM
+   ========================================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
 
   const selector =
     document.getElementById("languageSelect");
 
-  const lang =
-    selector ? selector.value : "ht";
 
-  localStorage.setItem(
-    "selectedLanguage",
-    lang
-  );
-
-  applyLanguage(lang);
-
-}
+  /* Load saved language */
+  const savedLanguage =
+    localStorage.getItem("selectedLanguage") || "ht";
 
 
-/* ==============================
-   LOAD SAVED LANGUAGE
-============================== */
+  /* Apply saved language */
+  applyLanguage(savedLanguage);
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
 
-    const savedLanguage =
-      localStorage.getItem("selectedLanguage") || "ht";
+  /* Listen for selector changes */
+  if (selector) {
 
-    applyLanguage(savedLanguage);
+    selector.addEventListener("change", function () {
+
+      const selectedLanguage =
+        this.value;
+
+      applyLanguage(selectedLanguage);
+
+    });
 
   }
-); 
+
+});
