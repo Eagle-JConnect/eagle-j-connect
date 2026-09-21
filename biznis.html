@@ -4,18 +4,173 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Eagle-J Connect — Biznis ak Sèvis</title>
+  <title>Eagle-J Connect — Biznis</title>
 
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f8fc;
+    }
+
+    header {
+      height: 74px;
+      background: #003366;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 15px;
+      position: relative;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-area img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .site-title {
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .site-title strong {
+      font-size: 18px;
+    }
+
+    .site-title span {
+      font-size: 12px;
+    }
+
+    /* BOUTON MENI */
+    #menuToggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 50px;
+      height: 50px;
+
+      border: 2px solid white;
+      border-radius: 8px;
+
+      background: #003366;
+      color: white;
+
+      font-size: 28px;
+      line-height: 1;
+
+      cursor: pointer;
+
+      position: relative;
+      z-index: 99999;
+    }
+
+    /* MENI */
+    #menu {
+      display: none;
+
+      position: absolute;
+      top: 74px;
+      right: 0;
+
+      width: 270px;
+
+      background: #003366;
+
+      padding: 15px;
+
+      z-index: 99998;
+
+      flex-direction: column;
+      gap: 5px;
+
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    #menu.show {
+      display: flex;
+    }
+
+    #menu a {
+      display: block;
+
+      color: white;
+      text-decoration: none;
+
+      padding: 14px;
+
+      font-size: 17px;
+
+      border-radius: 6px;
+    }
+
+    #menu a:hover {
+      background: #F4B400;
+      color: #003366;
+    }
+
+    .language select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+
+    main {
+      padding: 30px 15px;
+    }
+
+    .hero {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .hero h1 {
+      color: #003366;
+    }
+
+    .hero p {
+      color: #555;
+    }
+
+    #businessList {
+      max-width: 900px;
+      margin: 25px auto;
+    }
+
+    .message {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+    }
+  </style>
 </head>
+
 
 <body>
 
   <!-- HEADER -->
-  <header class="header">
+  <header>
 
-    <!-- LOGO -->
     <div class="logo-area">
+
       <a href="index.html">
         <img src="Logo.jpg" alt="Eagle-J Connect">
       </a>
@@ -24,50 +179,47 @@
         <strong>Eagle-J Connect</strong>
         <span>Ayiti + Bahamas</span>
       </div>
+
     </div>
 
 
-    <!-- MENU BUTTON -->
-    <button
-      id="menuToggle"
-      class="menu-toggle"
-      type="button"
-      aria-label="Ouvri meni"
-      aria-expanded="false"
-    >
+    <!-- BOUTON ☰ -->
+    <button id="menuToggle" type="button">
       ☰
     </button>
 
 
-    <!-- NAVIGATION -->
+    <!-- MENI -->
     <nav id="menu">
 
-      <a id="nav-home" href="index.html">
+      <a href="index.html">
         Akèy
       </a>
 
-      <a id="nav-jobs" href="travay.html">
+      <a href="travay.html">
         Travay
       </a>
 
-      <a id="nav-business" href="biznis.html">
+      <a href="biznis.html">
         Biznis
       </a>
 
-      <a id="nav-contact" href="kontak.html">
+      <a href="kontak.html">
         Kontak
       </a>
 
-      <a id="nav-register" href="enskri.html">
+      <a href="enskri.html">
         Enskri
       </a>
 
       <div class="language">
-        <select id="languageSelect" onchange="changeLanguage()">
+
+        <select id="languageSelect">
           <option value="ht">🇭🇹 Kreyòl</option>
           <option value="en">🇺🇸 English</option>
           <option value="fr">🇫🇷 Français</option>
         </select>
+
       </div>
 
     </nav>
@@ -75,46 +227,27 @@
   </header>
 
 
-  <!-- MAIN -->
-  <main class="page-container">
+  <!-- KONTNI -->
+  <main>
 
-    <section class="page-hero">
+    <section class="hero">
 
-      <h1 id="businessTitle">
+      <h1>
         Biznis ak Sèvis
       </h1>
 
-      <p id="businessSubtitle">
-        Dekouvri biznis ak sèvis ki disponib nan kominote Ayiti ak Bahamas.
+      <p>
+        Dekouvri biznis ak sèvis ki disponib nan kominote
+        Ayiti ak Bahamas.
       </p>
 
     </section>
 
 
-    <!-- SEARCH -->
-    <section class="search-section">
+    <section id="businessList">
 
-      <input
-        type="text"
-        id="businessSearch"
-        placeholder="Chèche yon biznis oswa sèvis..."
-      >
-
-    </section>
-
-
-    <!-- BUSINESS LIST -->
-    <section>
-
-      <div
-        id="businessList"
-        class="business-grid"
-      >
-
-        <p>
-          Ap chèche biznis yo...
-        </p>
-
+      <div class="message">
+        Biznis yo ap parèt isit la.
       </div>
 
     </section>
@@ -122,80 +255,42 @@
   </main>
 
 
-  <!-- MENU SCRIPT -->
+  <!-- MENU JAVASCRIPT -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
 
-      const button = document.getElementById("menuToggle");
-      const menu = document.getElementById("menu");
+    const menuButton = document.getElementById("menuToggle");
+    const menu = document.getElementById("menu");
 
-      if (!button || !menu) {
-        console.error("Bouton meni oswa meni pa jwenn.");
-        return;
+
+    menuButton.addEventListener("click", function () {
+
+      if (menu.style.display === "flex") {
+
+        menu.style.display = "none";
+
+      } else {
+
+        menu.style.display = "flex";
+
       }
 
-      button.addEventListener("click", function (event) {
-
-        event.preventDefault();
-        event.stopPropagation();
-
-        menu.classList.toggle("show");
-
-        const opened = menu.classList.contains("show");
-
-        button.setAttribute(
-          "aria-expanded",
-          opened ? "true" : "false"
-        );
-
-      });
+    });
 
 
-      /* Fè meni an fèmen lè yon moun klike sou yon lyen */
-      menu.querySelectorAll("a").forEach(function (link) {
+    document.addEventListener("click", function(event) {
 
-        link.addEventListener("click", function () {
+      if (
+        !menu.contains(event.target) &&
+        !menuButton.contains(event.target)
+      ) {
 
-          menu.classList.remove("show");
+        menu.style.display = "none";
 
-          button.setAttribute(
-            "aria-expanded",
-            "false"
-          );
-
-        });
-
-      });
-
-
-      /* Fè meni an fèmen si moun klike deyò meni an */
-      document.addEventListener("click", function (event) {
-
-        if (
-          !menu.contains(event.target) &&
-          !button.contains(event.target)
-        ) {
-
-          menu.classList.remove("show");
-
-          button.setAttribute(
-            "aria-expanded",
-            "false"
-          );
-
-        }
-
-      });
+      }
 
     });
+
   </script>
-
-
-  <!-- LANGUAGE -->
-  <script src="language.js"></script>
-
-  <!-- MAIN JAVASCRIPT -->
-  <script src="script.js"></script>
 
 </body>
 </html>
