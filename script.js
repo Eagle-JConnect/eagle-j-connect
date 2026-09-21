@@ -572,6 +572,7 @@ async function registerUser(e){
             body:JSON.stringify({
               id:data.user.id,
               full_name:fullName,
+              email,
               phone,
               account_type:accountType
             })

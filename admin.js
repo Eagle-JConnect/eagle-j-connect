@@ -45,7 +45,7 @@
   window.loadAdminUsers=async function(){
     const body=$("adminUsersBody"); if(body) body.innerHTML='<tr><td colspan="6">⏳ Nap chaje itilizatè yo...</td></tr>';
     try{
-      users=await api('/rest/v1/profiles?select=id,full_name,phone,account_type&order=full_name.asc');
+      users=await api('/rest/v1/profiles?select=id,full_name,email,phone,account_type&order=full_name.asc');
       if(!Array.isArray(users))users=[];
       render();
     }catch(e){
@@ -73,7 +73,7 @@
   function row(u){
     const role=u.account_type||"job_seeker";
     return `<tr id="user-row-${esc(u.id)}">
-      <td>${esc(u.full_name||"—")}</td><td class="email-cell">—</td><td>${esc(u.phone||"—")}</td>
+      <td>${esc(u.full_name||"—")}</td><td class="email-cell">${esc(u.email||"—")}</td><td>${esc(u.phone||"—")}</td>
       <td>${esc(role)}</td><td><small>${esc(u.id)}</small></td>
       <td><button class="edit-btn" type="button" onclick="editAdminUser('${esc(u.id)}')">✏️ Modifye</button></td>
     </tr>`;
@@ -83,7 +83,7 @@
     const u=users.find(x=>x.id===id); if(!u)return;
     const tr=$("user-row-"+id); if(!tr)return;
     tr.innerHTML=`<td><input id="edit-name-${esc(id)}" value="${String(u.full_name||"").replace(/"/g,'&quot;')}" style="max-width:160px"></td>
-      <td class="email-cell">Imèl la soti nan Auth</td>
+      <td class="email-cell">${esc(u.email||"—")}</td>
       <td><input id="edit-phone-${esc(id)}" value="${String(u.phone||"").replace(/"/g,'&quot;')}" style="max-width:130px"></td>
       <td><select id="edit-type-${esc(id)}"><option value="job_seeker" ${u.account_type==='job_seeker'?'selected':''}>job_seeker</option><option value="employer" ${u.account_type==='employer'?'selected':''}>employer</option><option value="admin" ${u.account_type==='admin'?'selected':''}>admin</option></select></td>
       <td><small>${esc(id)}</small></td><td><button class="save-btn" type="button" onclick="saveAdminUser('${esc(id)}')">💾 Sove</button> <button class="cancel-btn" type="button" onclick="render()">Anile</button></td>`;
