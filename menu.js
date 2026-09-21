@@ -44,9 +44,30 @@
     }, false);
   }
 
+
+  async function addAdminLink() {
+    const menu = document.getElementById('menu');
+    if (!menu) return;
+
+    // Only show the admin link after a successful admin check during login.
+    // The admin.html page performs its own server-side/RLS-backed check too.
+    if (localStorage.getItem('eagle_j_is_admin') !== '1') return;
+    if (menu.querySelector('a[data-admin-link="1"]')) return;
+
+    const link = document.createElement('a');
+    link.href = 'admin.html';
+    link.dataset.adminLink = '1';
+    link.textContent = '🛡️ Admin Dashboard';
+    menu.insertBefore(link, menu.querySelector('.language') || null);
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMenu);
+    document.addEventListener('DOMContentLoaded', function () {
+      initMenu();
+      addAdminLink();
+    });
   } else {
     initMenu();
+    addAdminLink();
   }
 })();

@@ -743,6 +743,20 @@ async function loginUser(e){
       JSON.stringify(user)
     );
 
+    // Verify whether this authenticated user is an administrator.
+    // Admin status is controlled by the Supabase admin_users table, not by a
+    // client-editable profile field.
+    let isAdmin = false;
+    try {
+      const adminRows = await api(
+        `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(data.user.id)}&select=user_id`
+      );
+      isAdmin = Array.isArray(adminRows) && adminRows.length > 0;
+    } catch (adminErr) {
+      console.warn("Admin check failed:", adminErr);
+    }
+
+    localStorage.setItem("eagle_j_is_admin", isAdmin ? "1" : "0");
 
     msg(
       message,
@@ -750,15 +764,16 @@ async function loginUser(e){
       "success"
     );
 
-
     setTimeout(
       ()=>{
-
-        location.href=
-          profile.account_type==="employer"
-            ? "employer.html"
-            : "dashboard.html";
-
+        if (isAdmin) {
+          location.href = "admin.html";
+        } else {
+          location.href =
+            profile.account_type==="employer"
+              ? "employer.html"
+              : "dashboard.html";
+        }
       },
       500
     );
