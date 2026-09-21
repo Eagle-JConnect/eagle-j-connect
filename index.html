@@ -6,116 +6,126 @@
 
   <title>Eagle-J Connect</title>
 
-  <meta name="description"
-        content="Eagle-J Connect - Connect with people, discover opportunities, grow your network and create new possibilities.">
+  <meta
+    name="description"
+    content="Eagle-J Connect - Connect people, jobs, businesses and opportunities between Haiti and Bahamas."
+  >
 
   <link rel="stylesheet" href="style.css">
-
-  <style>
-    .brand-wrap {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-    }
-
-    .brand-tagline {
-      font-size: 11px;
-      letter-spacing: 1.5px;
-      opacity: .8;
-      margin-top: 4px;
-    }
-
-    .hero-title-main {
-      text-transform: uppercase;
-    }
-
-    .language-box {
-      margin-left: 10px;
-    }
-
-    #languageSelect {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255,255,255,.3);
-      background: rgba(255,255,255,.1);
-      color: inherit;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    #languageSelect option {
-      background: #ffffff;
-      color: #111111;
-    }
-  </style>
 </head>
 
 <body>
 
-  <!-- HEADER -->
+  <!-- =========================
+       HEADER / NAVIGATION
+  ========================== -->
   <header class="header">
+
     <div class="container nav-container">
 
       <a href="index.html" class="logo">
         <div class="brand-wrap">
           <h2>Eagle-J Connect</h2>
-          <span class="brand-tagline">Connect • Discover • Grow</span>
+          <span class="brand-tagline">
+            Connect • Discover • Grow
+          </span>
         </div>
       </a>
 
-      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <!-- Mobile menu button -->
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        type="button"
+        aria-label="Menu"
+        aria-expanded="false"
+      >
         ☰
       </button>
 
+      <!-- Navigation -->
       <nav class="nav-menu" id="navMenu">
 
-        <a href="index.html" data-i18n="nav-home">
+        <a
+          href="index.html"
+          data-i18n="nav-home"
+        >
           Akèy
         </a>
 
-        <a href="jobs.html" data-i18n="nav-jobs">
+        <a
+          href="travay.html"
+          data-i18n="nav-jobs"
+        >
           Travay
         </a>
 
-        <a href="business.html" data-i18n="nav-business">
+        <a
+          href="biznis.html"
+          data-i18n="nav-business"
+        >
           Biznis
         </a>
 
-        <a href="contact.html" data-i18n="nav-contact">
+        <a
+          href="kontak.html"
+          data-i18n="nav-contact"
+        >
           Kontak
         </a>
 
-        <a href="register.html" data-i18n="nav-register">
+        <a
+          href="enskri.html"
+          data-i18n="nav-register"
+        >
           Enskri
         </a>
 
-        <a href="login.html" data-i18n="nav-login">
+        <a
+          href="login.html"
+          data-i18n="nav-login"
+        >
           Konekte
         </a>
 
-        <a href="account.html" data-i18n="nav-account">
+        <a
+          href="account.html"
+          data-i18n="nav-account"
+        >
           Kont Mwen
         </a>
 
-        <a href="#" id="logoutBtn" data-i18n="nav-logout">
+        <a
+          href="#"
+          id="logoutBtn"
+          data-i18n="nav-logout"
+        >
           Dekonekte
         </a>
 
         <div class="language-box">
-          <select id="languageSelect" aria-label="Select language">
+
+          <select
+            id="languageSelect"
+            aria-label="Select language"
+          >
             <option value="ht">🇭🇹 Kreyòl</option>
             <option value="en">🇺🇸 English</option>
             <option value="fr">🇫🇷 Français</option>
           </select>
+
         </div>
 
       </nav>
 
     </div>
+
   </header>
 
 
-  <!-- HERO -->
+  <!-- =========================
+       HERO
+  ========================== -->
   <section class="hero">
 
     <div class="container hero-content">
@@ -124,22 +134,29 @@
         OPEN THE WAY. CREATE WEALTH.
       </h1>
 
-      <p class="hero-subtitle-main" data-i18n="hero-text">
-        Konekte ak moun, dekouvri opòtinite, devlope rezo ou,
-        epi kreye nouvo posiblite.
+      <p
+        class="hero-subtitle-main"
+        data-i18n="hero-text"
+      >
+        Konekte ak opòtinite, travay, biznis ak moun
+        k ap ede w grandi nan Ayiti ak Bahamas.
       </p>
 
       <div class="hero-buttons">
 
-        <a href="register.html"
-           class="btn btn-primary"
-           data-i18n="create-account">
+        <a
+          href="enskri.html"
+          class="btn btn-primary"
+          data-i18n="create-account"
+        >
           Kreye Kont
         </a>
 
-        <a href="jobs.html"
-           class="btn btn-secondary"
-           data-i18n="find-job">
+        <a
+          href="travay.html"
+          class="btn btn-secondary"
+          data-i18n="find-job"
+        >
           Chèche Travay
         </a>
 
@@ -150,150 +167,111 @@
   </section>
 
 
-  <!-- BUSINESS PROMOTION -->
-  <section class="business-promo">
+  <!-- =========================
+       SERVICES
+  ========================== -->
+  <section class="services">
 
     <div class="container">
 
-      <h2 data-i18n="business-promo-title">
-        Fè biznis ou jwenn plis kliyan
+      <h2 class="section-title">
+        Eagle-J Connect
       </h2>
 
-      <p data-i18n="business-promo-text">
-        Mete biznis ou, sèvis ou oswa pwodwi ou sou Eagle-J Connect
-        epi fè plis moun dekouvri sa ou ofri.
+      <p class="section-description">
+        Yon platfòm pou konekte moun ak opòtinite.
       </p>
 
-      <a href="business.html"
-         class="btn btn-primary"
-         data-i18n="create-ad">
-        Kreye yon Anons
-      </a>
 
-    </div>
-
-  </section>
+      <div class="cards">
 
 
-  <!-- STATS -->
-  <section class="stats-section">
+        <!-- JOBS -->
+        <article class="card">
 
-    <div class="container stats-grid">
-
-      <div class="stat-card">
-        <h2 id="jobsCount">0</h2>
-        <p data-i18n="stats-jobs">Travay</p>
-      </div>
-
-      <div class="stat-card">
-        <h2 id="businessCount">0</h2>
-        <p data-i18n="stats-business">Biznis</p>
-      </div>
-
-      <div class="stat-card">
-        <h2 id="usersCount">0</h2>
-        <p data-i18n="stats-users">Itilizatè</p>
-      </div>
-
-      <div class="stat-card">
-        <h2 id="adsCount">0</h2>
-        <p data-i18n="stats-ads">Anons</p>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- SERVICES -->
-  <section class="services-section">
-
-    <div class="container">
-
-      <h2 class="section-title" data-i18n="services-title">
-        Sèvis Eagle-J Connect
-      </h2>
-
-      <div class="services-grid">
-
-        <div class="service-card">
-
-          <div class="service-icon">
-            💼
-          </div>
-
-          <h3 data-i18n="service-jobs-title">
-            Travay
+          <h3>
+            💼 Travay
           </h3>
 
-          <p data-i18n="service-jobs-text">
-            Chèche travay epi dekouvri nouvo opòtinite.
+          <p>
+            Chèche travay ki disponib nan Bahamas
+            ak Ayiti.
           </p>
 
-          <a href="jobs.html"
-             class="btn btn-small"
-             data-i18n="find-job">
-            Chèche Travay
+          <a
+            href="travay.html"
+            class="btn btn-primary"
+          >
+            Gade Travay
           </a>
 
-        </div>
+        </article>
 
 
-        <div class="service-card">
+        <!-- BUSINESS -->
+        <article class="card">
 
-          <div class="service-icon">
-            🏪
-          </div>
-
-          <h3 data-i18n="service-business-title">
-            Biznis
+          <h3>
+            🏪 Biznis
           </h3>
 
-          <p data-i18n="service-business-text">
-            Fè moun dekouvri biznis, pwodwi ak sèvis ou.
+          <p>
+            Dekouvri biznis, sèvis ak opòtinite
+            ki disponib bò kote w.
           </p>
 
-          <a href="business.html"
-             class="btn btn-small"
-             data-i18n="create-ad">
-            Kreye yon Anons
+          <a
+            href="biznis.html"
+            class="btn btn-primary"
+          >
+            Dekouvri Biznis
           </a>
 
-        </div>
+        </article>
 
 
-        <div class="service-card">
+        <!-- ACCOUNT -->
+        <article class="card">
 
-          <div class="service-icon">
-            🤝
-          </div>
-
-          <h3 data-i18n="service-network-title">
-            Rezo
+          <h3>
+            👤 Kont Mwen
           </h3>
 
-          <p data-i18n="service-network-text">
-            Konekte ak moun ki ka ede ou grandi.
+          <p>
+            Jere enfòmasyon kont ou ak aktivite
+            ou sou Eagle-J Connect.
           </p>
 
-        </div>
+          <a
+            href="account.html"
+            class="btn btn-primary"
+          >
+            Kont Mwen
+          </a>
+
+        </article>
 
 
-        <div class="service-card">
+        <!-- CONTACT -->
+        <article class="card">
 
-          <div class="service-icon">
-            🚀
-          </div>
-
-          <h3 data-i18n="service-opportunity-title">
-            Opòtinite
+          <h3>
+            📞 Kontak
           </h3>
 
-          <p data-i18n="service-opportunity-text">
-            Dekouvri nouvo fason pou devlope tèt ou ak biznis ou.
+          <p>
+            Kontakte ekip Eagle-J Connect pou
+            kesyon oswa asistans.
           </p>
 
-        </div>
+          <a
+            href="kontak.html"
+            class="btn btn-primary"
+          >
+            Kontakte Nou
+          </a>
+
+        </article>
 
       </div>
 
@@ -302,46 +280,82 @@
   </section>
 
 
-  <!-- HOW IT WORKS -->
-  <section class="how-section">
+  <!-- =========================
+       HOW IT WORKS
+  ========================== -->
+  <section class="about">
 
     <div class="container">
 
-      <h2 class="section-title" data-i18n="how-title">
-        Kijan sa mache?
+      <h2>
+        Kijan Eagle-J Connect mache?
       </h2>
 
-      <div class="steps-grid">
+      <div class="cards">
 
-        <div class="step-card">
-          <div class="step-number">1</div>
-          <h3 data-i18n="step-one-title">
-            Kreye Kont
-          </h3>
-          <p data-i18n="step-one-text">
-            Enskri sou Eagle-J Connect.
-          </p>
-        </div>
 
-        <div class="step-card">
-          <div class="step-number">2</div>
-          <h3 data-i18n="step-two-title">
-            Chèche
-          </h3>
-          <p data-i18n="step-two-text">
-            Chèche travay, biznis ak sèvis.
-          </p>
-        </div>
+        <article class="card">
 
-        <div class="step-card">
-          <div class="step-number">3</div>
-          <h3 data-i18n="step-three-title">
-            Konekte
+          <h3>
+            1️⃣ Kreye Kont
           </h3>
-          <p data-i18n="step-three-text">
-            Kontakte moun epi kreye opòtinite.
+
+          <p>
+            Enskri sou platfòm lan pou kreye
+            pwofil pa w.
           </p>
-        </div>
+
+          <a
+            href="enskri.html"
+            class="btn btn-secondary"
+          >
+            Enskri
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <h3>
+            2️⃣ Dekouvri
+          </h3>
+
+          <p>
+            Chèche travay, biznis ak lòt
+            opòtinite.
+          </p>
+
+          <a
+            href="travay.html"
+            class="btn btn-secondary"
+          >
+            Kòmanse
+          </a>
+
+        </article>
+
+
+        <article class="card">
+
+          <h3>
+            3️⃣ Konekte
+          </h3>
+
+          <p>
+            Kontakte moun, biznis oswa anplwayè
+            ki gen opòtinite pou ou.
+          </p>
+
+          <a
+            href="kontak.html"
+            class="btn btn-secondary"
+          >
+            Kontakte
+          </a>
+
+        </article>
+
 
       </div>
 
@@ -350,59 +364,37 @@
   </section>
 
 
-  <!-- ABOUT -->
-  <section class="about-section">
+  <!-- =========================
+       CALL TO ACTION
+  ========================== -->
+  <section class="cta">
 
     <div class="container">
 
-      <h2 class="section-title" data-i18n="about-title">
-        Poukisa Eagle-J Connect?
+      <h2>
+        Pare pou louvri chemen ou?
       </h2>
 
-      <p class="about-text" data-i18n="about-text">
-        Eagle-J Connect se yon platfòm ki fèt pou ede moun konekte,
-        dekouvri opòtinite, fè biznis epi grandi ansanm.
+      <p>
+        Kreye kont ou jodi a epi kòmanse
+        dekouvri nouvo opòtinite.
       </p>
 
-      <div class="about-grid">
+      <div class="hero-buttons">
 
-        <div class="about-card">
+        <a
+          href="enskri.html"
+          class="btn btn-primary"
+        >
+          Kreye Kont
+        </a>
 
-          <h3 data-i18n="about-connect-title">
-            Konekte
-          </h3>
-
-          <p data-i18n="about-connect-text">
-            Konekte ak moun, biznis ak pwofesyonèl.
-          </p>
-
-        </div>
-
-
-        <div class="about-card">
-
-          <h3 data-i18n="about-discover-title">
-            Dekouvri
-          </h3>
-
-          <p data-i18n="about-discover-text">
-            Dekouvri travay, sèvis ak nouvo opòtinite.
-          </p>
-
-        </div>
-
-
-        <div class="about-card">
-
-          <h3 data-i18n="about-grow-title">
-            Grandi
-          </h3>
-
-          <p data-i18n="about-grow-text">
-            Devlope rezo ou epi kreye plis posiblite.
-          </p>
-
-        </div>
+        <a
+          href="biznis.html"
+          class="btn btn-secondary"
+        >
+          Gade Biznis
+        </a>
 
       </div>
 
@@ -411,8 +403,10 @@
   </section>
 
 
-  <!-- FOOTER -->
-  <footer class="footer">
+  <!-- =========================
+       FOOTER
+  ========================== -->
+  <footer>
 
     <div class="container">
 
@@ -424,31 +418,43 @@
         OPEN THE WAY. CREATE WEALTH.
       </p>
 
-      <p data-i18n="footer-text">
-        Konekte ak moun, dekouvri opòtinite epi grandi ansanm.
+      <p>
+        CONNECT • DISCOVER • GROW
       </p>
 
       <div class="footer-links">
 
-        <a href="index.html" data-i18n="nav-home">
+        <a href="index.html">
           Akèy
         </a>
 
-        <a href="jobs.html" data-i18n="nav-jobs">
+        <a href="travay.html">
           Travay
         </a>
 
-        <a href="business.html" data-i18n="nav-business">
+        <a href="biznis.html">
           Biznis
         </a>
 
-        <a href="contact.html" data-i18n="nav-contact">
+        <a href="kontak.html">
           Kontak
+        </a>
+
+        <a href="enskri.html">
+          Enskri
+        </a>
+
+        <a href="login.html">
+          Konekte
+        </a>
+
+        <a href="account.html">
+          Kont Mwen
         </a>
 
       </div>
 
-      <p class="copyright">
+      <p>
         © 2026 Eagle-J Connect. All rights reserved.
       </p>
 
@@ -457,10 +463,14 @@
   </footer>
 
 
-  <!-- SCRIPTS -->
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
   <script src="language.js?v=5"></script>
-  <script src="script.js?v=10"></script>
-  <script src="menu.js?v=6"></script>
+
+  <script src="script.js?v=11"></script>
+
+  <script src="menu.js?v=7"></script>
 
 </body>
 </html>
