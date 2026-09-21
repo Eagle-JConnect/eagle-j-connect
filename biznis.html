@@ -3,80 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Biznis | Eagle-J Connect</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Biznis & Sèvis | Eagle-J Connect</title>
+  <meta name="description" content="Dekouvri biznis, sèvis, pwofesyonèl, anplwayè ak lòt opòtinite sou Eagle-J Connect.">
+  <link rel="stylesheet" href="style.css?v=final1">
 </head>
 <body>
+
 <header class="header">
-  <div class="logo-area">
-    <a href="index.html"><img src="Logo.jpg" alt="Eagle-J Connect Logo"></a>
-    <div>
-      <h2>Eagle-J Connect</h2>
-      <span>Ayiti + Bahamas</span>
-    </div>
+  <div class="container nav-container">
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false">☰</button>
+    <nav id="menu">
+      <a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a>
+      <a href="kontak.html">Kontak</a><a href="enskri.html">Enskri</a><a href="login.html">Konekte</a>
+      <a href="profil.html">Kont Mwen</a><a href="#" id="logoutBtn">Dekonekte</a>
+      <div class="language"><select id="languageSelect" aria-label="Lang">
+        <option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option>
+      </select></div>
+    </nav>
   </div>
-
-  <button class="menu-toggle" id="menuToggle" type="button"
-          aria-label="Ouvri meni" aria-expanded="false">☰</button>
-
-  <nav id="menu">
-    <a id="nav-home" href="index.html">Akèy</a>
-    <a id="nav-jobs" href="travay.html">Travay</a>
-    <a id="nav-business" href="biznis.html">Biznis</a>
-    <a id="nav-contact" href="kontak.html">Kontak</a>
-    <a id="nav-register" href="enskri.html">Enskri</a>
-    <div class="language">
-      <select id="languageSelect" onchange="changeLanguage()" aria-label="Lang">
-        <option value="ht">🇭🇹 Kreyòl</option>
-        <option value="en">🇺🇸 English</option>
-        <option value="fr">🇫🇷 Français</option>
-      </select>
-    </div>
-  </nav>
 </header>
 
 <main>
   <section class="hero">
-    <h1 data-i18n="business-title">🌎 Eagle-J Connect Marketplace</h1>
-    <p>Jwenn anplwaye, anplwayè, pwofesyonèl, sèvis, biznis ak byen nan kominote Ayiti ak Bahamas.</p>
-    <div class="actions" style="justify-content:center">
-      <a class="btn" href="travay.html">💼 Chèche Travay</a>
-      <a class="btn" href="kreye-anons.html">📢 Mete yon Anons</a>
+    <div class="container hero-content">
+      <p class="card-kicker" style="color:#9edcff">EAGLE-J MARKETPLACE</p>
+      <h1>Biznis, sèvis & pwofesyonèl</h1>
+      <p>Jwenn moun ak biznis ki ka ede w. Oswa mete sa w ap ofri devan kominote a.</p>
+      <div class="hero-buttons">
+        <a class="btn btn-primary" href="kreye-anons.html">📢 Mete yon Anons</a>
+        <a class="btn btn-secondary" href="anons-list.html">Gade Tout Anons</a>
+      </div>
     </div>
   </section>
 
   <section class="services marketplace-tools">
-    <div class="marketplace-categories">
+    <div class="marketplace-categories" aria-label="Kategori anons">
       <button class="market-tab active" type="button" data-filter="all">🌎 Tout</button>
       <button class="market-tab" type="button" data-filter="employee">👷 Anplwaye</button>
       <button class="market-tab" type="button" data-filter="employer">🏢 Anplwayè</button>
-      <button class="market-tab" type="button" data-filter="professional">👨🏾‍🔧 Pwofesyonèl</button>
+      <button class="market-tab" type="button" data-filter="professional">🧑🏾‍🔧 Pwofesyonèl</button>
       <button class="market-tab" type="button" data-filter="service">🛠️ Sèvis</button>
       <button class="market-tab" type="button" data-filter="business">🛍️ Biznis</button>
       <button class="market-tab" type="button" data-filter="property">🏠 Byen</button>
     </div>
+
     <div class="market-search-row">
-      <input id="marketSearch" type="search" placeholder="🔎 Chèche yon pwofesyonèl, sèvis, biznis oswa byen..." aria-label="Chèche nan marketplace">
-      <select id="marketLocation" aria-label="Filtre pa lokalizasyon">
+      <input id="marketSearch" type="search" placeholder="🔎 Chèche biznis, sèvis, pwofesyonèl..." aria-label="Chèche anons">
+      <select id="marketLocation" aria-label="Filtre lokalizasyon">
         <option value="">📍 Tout lokalizasyon</option>
         <option value="bahamas">🇧🇸 Bahamas</option>
         <option value="ayiti">🇭🇹 Ayiti</option>
       </select>
     </div>
+
     <p id="marketResultCount" class="market-result-count"></p>
-    <div id="businessListings" class="cards listing-grid">
-      <p class="notice">⏳ Anons yo ap chaje...</p>
+    <div id="businessListings" class="listing-grid">
+      <div class="loading-state"><span>⏳</span><p>Anons yo ap chaje...</p></div>
     </div>
   </section>
 </main>
 
 <footer>
-  <h3>Eagle-J Connect</h3>
-  <p>Konekte Opòtinite ant Ayiti ak Bahamas.</p>
-  <p>© 2026 Eagle-J Connect</p>
+  <div class="container">
+    <h3>Eagle-J Connect</h3>
+    <p>Konekte moun, travay ak sèvis ant Ayiti ak Bahamas.</p>
+    <div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a></div>
+    <p class="copyright">© 2026 Eagle-J Connect</p>
+  </div>
 </footer>
 
-<script src="language.js"></script>
-<script src="script.js?v=9"></script>
-<script src="menu.js?v=6"></script></body>
+<script src="language.js?v=final1"></script>
+<script src="script.js?v=final1"></script>
+<script src="menu.js?v=final1"></script>
+</body>
 </html>
