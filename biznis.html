@@ -1,5 +1,269 @@
-<!DOCTYPE html><html lang="ht"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Biznis | Eagle-J Connect</title><link rel="stylesheet" href="style.css"></head><body>
-<header class="header"><div class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect Logo"><div><h2>Eagle-J Connect</h2><span>Ayiti + Bahamas</span></div></div><button class="menu-toggle" type="button" onclick="toggleMenu()" aria-label="Meni">☰</button><nav id="menu"><a id="nav-home" href="index.html">Akèy</a><a id="nav-jobs" href="travay.html">Travay</a><a id="nav-business" href="biznis.html">Biznis</a><a id="nav-contact" href="kontak.html">Kontak</a><a id="nav-register" href="enskri.html">Enskri</a><div class="language"><select id="languageSelect" onchange="changeLanguage()"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div></nav></header>
-<section class="services"><h1 data-i18n="business-title">Biznis ak Sèvis</h1><p>Dekouvri pwodwi ak sèvis kominote a ap ofri.</p><div id="businessListings" class="cards listing-grid"><p>⏳ Anons yo ap chaje...</p></div></section>
-<section style="background:#F4B400;padding:45px 20px;text-align:center"><h2>Mete biznis ou sou Eagle-J Connect</h2><p style="margin:12px auto 20px">Kreye yon anons ak yon foto, kontak ak deskripsyon biznis ou.</p><a href="kreye-anons.html" class="btn" style="background:#003366;color:white;text-decoration:none">📢 Kreye yon Anons</a></section>
-<footer><h3>Eagle-J Connect</h3><p>Konekte Opòtinite ant Ayiti ak Bahamas.</p><p>© 2026 Eagle-J Connect</p></footer><script src="language.js"></script><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="ht">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Biznis | Eagle-J Connect</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <div class="logo-area">
+
+      <img
+        src="Logo.jpg"
+        alt="Eagle-J Connect Logo"
+      >
+
+      <div>
+        <h2>Eagle-J Connect</h2>
+        <span>Ayiti + Bahamas</span>
+      </div>
+
+    </div>
+
+
+    <!-- MOBILE MENU BUTTON -->
+    <button
+      id="menuToggle"
+      class="menu-toggle"
+      type="button"
+      aria-label="Ouvri meni"
+      aria-expanded="false"
+    >
+      ☰
+    </button>
+
+
+    <!-- NAVIGATION -->
+    <nav id="menu">
+
+      <a
+        id="nav-home"
+        href="index.html"
+      >
+        Akèy
+      </a>
+
+      <a
+        id="nav-jobs"
+        href="travay.html"
+      >
+        Travay
+      </a>
+
+      <a
+        id="nav-business"
+        href="biznis.html"
+      >
+        Biznis
+      </a>
+
+      <a
+        id="nav-contact"
+        href="kontak.html"
+      >
+        Kontak
+      </a>
+
+      <a
+        id="nav-register"
+        href="enskri.html"
+      >
+        Enskri
+      </a>
+
+
+      <!-- LANGUAGE -->
+      <div class="language">
+
+        <select
+          id="languageSelect"
+          onchange="changeLanguage()"
+        >
+
+          <option value="ht">
+            🇭🇹 Kreyòl
+          </option>
+
+          <option value="en">
+            🇺🇸 English
+          </option>
+
+          <option value="fr">
+            🇫🇷 Français
+          </option>
+
+        </select>
+
+      </div>
+
+    </nav>
+
+  </header>
+
+
+  <!-- BUSINESS SECTION -->
+  <section class="services">
+
+    <h1 data-i18n="business-title">
+      Biznis ak Sèvis
+    </h1>
+
+    <p>
+      Dekouvri pwodwi ak sèvis kominote a ap ofri.
+    </p>
+
+
+    <!-- BUSINESS LIST -->
+    <div
+      id="businessListings"
+      class="cards listing-grid"
+    >
+
+      <p>
+        ⏳ Anons yo ap chaje...
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- CREATE BUSINESS AD -->
+  <section
+    style="
+      background:#F4B400;
+      padding:45px 20px;
+      text-align:center;
+    "
+  >
+
+    <h2>
+      Mete biznis ou sou Eagle-J Connect
+    </h2>
+
+    <p
+      style="
+        margin:12px auto 20px;
+      "
+    >
+      Kreye yon anons ak yon foto, kontak ak
+      deskripsyon biznis ou.
+    </p>
+
+    <a
+      href="kreye-anons.html"
+      class="btn"
+      style="
+        background:#003366;
+        color:white;
+        text-decoration:none;
+      "
+    >
+      📢 Kreye yon Anons
+    </a>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer>
+
+    <h3>
+      Eagle-J Connect
+    </h3>
+
+    <p>
+      Konekte Opòtinite ant Ayiti ak Bahamas.
+    </p>
+
+    <p>
+      © 2026 Eagle-J Connect
+    </p>
+
+  </footer>
+
+
+  <!-- SCRIPTS -->
+  <script src="language.js"></script>
+  <script src="script.js"></script>
+
+
+  <!-- MOBILE MENU SAFETY -->
+  <script>
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      function(){
+
+        const button =
+          document.getElementById("menuToggle");
+
+        const menu =
+          document.getElementById("menu");
+
+
+        if(!button || !menu){
+
+          console.error(
+            "Eagle-J Connect: Menu pa jwenn."
+          );
+
+          return;
+
+        }
+
+
+        button.addEventListener(
+          "click",
+          function(){
+
+            menu.classList.toggle("show");
+
+            const opened =
+              menu.classList.contains("show");
+
+            button.setAttribute(
+              "aria-expanded",
+              opened ? "true" : "false"
+            );
+
+          }
+        );
+
+
+        menu.querySelectorAll("a").forEach(
+          function(link){
+
+            link.addEventListener(
+              "click",
+              function(){
+
+                menu.classList.remove("show");
+
+                button.setAttribute(
+                  "aria-expanded",
+                  "false"
+                );
+
+              }
+            );
+
+          }
+        );
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
