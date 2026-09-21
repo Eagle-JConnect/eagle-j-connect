@@ -1,63 +1,780 @@
-/* Eagle-J Connect - clean responsive design */
-:root{--primary:#003366;--secondary:#F4B400;--light:#F5F8FC;--white:#fff;--dark:#222;--muted:#667085;--danger:#c62828;--success:#18864b}
-*{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:Arial,Helvetica,sans-serif;background:var(--light);color:var(--dark);padding-top:82px;line-height:1.55}
-a{color:inherit}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.header{height:82px;width:100%;position:fixed;top:0;left:0;z-index:1000;background:var(--primary);display:flex;align-items:center;justify-content:space-between;padding:10px 28px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
-.logo-area{display:flex;align-items:center;gap:9px}
-.logo-area img{width:58px;height:58px;border-radius:50%;object-fit:cover}
-.logo-area h2{font-size:20px;color:#fff;line-height:1.1}
-.logo-area span{font-size:12px;color:var(--secondary)}
-#menu{display:flex;align-items:center;gap:18px}
-#menu a{color:#fff;text-decoration:none;font-weight:700;padding:8px 5px}
-#menu a:hover{color:var(--secondary)}
-.language select{padding:7px;border-radius:7px;border:0}
-.menu-toggle,.menu-icon{display:none;background:none;border:0;color:#fff;font-size:30px}
-.hero{background:linear-gradient(135deg,#003366,#07558f);color:#fff;text-align:center;padding:85px 20px}
-.hero h1{font-size:clamp(30px,5vw,46px);max-width:850px;margin:auto;line-height:1.2}
-.hero p{max-width:720px;margin:20px auto;font-size:19px}
-.hero-buttons{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:30px}
-.btn,button{border:0;border-radius:9px;padding:12px 20px;font-weight:700}
-.btn-primary,button{background:var(--secondary);color:var(--primary)}
-.btn-secondary{background:#fff;color:var(--primary)}
-.services,.about{padding:60px 20px;max-width:1150px;margin:auto;text-align:center}
-.services h1,.about h2,.services>h2{color:var(--primary);margin-bottom:15px}
-.cards{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:28px}
-.card{background:#fff;width:min(340px,100%);padding:25px;border-radius:14px;border-top:4px solid var(--secondary);box-shadow:0 5px 18px rgba(0,0,0,.08);text-align:left}
-.card h3{color:var(--primary);margin-bottom:10px}
-.card p{color:#555;margin:7px 0}
-.card button,.card .btn{margin-top:12px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;padding:35px 20px;max-width:1100px;margin:auto}
-.stat-box{background:#fff;border-radius:12px;text-align:center;padding:22px;box-shadow:0 4px 15px rgba(0,0,0,.07)}
-.stat-box h2{font-size:32px;color:var(--primary)}
-.stat-box p{color:var(--muted)}
-.form-wrap{max-width:700px;margin:auto}
-.business-form{max-width:700px;margin:25px auto;display:flex;flex-direction:column;gap:9px;text-align:left;background:#fff;padding:25px;border-radius:14px;box-shadow:0 5px 18px rgba(0,0,0,.07)}
-.business-form label{font-weight:700;color:var(--primary);margin-top:5px}
-.business-form input,.business-form select,.business-form textarea,.search-box{width:100%;padding:13px;border:1px solid #d5dbe3;border-radius:8px;background:#fff;outline:none}
-.business-form textarea{min-height:120px;resize:vertical}
-.business-form input:focus,.business-form select:focus,.business-form textarea:focus,.search-box:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,51,102,.1)}
-.form-message{text-align:center;font-weight:700;min-height:25px;margin:10px}
-.job-toolbar{max-width:900px;margin:25px auto;display:grid;grid-template-columns:1fr 180px;gap:10px}
-.listing-grid{max-width:1100px;margin:auto}
-.job-card,.business-card{width:min(100%,520px)}
-.job-card .meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.badge{background:#edf3f8;color:var(--primary);padding:5px 9px;border-radius:999px;font-size:13px}
-.business-card img{width:100%;height:220px;object-fit:contain;background:#f5f5f5;border-radius:10px;margin-bottom:14px}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
-.actions a{text-decoration:none}
-.actions button{padding:10px 14px}
-.notice{padding:15px;border-radius:10px;background:#fff8dc;margin:15px auto;max-width:700px}
-.hidden{display:none!important}
-footer{background:var(--primary);color:#fff;text-align:center;padding:30px 20px;margin-top:40px}
-footer p{margin-top:7px}
-.auth-links{text-align:center;margin-top:15px}
-.auth-links a{color:var(--primary);font-weight:700}
+/* =========================================================
+   EAGLE-J CONNECT
+   CLEAN RESPONSIVE DESIGN
+========================================================= */
+
+:root{
+  --primary:#003366;
+  --secondary:#F4B400;
+  --light:#F5F8FC;
+  --white:#fff;
+  --dark:#222;
+  --muted:#667085;
+  --danger:#c62828;
+  --success:#18864b;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--light);
+  color:var(--dark);
+  padding-top:82px;
+  line-height:1.55;
+}
+
+a{
+  color:inherit;
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+  height:82px;
+  width:100%;
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:10000;
+
+  background:var(--primary);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:10px 28px;
+
+  box-shadow:0 2px 12px rgba(0,0,0,.15);
+}
+
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo-area{
+  display:flex;
+  align-items:center;
+  gap:9px;
+}
+
+.logo-area img{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.logo-area h2{
+  font-size:20px;
+  color:#fff;
+  line-height:1.1;
+}
+
+.logo-area span{
+  font-size:12px;
+  color:var(--secondary);
+}
+
+
+/* =========================================================
+   DESKTOP MENU
+========================================================= */
+
+#menu{
+  display:flex;
+  align-items:center;
+  gap:18px;
+}
+
+#menu a{
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+  padding:8px 5px;
+}
+
+#menu a:hover{
+  color:var(--secondary);
+}
+
+.language select{
+  padding:7px;
+  border-radius:7px;
+  border:0;
+}
+
+
+/* =========================================================
+   MENU BUTTON
+========================================================= */
+
+.menu-toggle{
+  display:none;
+
+  background:transparent !important;
+  border:0 !important;
+
+  color:#fff !important;
+
+  font-size:32px;
+  font-weight:bold;
+
+  padding:5px 10px;
+
+  cursor:pointer;
+
+  line-height:1;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+  background:linear-gradient(
+    135deg,
+    #003366,
+    #07558f
+  );
+
+  color:#fff;
+
+  text-align:center;
+
+  padding:85px 20px;
+}
+
+.hero h1{
+  font-size:clamp(30px,5vw,46px);
+  max-width:850px;
+  margin:auto;
+  line-height:1.2;
+}
+
+.hero p{
+  max-width:720px;
+  margin:20px auto;
+  font-size:19px;
+}
+
+.hero-buttons{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:30px;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn,
+button{
+  border:0;
+  border-radius:9px;
+  padding:12px 20px;
+  font-weight:700;
+}
+
+.btn-primary,
+button{
+  background:var(--secondary);
+  color:var(--primary);
+}
+
+.btn-secondary{
+  background:#fff;
+  color:var(--primary);
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.services,
+.about{
+  padding:60px 20px;
+  max-width:1150px;
+  margin:auto;
+  text-align:center;
+}
+
+.services h1,
+.about h2,
+.services>h2{
+  color:var(--primary);
+  margin-bottom:15px;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.cards{
+  display:flex;
+  justify-content:center;
+  gap:22px;
+  flex-wrap:wrap;
+  margin-top:28px;
+}
+
+.card{
+  background:#fff;
+
+  width:min(340px,100%);
+
+  padding:25px;
+
+  border-radius:14px;
+
+  border-top:4px solid var(--secondary);
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.08);
+
+  text-align:left;
+}
+
+.card h3{
+  color:var(--primary);
+  margin-bottom:10px;
+}
+
+.card p{
+  color:#555;
+  margin:7px 0;
+}
+
+.card button,
+.card .btn{
+  margin-top:12px;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+
+  padding:35px 20px;
+
+  max-width:1100px;
+  margin:auto;
+}
+
+.stat-box{
+  background:#fff;
+
+  border-radius:12px;
+
+  text-align:center;
+
+  padding:22px;
+
+  box-shadow:
+    0 4px 15px rgba(0,0,0,.07);
+}
+
+.stat-box h2{
+  font-size:32px;
+  color:var(--primary);
+}
+
+.stat-box p{
+  color:var(--muted);
+}
+
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.form-wrap{
+  max-width:700px;
+  margin:auto;
+}
+
+.business-form{
+  max-width:700px;
+  margin:25px auto;
+
+  display:flex;
+  flex-direction:column;
+
+  gap:9px;
+
+  text-align:left;
+
+  background:#fff;
+
+  padding:25px;
+
+  border-radius:14px;
+
+  box-shadow:
+    0 5px 18px rgba(0,0,0,.07);
+}
+
+.business-form label{
+  font-weight:700;
+  color:var(--primary);
+  margin-top:5px;
+}
+
+.business-form input,
+.business-form select,
+.business-form textarea,
+.search-box{
+  width:100%;
+
+  padding:13px;
+
+  border:1px solid #d5dbe3;
+
+  border-radius:8px;
+
+  background:#fff;
+
+  outline:none;
+}
+
+.business-form textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.business-form input:focus,
+.business-form select:focus,
+.business-form textarea:focus,
+.search-box:focus{
+  border-color:var(--primary);
+
+  box-shadow:
+    0 0 0 3px rgba(0,51,102,.1);
+}
+
+.form-message{
+  text-align:center;
+  font-weight:700;
+  min-height:25px;
+  margin:10px;
+}
+
+
+/* =========================================================
+   JOB TOOLBAR
+========================================================= */
+
+.job-toolbar{
+  max-width:900px;
+
+  margin:25px auto;
+
+  display:grid;
+
+  grid-template-columns:1fr 180px;
+
+  gap:10px;
+}
+
+
+/* =========================================================
+   LISTINGS
+========================================================= */
+
+.listing-grid{
+  max-width:1100px;
+  margin:auto;
+}
+
+.job-card,
+.business-card{
+  width:min(100%,520px);
+}
+
+
+/* =========================================================
+   JOB META
+========================================================= */
+
+.job-card .meta{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+
+.badge{
+  background:#edf3f8;
+
+  color:var(--primary);
+
+  padding:5px 9px;
+
+  border-radius:999px;
+
+  font-size:13px;
+}
+
+
+/* =========================================================
+   BUSINESS IMAGE
+========================================================= */
+
+.business-card img{
+  width:100%;
+  height:220px;
+
+  object-fit:contain;
+
+  background:#f5f5f5;
+
+  border-radius:10px;
+
+  margin-bottom:14px;
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+.actions a{
+  text-decoration:none;
+}
+
+.actions button{
+  padding:10px 14px;
+}
+
+
+/* =========================================================
+   NOTICE
+========================================================= */
+
+.notice{
+  padding:15px;
+
+  border-radius:10px;
+
+  background:#fff8dc;
+
+  margin:15px auto;
+
+  max-width:700px;
+}
+
+
+/* =========================================================
+   HIDDEN
+========================================================= */
+
+.hidden{
+  display:none !important;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer{
+  background:var(--primary);
+
+  color:#fff;
+
+  text-align:center;
+
+  padding:30px 20px;
+
+  margin-top:40px;
+}
+
+footer p{
+  margin-top:7px;
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+.auth-links{
+  text-align:center;
+  margin-top:15px;
+}
+
+.auth-links a{
+  color:var(--primary);
+  font-weight:700;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media(max-width:768px){
- body{padding-top:74px}.header{height:74px;padding:8px 15px}.logo-area img{width:48px;height:48px}.logo-area h2{font-size:17px}.logo-area span{display:none}
- .menu-toggle,.menu-icon{display:block}#menu{display:none;position:absolute;top:74px;right:0;width:250px;background:var(--primary);padding:12px;flex-direction:column;align-items:stretch;gap:4px;box-shadow:0 8px 18px rgba(0,0,0,.2)}#menu.show{display:flex}#menu a{padding:12px}.language select{width:100%}
- .hero{padding:65px 18px}.hero p{font-size:17px}.stats{grid-template-columns:repeat(2,1fr);padding:25px 15px}.services,.about{padding:45px 15px}.job-toolbar{grid-template-columns:1fr}.card{width:100%}
+
+  body{
+    padding-top:74px;
+  }
+
+
+  /* HEADER */
+
+  .header{
+    height:74px;
+
+    padding:8px 15px;
+
+    z-index:10000;
+  }
+
+
+  /* LOGO */
+
+  .logo-area img{
+    width:48px;
+    height:48px;
+  }
+
+  .logo-area h2{
+    font-size:17px;
+  }
+
+  .logo-area span{
+    display:none;
+  }
+
+
+  /* HAMBURGER */
+
+  .menu-toggle{
+    display:block !important;
+
+    width:50px;
+    height:50px;
+
+    flex-shrink:0;
+
+    background:transparent !important;
+
+    color:#fff !important;
+
+    border:0 !important;
+
+    font-size:32px;
+
+    position:relative;
+
+    z-index:10002;
+  }
+
+
+  /* MOBILE MENU */
+
+  #menu{
+
+    display:none !important;
+
+    position:absolute;
+
+    top:74px;
+
+    right:0;
+
+    width:270px;
+
+    max-width:90vw;
+
+    background:var(--primary);
+
+    padding:14px;
+
+    flex-direction:column;
+
+    align-items:stretch;
+
+    gap:4px;
+
+    box-shadow:
+      0 8px 20px rgba(0,0,0,.30);
+
+    border-radius:0 0 0 12px;
+
+    z-index:10001;
+  }
+
+
+  /* OPEN MENU */
+
+  #menu.show{
+    display:flex !important;
+  }
+
+
+  #menu a{
+    display:block;
+
+    width:100%;
+
+    color:#fff;
+
+    padding:13px 12px;
+
+    border-radius:7px;
+  }
+
+
+  #menu a:hover{
+    background:rgba(255,255,255,.10);
+
+    color:var(--secondary);
+  }
+
+
+  /* LANGUAGE */
+
+  .language{
+    width:100%;
+    margin-top:5px;
+  }
+
+  .language select{
+    width:100%;
+  }
+
+
+  /* HERO */
+
+  .hero{
+    padding:65px 18px;
+  }
+
+  .hero p{
+    font-size:17px;
+  }
+
+
+  /* STATS */
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+
+    padding:25px 15px;
+  }
+
+
+  /* SECTIONS */
+
+  .services,
+  .about{
+    padding:45px 15px;
+  }
+
+
+  /* JOB TOOLBAR */
+
+  .job-toolbar{
+    grid-template-columns:1fr;
+  }
+
+
+  /* CARDS */
+
+  .card{
+    width:100%;
+  }
+
+
+  /* BUSINESS CARD */
+
+  .business-card{
+    width:100%;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media(max-width:400px){
+
+  .header{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .logo-area{
+    gap:6px;
+  }
+
+  .logo-area img{
+    width:44px;
+    height:44px;
+  }
+
+  .logo-area h2{
+    font-size:15px;
+  }
+
+  .menu-toggle{
+    width:46px;
+    height:46px;
+    font-size:30px;
+  }
+
+  #menu{
+    width:250px;
+  }
+
 }
