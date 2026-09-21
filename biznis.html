@@ -17,6 +17,7 @@
       background: #f5f8fc;
     }
 
+    /* HEADER */
     header {
       height: 74px;
       background: #003366;
@@ -25,12 +26,19 @@
       justify-content: space-between;
       padding: 10px 15px;
       position: relative;
+      z-index: 10000;
     }
 
+    /* LOGO */
     .logo-area {
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .logo-area a {
+      display: flex;
+      align-items: center;
     }
 
     .logo-area img {
@@ -54,58 +62,78 @@
       font-size: 12px;
     }
 
-    /* BOUTON MENI */
-    #menuToggle {
+    /* =========================
+       MENU SYSTEM
+       PA GEN JAVASCRIPT
+       ========================= */
+
+    /* Kache checkbox la */
+    #menuCheck {
+      display: none;
+    }
+
+    /* Bouton ☰ */
+    .menu-button {
+      width: 50px;
+      height: 50px;
+
       display: flex;
       align-items: center;
       justify-content: center;
 
-      width: 50px;
-      height: 50px;
+      background: #003366;
+      color: white;
 
       border: 2px solid white;
       border-radius: 8px;
 
-      background: #003366;
-      color: white;
-
       font-size: 28px;
-      line-height: 1;
+      font-weight: bold;
 
       cursor: pointer;
 
+      user-select: none;
+
       position: relative;
-      z-index: 99999;
+      z-index: 10002;
     }
 
-    /* MENI */
+    /* MENI FÈMEN */
     #menu {
       display: none;
 
       position: absolute;
+
       top: 74px;
       right: 0;
 
       width: 270px;
+      max-width: 90vw;
 
       background: #003366;
 
       padding: 15px;
 
-      z-index: 99998;
-
       flex-direction: column;
       gap: 5px;
 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      border-radius: 0 0 0 12px;
+
+      box-shadow: 0 8px 20px rgba(0,0,0,0.30);
+
+      z-index: 10001;
     }
 
-    #menu.show {
+    /* MENI LOUVRI */
+    #menuCheck:checked ~ #menu {
       display: flex;
     }
 
+    /* LYEN MENI */
     #menu a {
       display: block;
+
+      width: 100%;
 
       color: white;
       text-decoration: none;
@@ -122,31 +150,48 @@
       color: #003366;
     }
 
+    /* LANGUAGE */
+    .language {
+      width: 100%;
+    }
+
     .language select {
       width: 100%;
       padding: 10px;
-      margin-top: 5px;
+
+      border: none;
+      border-radius: 6px;
+
+      font-size: 15px;
     }
 
+    /* KONTNI */
     main {
       padding: 30px 15px;
     }
 
     .hero {
       background: white;
+
       padding: 25px;
+
       border-radius: 12px;
+
       text-align: center;
+
       max-width: 900px;
+
       margin: auto;
     }
 
     .hero h1 {
       color: #003366;
+      margin-top: 0;
     }
 
     .hero p {
       color: #555;
+      line-height: 1.6;
     }
 
     #businessList {
@@ -156,10 +201,63 @@
 
     .message {
       background: white;
+
       padding: 25px;
+
       border-radius: 12px;
+
       text-align: center;
     }
+
+    /* DESKTOP */
+    @media (min-width: 769px) {
+
+      .menu-button {
+        display: none;
+      }
+
+      #menu {
+        display: flex;
+        position: static;
+
+        width: auto;
+
+        flex-direction: row;
+        align-items: center;
+
+        padding: 0;
+
+        background: transparent;
+
+        box-shadow: none;
+
+        border-radius: 0;
+      }
+
+      #menu a {
+        width: auto;
+        padding: 10px 12px;
+      }
+
+      .language {
+        width: auto;
+      }
+
+      .language select {
+        width: auto;
+      }
+
+    }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+
+      .menu-button {
+        display: flex;
+      }
+
+    }
+
   </style>
 </head>
 
@@ -169,6 +267,7 @@
   <!-- HEADER -->
   <header>
 
+    <!-- LOGO -->
     <div class="logo-area">
 
       <a href="index.html">
@@ -183,13 +282,24 @@
     </div>
 
 
-    <!-- BOUTON ☰ -->
-    <button id="menuToggle" type="button">
+    <!-- CHECKBOX KACHE -->
+    <input
+      type="checkbox"
+      id="menuCheck"
+    >
+
+
+    <!-- BOUTON MENI -->
+    <label
+      for="menuCheck"
+      class="menu-button"
+      aria-label="Ouvri meni"
+    >
       ☰
-    </button>
+    </label>
 
 
-    <!-- MENI -->
+    <!-- MENU -->
     <nav id="menu">
 
       <a href="index.html">
@@ -215,9 +325,19 @@
       <div class="language">
 
         <select id="languageSelect">
-          <option value="ht">🇭🇹 Kreyòl</option>
-          <option value="en">🇺🇸 English</option>
-          <option value="fr">🇫🇷 Français</option>
+
+          <option value="ht">
+            🇭🇹 Kreyòl
+          </option>
+
+          <option value="en">
+            🇺🇸 English
+          </option>
+
+          <option value="fr">
+            🇫🇷 Français
+          </option>
+
         </select>
 
       </div>
@@ -254,43 +374,6 @@
 
   </main>
 
-
-  <!-- MENU JAVASCRIPT -->
-  <script>
-
-    const menuButton = document.getElementById("menuToggle");
-    const menu = document.getElementById("menu");
-
-
-    menuButton.addEventListener("click", function () {
-
-      if (menu.style.display === "flex") {
-
-        menu.style.display = "none";
-
-      } else {
-
-        menu.style.display = "flex";
-
-      }
-
-    });
-
-
-    document.addEventListener("click", function(event) {
-
-      if (
-        !menu.contains(event.target) &&
-        !menuButton.contains(event.target)
-      ) {
-
-        menu.style.display = "none";
-
-      }
-
-    });
-
-  </script>
 
 </body>
 </html>
