@@ -1,6 +1,6 @@
 /* =========================================================
    EAGLE-J CONNECT
-   CLEAN RESPONSIVE DESIGN
+   RESPONSIVE DESIGN
 ========================================================= */
 
 :root{
@@ -60,9 +60,11 @@ button{
 .header{
   height:82px;
   width:100%;
+
   position:fixed;
   top:0;
   left:0;
+
   z-index:10000;
 
   background:var(--primary);
@@ -73,7 +75,8 @@ button{
 
   padding:10px 28px;
 
-  box-shadow:0 2px 12px rgba(0,0,0,.15);
+  box-shadow:
+    0 2px 12px rgba(0,0,0,.15);
 }
 
 
@@ -85,13 +88,19 @@ button{
   display:flex;
   align-items:center;
   gap:9px;
+
+  min-width:0;
 }
 
 .logo-area img{
   width:58px;
   height:58px;
+
   border-radius:50%;
+
   object-fit:cover;
+
+  flex-shrink:0;
 }
 
 .logo-area h2{
@@ -135,13 +144,19 @@ button{
 
 
 /* =========================================================
-   MENU BUTTON
+   HAMBURGER BUTTON
 ========================================================= */
 
 .menu-toggle{
   display:none;
 
+  width:50px;
+  height:50px;
+
+  padding:0;
+
   background:transparent !important;
+
   border:0 !important;
 
   color:#fff !important;
@@ -149,11 +164,15 @@ button{
   font-size:32px;
   font-weight:bold;
 
-  padding:5px 10px;
+  line-height:1;
+
+  text-align:center;
 
   cursor:pointer;
 
-  line-height:1;
+  position:relative;
+
+  z-index:10002;
 }
 
 
@@ -580,6 +599,10 @@ footer p{
 
   /* LOGO */
 
+  .logo-area{
+    max-width:calc(100% - 65px);
+  }
+
   .logo-area img{
     width:48px;
     height:48px;
@@ -594,10 +617,15 @@ footer p{
   }
 
 
-  /* HAMBURGER */
+  /* =====================================================
+     HAMBURGER
+  ====================================================== */
 
   .menu-toggle{
-    display:block !important;
+    display:flex !important;
+
+    align-items:center;
+    justify-content:center;
 
     width:50px;
     height:50px;
@@ -608,30 +636,33 @@ footer p{
 
     color:#fff !important;
 
-    border:0 !important;
+    border:none !important;
 
     font-size:32px;
 
     position:relative;
 
     z-index:10002;
+
+    -webkit-appearance:none;
+    appearance:none;
   }
 
 
-  /* MOBILE MENU */
+  /* =====================================================
+     MOBILE MENU CLOSED
+  ====================================================== */
 
   #menu{
 
-    display:none !important;
+    display:none;
 
     position:absolute;
 
     top:74px;
-
     right:0;
 
     width:270px;
-
     max-width:90vw;
 
     background:var(--primary);
@@ -647,48 +678,67 @@ footer p{
     box-shadow:
       0 8px 20px rgba(0,0,0,.30);
 
-    border-radius:0 0 0 12px;
+    border-radius:
+      0 0 0 12px;
 
     z-index:10001;
   }
 
 
-  /* OPEN MENU */
+  /* =====================================================
+     MOBILE MENU OPEN
+  ====================================================== */
 
   #menu.show{
+
     display:flex !important;
+
   }
 
 
+  /* MENU LINKS */
+
   #menu a{
+
     display:block;
 
     width:100%;
 
     color:#fff;
 
+    text-decoration:none;
+
     padding:13px 12px;
 
     border-radius:7px;
+
+    font-weight:700;
   }
 
 
   #menu a:hover{
+
     background:rgba(255,255,255,.10);
 
     color:var(--secondary);
+
   }
 
 
   /* LANGUAGE */
 
   .language{
+
     width:100%;
+
     margin-top:5px;
+
   }
 
   .language select{
+
     width:100%;
+
   }
 
 
