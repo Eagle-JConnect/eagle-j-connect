@@ -115,41 +115,149 @@ window.logoutUser=()=>{
 
 /* =========================================================
    MOBILE MENU
+   Works on ALL pages
 ========================================================= */
+
+function setupMobileMenu(){
+
+  const menu=document.getElementById("menu");
+  const button=document.querySelector(".menu-toggle");
+
+  if(!menu || !button){
+
+    console.log(
+      "Mobile menu: #menu oswa .menu-toggle pa jwenn."
+    );
+
+    return;
+
+  }
+
+
+  /* Prevent duplicate initialization */
+
+  if(button.dataset.menuReady==="true"){
+
+    return;
+
+  }
+
+  button.dataset.menuReady="true";
+
+
+  /* Accessibility */
+
+  button.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+
+  /* Open / close menu */
+
+  button.addEventListener(
+    "click",
+    function(e){
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      menu.classList.toggle("show");
+
+      const opened=
+        menu.classList.contains("show");
+
+      button.setAttribute(
+        "aria-expanded",
+        opened ? "true" : "false"
+      );
+
+    }
+  );
+
+
+  /* Close menu after clicking a link */
+
+  menu.querySelectorAll("a").forEach(
+    link=>{
+
+      link.addEventListener(
+        "click",
+        function(){
+
+          menu.classList.remove("show");
+
+          button.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  /* Close menu when clicking outside */
+
+  document.addEventListener(
+    "click",
+    function(e){
+
+      if(
+        !menu.contains(e.target) &&
+        !button.contains(e.target)
+      ){
+
+        menu.classList.remove("show");
+
+        button.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+      }
+
+    }
+  );
+
+}
+
+
+/* Compatibility with pages using onclick="toggleMenu()" */
 
 window.toggleMenu=function(){
 
   const menu=document.getElementById("menu");
+  const button=document.querySelector(".menu-toggle");
 
   if(!menu){
 
-    console.error("Menu #menu pa jwenn.");
+    console.error(
+      "Menu #menu pa jwenn."
+    );
 
     return;
+
   }
+
 
   menu.classList.toggle("show");
 
-};
 
+  if(button){
 
-/* Close menu after clicking a link */
-
-document.addEventListener(
-  "click",
-  e=>{
-
-    if(
-      e.target.closest("#menu a") &&
-      qs("menu")
-    ){
-
-      qs("menu").classList.remove("show");
-
-    }
+    button.setAttribute(
+      "aria-expanded",
+      menu.classList.contains("show")
+        ? "true"
+        : "false"
+    );
 
   }
-);
+
+};
 
 
 /* =========================================================
@@ -1668,4 +1776,295 @@ async function loadStats(){
           headers:{
             "apikey":SUPABASE_KEY,
 
-           
+            "Range":"0-0",
+
+            "Prefer":"count=exact"
+          }
+        }
+      );
+
+
+      const range=
+        r.headers.get("content-range");
+
+
+      const count=
+        range
+          ? parseInt(
+              range.split("/")[1],
+              10
+            )
+          : 0;
+
+
+      if(qs(id)){
+
+        qs(id).textContent=
+          Number.isFinite(count)
+            ? count
+            : 0;
+
+      }
+
+
+    }catch(e){}
+
+  }
+
+
+  if(qs("stat-ads")){
+
+    qs("stat-ads").textContent=
+      qs("stat-business")?.textContent || "0";
+
+  }
+
+}
+
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+function initContact(){
+
+  const form=qs("contactForm");
+
+  if(!form)return;
+
+
+  form.addEventListener(
+    "submit",
+    e=>{
+
+      e.preventDefault();
+
+
+      const name=
+        qs("contactName").value.trim();
+
+      const email=
+        qs("contactEmail").value.trim();
+
+      const phone=
+        qs("contactPhone").value.trim();
+
+      const message=
+        qs("contactMessage").value.trim();
+
+
+      if(
+        !name ||
+        !email ||
+        !message
+      ){
+
+        msg(
+          "contactMessageBox",
+          "⚠️ Tanpri ranpli non, imèl ak mesaj."
+        );
+
+        return;
+
+      }
+
+
+      const subject=
+        encodeURIComponent(
+          "Eagle-J Connect - Contact"
+        );
+
+
+      const body=
+        encodeURIComponent(
+          `Non: ${name}\nEmail: ${email}\nTelefòn: ${phone}\n\nMesaj:\n${message}`
+        );
+
+
+      location.href=
+        `mailto:eaglejconnect@gmail.com?subject=${subject}&body=${body}`;
+
+
+      msg(
+        "contactMessageBox",
+        "📧 Nou prepare mesaj la nan aplikasyon imèl ou.",
+        "success"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   PAGE INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  ()=>{
+
+
+    /* =====================================================
+       MOBILE MENU
+    ===================================================== */
+
+    setupMobileMenu();
+
+
+    /* =====================================================
+       REGISTRATION
+    ===================================================== */
+
+    const reg=qs("registerForm");
+
+    if(reg){
+
+      reg.addEventListener(
+        "submit",
+        registerUser
+      );
+
+    }
+
+
+    /* =====================================================
+       LOGIN
+    ===================================================== */
+
+    const login=qs("loginForm");
+
+    if(login){
+
+      login.addEventListener(
+        "submit",
+        loginUser
+      );
+
+    }
+
+
+    /* =====================================================
+       PUBLIC JOBS
+    ===================================================== */
+
+    if(qs("jobListings")){
+
+      loadJobs();
+
+
+      qs("searchJob")?.addEventListener(
+        "input",
+        renderJobs
+      );
+
+
+      qs("jobFilter")?.addEventListener(
+        "change",
+        renderJobs
+      );
+
+    }
+
+
+    /* =====================================================
+       BUSINESS LISTINGS
+    ===================================================== */
+
+    if(qs("businessListings")){
+
+      loadBusinesses();
+
+    }
+
+
+    /* =====================================================
+       BUSINESS FORM
+    ===================================================== */
+
+    if(qs("businessForm")){
+
+      qs("businessForm").addEventListener(
+        "submit",
+        submitBusiness
+      );
+
+    }
+
+
+    /* =====================================================
+       DASHBOARD
+    ===================================================== */
+
+    if(qs("dashboardLoading")){
+
+      loadDashboard();
+
+    }
+
+
+    /* =====================================================
+       EMPLOYER DASHBOARD
+    ===================================================== */
+
+    if(qs("employerName")){
+
+      loadEmployerDashboard();
+
+    }
+
+
+    /* =====================================================
+       JOB FORM
+    ===================================================== */
+
+    if(qs("jobForm")){
+
+      qs("jobForm").addEventListener(
+        "submit",
+        postJob
+      );
+
+    }
+
+
+    /* =====================================================
+       MY JOBS
+    ===================================================== */
+
+    if(qs("myJobs")){
+
+      const s=getSession();
+
+      if(s){
+
+        loadMyJobs(
+          s.user.id,
+          s.token
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       STATISTICS
+    ===================================================== */
+
+    if(qs("stats")){
+
+      loadStats();
+
+    }
+
+
+    /* =====================================================
+       CONTACT
+    ===================================================== */
+
+    initContact();
+
+  }
+);
