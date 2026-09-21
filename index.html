@@ -1,109 +1,191 @@
 <!DOCTYPE html>
 <html lang="ht">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Eagle-J Connect</title>
+  <title>Eagle-J Connect</title>
 
-<link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 
-<style>
-/* MENU FIX - MOBILE */
-@media (max-width: 768px){
+  <style>
+    /* ==============================
+       MOBILE MENU
+    ============================== */
 
-  .menu-toggle{
-    display:block !important;
-    background:transparent !important;
-    border:0 !important;
-    color:white !important;
-    font-size:32px !important;
-    padding:8px 12px !important;
-    cursor:pointer !important;
-    position:relative !important;
-    z-index:10002 !important;
-  }
+    @media (max-width: 768px) {
 
-  #menu{
-    display:none !important;
-  }
+      .menu-toggle {
+        display: block !important;
+        background: transparent !important;
+        border: 0 !important;
+        color: white !important;
+        font-size: 32px !important;
+        padding: 8px 12px !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 10002 !important;
+      }
 
-  #menu.show{
-    display:flex !important;
-  }
+      #menu {
+        display: none !important;
+      }
 
-}
+      #menu.show {
+        display: flex !important;
+      }
+    }
 
-.stat-link{
-  display:block;
-  text-decoration:none;
-  color:inherit;
-  cursor:pointer;
-  transition:transform .15s ease,box-shadow .15s ease;
-}
 
-.stat-link:hover{
-  transform:translateY(-2px);
-}
+    /* ==============================
+       BRAND TAGLINE
+    ============================== */
 
-.stat-link:active{
-  transform:translateY(0);
-}
-</style>
+    .brand-tagline {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      color: white !important;
+      font-size: 14px !important;
+      margin-top: 4px !important;
+      font-weight: 600 !important;
+    }
+
+
+    /* ==============================
+       HERO
+    ============================== */
+
+    .hero-title-main {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+    .hero-subtitle-main {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    }
+
+
+    /* ==============================
+       STAT LINKS
+    ============================== */
+
+    .stat-link {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+    }
+
+    .stat-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-link:active {
+      transform: translateY(0);
+    }
+  </style>
 
 </head>
 
+
 <body>
+
+
+<!-- ==============================
+     HEADER
+============================== -->
 
 <header class="header">
 
   <div class="logo-area">
 
-    <img src="Logo.jpg" alt="Eagle-J Connect Logo">
+    <img
+      src="Logo.jpg"
+      alt="Eagle-J Connect Logo"
+    >
 
     <div>
-      <h2>Eagle-J Connect</h2>
-      <span>Connect • Discover • Grow</span>
+
+      <h2>
+        Eagle-J Connect
+      </h2>
+
+      <span class="brand-tagline">
+        Connect • Discover • Grow
+      </span>
+
     </div>
 
   </div>
+
 
   <button
     class="menu-toggle"
     id="menuToggle"
     type="button"
     aria-label="Ouvri meni"
-    aria-expanded="false">
+    aria-expanded="false"
+  >
     ☰
   </button>
 
+
   <nav id="menu">
 
-    <a id="nav-home" href="index.html">
+    <a
+      id="nav-home"
+      href="index.html"
+    >
       Akèy
     </a>
 
-    <a id="nav-jobs" href="travay.html">
+
+    <a
+      id="nav-jobs"
+      href="travay.html"
+    >
       Travay
     </a>
 
-    <a id="nav-business" href="biznis.html">
+
+    <a
+      id="nav-business"
+      href="biznis.html"
+    >
       Biznis
     </a>
 
-    <a id="nav-contact" href="kontak.html">
+
+    <a
+      id="nav-contact"
+      href="kontak.html"
+    >
       Kontak
     </a>
 
-    <a id="nav-register" href="enskri.html">
+
+    <a
+      id="nav-register"
+      href="enskri.html"
+    >
       Enskri
     </a>
+
 
     <div class="language">
 
       <select
         id="languageSelect"
-        onchange="changeLanguage()">
+        onchange="changeLanguage()"
+      >
 
         <option value="ht">
           🇭🇹 Kreyòl
@@ -126,63 +208,87 @@
 </header>
 
 
-<!-- HERO -->
+
+<!-- ==============================
+     HERO
+============================== -->
 
 <section class="hero">
 
-  <h1 data-i18n="hero-title">
+
+  <h1
+    class="hero-title-main"
+    id="heroTitle"
+  >
     OPEN THE WAY. CREATE WEALTH.
   </h1>
 
-  <p data-i18n="hero-text">
-    Connect with people, discover opportunities, grow your network, and create new possibilities.
+
+  <p
+    class="hero-subtitle-main"
+    id="heroText"
+  >
+    Connect with people, discover opportunities,
+    grow your network, and create new possibilities.
   </p>
 
+
   <div class="hero-buttons">
+
 
     <a
       href="enskri.html"
       class="btn btn-primary"
-      data-i18n="create-account">
+    >
       Kreye Kont
     </a>
+
 
     <a
       href="travay.html"
       class="btn btn-secondary"
-      data-i18n="find-job">
+    >
       Chèche Travay
     </a>
+
 
   </div>
 
 </section>
 
 
-<!-- BUSINESS PROMOTION -->
+
+<!-- ==============================
+     BUSINESS PROMOTION
+============================== -->
 
 <section
   style="
     background:#F4B400;
     padding:50px 20px;
     text-align:center;
-  ">
+  "
+>
+
 
   <h2>
     🚀 Ou gen yon biznis?
   </h2>
 
+
   <p
     style="
       max-width:700px;
       margin:12px auto 22px;
-    ">
+    "
+  >
 
     Mete biznis ou sou Eagle-J Connect
     pou kominote a ka dekouvri
     pwodwi ak sèvis ou yo.
 
   </p>
+
 
   <a
     href="kreye-anons.html"
@@ -191,7 +297,8 @@
       background:#003366;
       color:white;
       text-decoration:none;
-    ">
+    "
+  >
 
     📢 KREYE YON ANONS
 
@@ -200,14 +307,22 @@
 </section>
 
 
-<!-- STATS -->
 
-<section id="stats" class="stats">
+<!-- ==============================
+     STATS
+============================== -->
+
+<section
+  id="stats"
+  class="stats"
+>
+
 
   <a
     href="travay.html"
     class="stat-box stat-link"
-    aria-label="Gade travay">
+    aria-label="Gade travay"
+  >
 
     <h2 id="stat-jobs">
       0
@@ -220,10 +335,12 @@
   </a>
 
 
+
   <a
     href="biznis.html"
     class="stat-box stat-link"
-    aria-label="Gade biznis">
+    aria-label="Gade biznis"
+  >
 
     <h2 id="stat-business">
       0
@@ -234,6 +351,7 @@
     </p>
 
   </a>
+
 
 
   <div class="stat-box">
@@ -249,10 +367,12 @@
   </div>
 
 
+
   <a
     href="anons-list.html"
     class="stat-box stat-link"
-    aria-label="Gade tout anons">
+    aria-label="Gade tout anons"
+  >
 
     <h2 id="stat-ads">
       0
@@ -264,16 +384,22 @@
 
   </a>
 
+
 </section>
 
 
-<!-- SERVICES -->
+
+<!-- ==============================
+     SERVICES
+============================== -->
 
 <section class="services">
 
-  <h2 data-i18n="services-title">
+
+  <h2>
     Sèvis Eagle-J Connect
   </h2>
+
 
   <div class="cards">
 
@@ -294,13 +420,13 @@
         style="
           text-decoration:none;
           display:inline-block;
-        ">
-
+        "
+      >
         Gade Travay
-
       </a>
 
     </article>
+
 
 
     <article class="card">
@@ -319,13 +445,13 @@
         style="
           text-decoration:none;
           display:inline-block;
-        ">
-
+        "
+      >
         Vizite
-
       </a>
 
     </article>
+
 
 
     <article class="card">
@@ -335,7 +461,8 @@
       </h3>
 
       <p>
-        Pibliye pwodwi oswa sèvis ou pou jwenn plis vizibilite.
+        Pibliye pwodwi oswa sèvis ou
+        pou jwenn plis vizibilite.
       </p>
 
       <a
@@ -344,26 +471,31 @@
         style="
           text-decoration:none;
           display:inline-block;
-        ">
-
+        "
+      >
         Kreye Anons
-
       </a>
 
     </article>
+
 
   </div>
 
 </section>
 
 
-<!-- ABOUT -->
+
+<!-- ==============================
+     ABOUT
+============================== -->
 
 <section class="about">
 
-  <h2 data-i18n="about-title">
+
+  <h2>
     Poukisa Eagle-J Connect?
   </h2>
+
 
   <p>
     Eagle-J Connect ede moun ak biznis
@@ -388,6 +520,7 @@
     </article>
 
 
+
     <article class="card">
 
       <h3>
@@ -395,10 +528,12 @@
       </h3>
 
       <p>
-        Chèche travay ak biznis fasil sou telefòn ou.
+        Chèche travay ak biznis fasil
+        sou telefòn ou.
       </p>
 
     </article>
+
 
 
     <article class="card">
@@ -413,12 +548,16 @@
 
     </article>
 
+
   </div>
 
 </section>
 
 
-<!-- FOOTER -->
+
+<!-- ==============================
+     FOOTER
+============================== -->
 
 <footer>
 
@@ -426,9 +565,11 @@
     Eagle-J Connect
   </h3>
 
+
   <p>
     OPEN THE WAY. CREATE WEALTH.
   </p>
+
 
   <p>
     © 2026 Eagle-J Connect
@@ -437,15 +578,18 @@
 </footer>
 
 
-<!-- LANGUAGE -->
 
-<script src="language.js?v=3"></script>
+<!-- ==============================
+     JAVASCRIPT
+============================== -->
 
-<!-- MAIN JAVASCRIPT -->
+<script src="language.js?v=4"></script>
 
-<script src="script.js?v=9"></script>
+<script src="script.js?v=10"></script>
 
 <script src="menu.js?v=6"></script>
 
+
 </body>
-</html>
+
+</html> 
