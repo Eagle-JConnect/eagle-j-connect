@@ -1249,6 +1249,58 @@ function initContact(){
 
 
 /* =========================================================
+   PUBLIC USERS DIRECTORY
+========================================================= */
+
+async function loadUsersDirectory(){
+
+  const box=qs("usersDirectory");
+  const count=qs("usersDirectoryCount");
+  if(!box)return;
+
+  try{
+    const rows=await api(
+      "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
+    );
+
+    const users=Array.isArray(rows)?rows:[];
+    if(count) count.textContent=`${users.length} itilizatè afiche`;
+
+    if(!users.length){
+      box.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><h3>Pa gen itilizatè pou afiche</h3><p>Nou poko gen pwofil piblik ki disponib.</p></div>`;
+      return;
+    }
+
+    box.innerHTML=users.map((u)=>{
+      const name=escapeHtml(u.full_name || "Itilizatè Eagle-J");
+      const type=escapeHtml(formatAccountType(u.account_type));
+      return `<article class="user-card">
+        <div class="user-avatar">${escapeHtml((u.full_name||"EJ").trim().slice(0,1).toUpperCase())}</div>
+        <div class="user-card-body">
+          <h3>${name}</h3>
+          <p>${type}</p>
+        </div>
+      </article>`;
+    }).join("");
+
+  }catch(err){
+    console.error("Users directory:",err);
+    if(count) count.textContent="";
+    box.innerHTML=`<div class="notice">❌ Nou pa kapab chaje lis itilizatè yo kounye a.</div>`;
+  }
+}
+
+function formatAccountType(type){
+  const map={
+    job_seeker:"Moun k ap chèche travay",
+    employer:"Anplwayè",
+    business:"Biznis",
+    professional:"Pwofesyonèl"
+  };
+  return map[type] || "Manm Eagle-J Connect";
+}
+
+/* =========================================================
    PAGE INITIALIZATION
 ========================================================= */
 
@@ -1427,6 +1479,16 @@ document.addEventListener(
     if(qs("stats")){
 
       loadStats();
+
+    }
+
+    /* =====================================================
+       PUBLIC USERS DIRECTORY
+    ===================================================== */
+
+    if(qs("usersDirectory")){
+
+      loadUsersDirectory();
 
     }
 
