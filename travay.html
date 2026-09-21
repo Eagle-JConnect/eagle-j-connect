@@ -2,7 +2,6 @@
 <html lang="ht">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -10,380 +9,422 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>
-    Travay | Eagle-J Connect
-  </title>
+  <title>Travay | Eagle-J Connect</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
+  <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
+  <!-- =========================
+       HEADER
+  ========================== -->
 
-<!-- =====================================================
-     HEADER
-===================================================== -->
+  <header class="header">
 
-<header class="header">
+    <div class="container nav-container">
 
-  <div class="logo-area">
+      <a href="index.html" class="logo">
 
-    <a
-      href="index.html"
-      style="text-decoration:none;color:inherit;display:flex;align-items:center;gap:10px;"
-    >
+        <div class="brand-wrap">
 
-      <img
-        src="Logo.jpg"
-        alt="Eagle-J Connect Logo"
+          <h2>Eagle-J Connect</h2>
+
+          <span class="brand-tagline">
+            Connect • Discover • Grow
+          </span>
+
+        </div>
+
+      </a>
+
+
+      <!-- MOBILE MENU -->
+
+      <button
+        id="menuToggle"
+        class="menu-toggle"
+        type="button"
+        aria-label="Menu"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+
+
+      <!-- NAVIGATION -->
+
+      <nav
+        id="navMenu"
+        class="nav-menu"
       >
 
-      <div>
-
-        <h2>
-          Eagle-J Connect
-        </h2>
-
-        <span>
-          Ayiti + Bahamas
-        </span>
-
-      </div>
-
-    </a>
-
-  </div>
+        <a
+          href="index.html"
+          data-i18n="nav-home"
+        >
+          Akèy
+        </a>
 
 
-  <button
-    id="menuToggle"
-    class="menu-toggle"
-    type="button"
-    aria-label="Meni"
-    aria-expanded="false"
-  >
-    ☰
-  </button>
+        <a
+          href="travay.html"
+          data-i18n="nav-jobs"
+        >
+          Travay
+        </a>
 
 
-  <nav
-    id="navMenu"
-  >
-
-    <a
-      href="index.html"
-      data-i18n="nav-home"
-    >
-      Akèy
-    </a>
+        <a
+          href="biznis.html"
+          data-i18n="nav-business"
+        >
+          Biznis
+        </a>
 
 
-    <a
-      href="travay.html"
-      data-i18n="nav-jobs"
-    >
-      Travay
-    </a>
+        <a
+          href="kontak.html"
+          data-i18n="nav-contact"
+        >
+          Kontak
+        </a>
 
 
-    <a
-      href="biznis.html"
-      data-i18n="nav-business"
-    >
-      Biznis
-    </a>
+        <a
+          href="enskri.html"
+          data-i18n="nav-register"
+        >
+          Enskri
+        </a>
 
 
-    <a
-      href="kontak.html"
-      data-i18n="nav-contact"
-    >
-      Kontak
-    </a>
+        <a
+          href="login.html"
+          data-i18n="nav-login"
+        >
+          Konekte
+        </a>
 
 
-    <a
-      href="enskri.html"
-      data-i18n="nav-register"
-    >
-      Enskri
-    </a>
+        <a
+          href="profil.html"
+          data-i18n="nav-account"
+        >
+          Kont Mwen
+        </a>
 
 
-    <a
-      href="login.html"
-      data-i18n="nav-login"
-    >
-      Konekte
-    </a>
+        <a
+          href="#"
+          id="logoutBtn"
+          data-i18n="nav-logout"
+        >
+          Dekonekte
+        </a>
 
 
-    <a
-      href="account.html"
-      data-i18n="nav-account"
-    >
-      Kont Mwen
-    </a>
+        <div class="language-box">
 
+          <select
+            id="languageSelect"
+            aria-label="Select language"
+          >
 
-    <a
-      href="#"
-      id="logoutBtn"
-      data-i18n="nav-logout"
-    >
-      Dekonekte
-    </a>
+            <option value="ht">
+              🇭🇹 Kreyòl
+            </option>
 
+            <option value="en">
+              🇺🇸 English
+            </option>
 
-    <div class="language-box">
+            <option value="fr">
+              🇫🇷 Français
+            </option>
 
-      <select
-        id="languageSelect"
-        aria-label="Select language"
-      >
+          </select>
 
-        <option value="ht">
-          🇭🇹 Kreyòl
-        </option>
+        </div>
 
-        <option value="en">
-          🇺🇸 English
-        </option>
-
-        <option value="fr">
-          🇫🇷 Français
-        </option>
-
-      </select>
+      </nav>
 
     </div>
 
-  </nav>
-
-</header>
+  </header>
 
 
+  <!-- =========================
+       HERO
+  ========================== -->
 
-<!-- =====================================================
-     HERO
-===================================================== -->
+  <section class="hero">
 
-<section class="hero">
+    <div class="container hero-content">
 
-  <div class="container">
-
-    <h1
-      data-i18n="jobs-title"
-    >
-      Opòtinite Travay
-    </h1>
-
-
-    <p
-      data-i18n="jobs-description"
-    >
-      Jwenn travay ki disponib nan Bahamas ak Ayiti.
-    </p>
-
-  </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     JOB SEARCH
-===================================================== -->
-
-<section class="services">
-
-  <div class="container">
-
-    <h2
-      data-i18n="category-title"
-    >
-      Travay ki disponib
-    </h2>
-
-
-    <div class="job-toolbar">
-
-
-      <input
-        type="text"
-        id="searchJob"
-        class="search-box"
-        data-i18n-placeholder="search-job"
-        placeholder="Chèche pa tit, konpayi oswa lokalizasyon..."
+      <h1
+        class="hero-title-main"
+        data-i18n="jobs-title"
       >
+        Opòtinite Travay
+      </h1>
 
 
-      <select
-        id="jobFilter"
-        class="search-box"
+      <p
+        class="hero-subtitle-main"
+        data-i18n="jobs-description"
       >
-
-        <option value="">
-          Tout kalite travay
-        </option>
-
-        <option value="full_time">
-          Full-time
-        </option>
-
-        <option value="part_time">
-          Part-time
-        </option>
-
-        <option value="contract">
-          Contract
-        </option>
-
-        <option value="temporary">
-          Temporary
-        </option>
-
-      </select>
-
-    </div>
-
-
-
-    <!-- =================================================
-         JOB LIST
-    ================================================= -->
-
-    <div
-      id="jobsList"
-      class="cards listing-grid"
-    >
-
-      <p>
-        ⏳ Ap chaje travay yo...
+        Jwenn travay ki disponib nan Bahamas ak Ayiti.
       </p>
 
     </div>
 
-  </div>
-
-</section>
+  </section>
 
 
+  <!-- =========================
+       JOB SEARCH
+  ========================== -->
 
-<!-- =====================================================
-     HOW IT WORKS
-===================================================== -->
+  <section class="services">
 
-<section class="about">
+    <div class="container">
 
-  <div class="container">
-
-    <h2
-      data-i18n="how-title"
-    >
-      Kijan sa mache?
-    </h2>
-
-
-    <div class="cards">
+      <h2
+        class="section-title"
+        data-i18n="category-title"
+      >
+        Travay ki disponib
+      </h2>
 
 
-      <article class="card">
+      <p class="section-description">
+        Chèche travay selon tit, konpayi,
+        lokalizasyon oswa kalite travay.
+      </p>
 
-        <h3
-          data-i18n="step-one"
+
+      <!-- SEARCH TOOLBAR -->
+
+      <div class="job-toolbar">
+
+        <input
+          type="text"
+          id="searchJob"
+          class="search-box"
+          data-i18n-placeholder="search-job"
+          placeholder="Chèche pa tit, konpayi oswa lokalizasyon..."
         >
-          1️⃣ Kreye Kont
-        </h3>
+
+
+        <select
+          id="jobFilter"
+          class="search-box"
+        >
+
+          <option value="">
+            Tout kalite travay
+          </option>
+
+          <option value="full_time">
+            Full-time
+          </option>
+
+          <option value="part_time">
+            Part-time
+          </option>
+
+          <option value="contract">
+            Contract
+          </option>
+
+          <option value="temporary">
+            Temporary
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- JOB LIST -->
+
+      <div
+        id="jobsList"
+        class="cards listing-grid"
+      >
 
         <p>
-          Enskri sou platfòm lan.
+          ⏳ Ap chaje travay yo...
         </p>
 
-      </article>
-
-
-
-      <article class="card">
-
-        <h3
-          data-i18n="step-two"
-        >
-          2️⃣ Chèche Travay
-        </h3>
-
-        <p>
-          Chèche selon tit, konpayi oswa lokalizasyon.
-        </p>
-
-      </article>
-
-
-
-      <article class="card">
-
-        <h3
-          data-i18n="step-three"
-        >
-          3️⃣ Aplike
-        </h3>
-
-        <p>
-          Rele oswa voye WhatsApp bay kontak travay la.
-        </p>
-
-      </article>
-
+      </div>
 
     </div>
 
-  </div>
-
-</section>
+  </section>
 
 
+  <!-- =========================
+       HOW IT WORKS
+  ========================== -->
 
-<!-- =====================================================
-     FOOTER
-===================================================== -->
+  <section class="about">
 
-<footer>
+    <div class="container">
 
-  <div class="container">
-
-    <h3>
-      Eagle-J Connect
-    </h3>
-
-    <p>
-      Konekte Opòtinite ant Ayiti ak Bahamas.
-    </p>
-
-    <p>
-      © 2026 Eagle-J Connect
-    </p>
-
-  </div>
-
-</footer>
+      <h2 data-i18n="how-title">
+        Kijan sa mache?
+      </h2>
 
 
+      <div class="cards">
 
-<!-- =====================================================
-     SCRIPTS
-===================================================== -->
 
-<script src="language.js?v=5"></script>
+        <!-- STEP 1 -->
 
-<script src="script.js?v=11"></script>
+        <article class="card">
 
-<script src="menu.js?v=7"></script>
+          <h3 data-i18n="step-one">
+            1️⃣ Kreye Kont
+          </h3>
 
+          <p>
+            Enskri sou platfòm lan pou kreye
+            pwofil ou.
+          </p>
+
+          <a
+            href="enskri.html"
+            class="btn btn-primary"
+          >
+            Enskri
+          </a>
+
+        </article>
+
+
+        <!-- STEP 2 -->
+
+        <article class="card">
+
+          <h3 data-i18n="step-two">
+            2️⃣ Chèche Travay
+          </h3>
+
+          <p>
+            Chèche selon tit, konpayi
+            oswa lokalizasyon.
+          </p>
+
+          <a
+            href="travay.html"
+            class="btn btn-primary"
+          >
+            Chèche Travay
+          </a>
+
+        </article>
+
+
+        <!-- STEP 3 -->
+
+        <article class="card">
+
+          <h3 data-i18n="step-three">
+            3️⃣ Aplike
+          </h3>
+
+          <p>
+            Rele oswa voye WhatsApp bay
+            kontak travay la.
+          </p>
+
+          <a
+            href="kontak.html"
+            class="btn btn-primary"
+          >
+            Kontakte Nou
+          </a>
+
+        </article>
+
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer>
+
+    <div class="container">
+
+      <h3>
+        Eagle-J Connect
+      </h3>
+
+      <p>
+        Konekte Opòtinite ant Ayiti ak Bahamas.
+      </p>
+
+
+      <div class="footer-links">
+
+        <a href="index.html">
+          Akèy
+        </a>
+
+        <a href="travay.html">
+          Travay
+        </a>
+
+        <a href="biznis.html">
+          Biznis
+        </a>
+
+        <a href="kontak.html">
+          Kontak
+        </a>
+
+        <a href="enskri.html">
+          Enskri
+        </a>
+
+        <a href="login.html">
+          Konekte
+        </a>
+
+        <a href="profil.html">
+          Kont Mwen
+        </a>
+
+      </div>
+
+
+      <p>
+        © 2026 Eagle-J Connect
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =========================
+       SCRIPTS
+  ========================== -->
+
+  <script src="language.js?v=5"></script>
+
+  <script src="script.js?v=11"></script>
+
+  <script src="menu.js?v=7"></script>
 
 </body>
 
