@@ -1,15 +1,17 @@
 /* =========================================================
    EAGLE-J CONNECT
-   RESPONSIVE DESIGN
-========================================================= */
+   COMPLETE RESPONSIVE DESIGN
+   ========================================================= */
 
 :root{
   --primary:#003366;
+  --primary-light:#07558f;
   --secondary:#F4B400;
   --light:#F5F8FC;
-  --white:#fff;
-  --dark:#222;
+  --white:#ffffff;
+  --dark:#222222;
   --muted:#667085;
+  --border:#d5dbe3;
   --danger:#c62828;
   --success:#18864b;
 }
@@ -17,7 +19,7 @@
 
 /* =========================================================
    RESET
-========================================================= */
+   ========================================================= */
 
 *{
   box-sizing:border-box;
@@ -33,8 +35,13 @@ body{
   font-family:Arial,Helvetica,sans-serif;
   background:var(--light);
   color:var(--dark);
-  padding-top:82px;
   line-height:1.55;
+  padding-top:82px;
+  overflow-x:hidden;
+}
+
+img{
+  max-width:100%;
 }
 
 a{
@@ -54,16 +61,28 @@ button{
 
 
 /* =========================================================
+   GENERAL CONTAINER
+   ========================================================= */
+
+.container{
+  width:100%;
+  max-width:1150px;
+  margin:0 auto;
+  padding-left:20px;
+  padding-right:20px;
+}
+
+
+/* =========================================================
    HEADER
-========================================================= */
+   ========================================================= */
 
 .header{
-  height:82px;
-  width:100%;
-
   position:fixed;
   top:0;
   left:0;
+  width:100%;
+  height:82px;
 
   z-index:10000;
 
@@ -71,289 +90,555 @@ button{
 
   display:flex;
   align-items:center;
+
+  box-shadow:0 2px 12px rgba(0,0,0,.15);
+}
+
+.nav-container{
+  height:100%;
+  display:flex;
+  align-items:center;
   justify-content:space-between;
-
-  padding:10px 28px;
-
-  box-shadow:
-    0 2px 12px rgba(0,0,0,.15);
+  gap:20px;
 }
 
 
 /* =========================================================
-   LOGO
-========================================================= */
+   LOGO / BRAND
+   ========================================================= */
 
-.logo-area{
-  display:flex;
-  align-items:center;
-  gap:9px;
-
-  min-width:0;
-}
-
-.logo-area img{
-  width:58px;
-  height:58px;
-
-  border-radius:50%;
-
-  object-fit:cover;
-
+.logo{
+  color:#fff;
+  text-decoration:none;
   flex-shrink:0;
 }
 
-.logo-area h2{
-  font-size:20px;
-  color:#fff;
+.brand-wrap{
+  display:flex;
+  flex-direction:column;
   line-height:1.1;
 }
 
-.logo-area span{
-  font-size:12px;
+.brand-wrap h2{
+  color:#fff;
+  font-size:21px;
+  font-weight:800;
+  margin:0;
+}
+
+.brand-tagline{
   color:var(--secondary);
+  font-size:10px;
+  letter-spacing:1.4px;
+  margin-top:5px;
+  text-transform:uppercase;
 }
 
 
 /* =========================================================
-   DESKTOP MENU
-========================================================= */
+   DESKTOP NAVIGATION
+   ========================================================= */
 
-#menu{
+.nav-menu{
   display:flex;
   align-items:center;
-  gap:18px;
+  justify-content:flex-end;
+  gap:6px;
 }
 
-#menu a{
+.nav-menu > a{
   color:#fff;
   text-decoration:none;
   font-weight:700;
-  padding:8px 5px;
-}
-
-#menu a:hover{
-  color:var(--secondary);
-}
-
-.language select{
-  padding:7px;
+  font-size:14px;
+  padding:9px 8px;
   border-radius:7px;
-  border:0;
+  white-space:nowrap;
+  transition:.2s ease;
+}
+
+.nav-menu > a:hover{
+  color:var(--secondary);
+  background:rgba(255,255,255,.08);
 }
 
 
 /* =========================================================
-   HAMBURGER BUTTON
-========================================================= */
+   LANGUAGE SELECTOR
+   ========================================================= */
+
+.language-box{
+  margin-left:8px;
+  flex-shrink:0;
+}
+
+#languageSelect{
+  width:auto;
+  min-width:125px;
+
+  padding:8px 10px;
+
+  border:1px solid rgba(255,255,255,.3);
+  border-radius:8px;
+
+  background:#fff;
+  color:#222;
+
+  cursor:pointer;
+  outline:none;
+}
+
+#languageSelect:focus{
+  border-color:var(--secondary);
+  box-shadow:0 0 0 2px rgba(244,180,0,.25);
+}
+
+
+/* =========================================================
+   HAMBURGER
+   ========================================================= */
 
 .menu-toggle{
   display:none;
 
-  width:50px;
-  height:50px;
+  width:48px;
+  height:48px;
 
   padding:0;
+  margin-left:auto;
 
   background:transparent !important;
-
   border:0 !important;
 
   color:#fff !important;
 
-  font-size:32px;
-  font-weight:bold;
-
+  font-size:30px;
   line-height:1;
 
-  text-align:center;
-
-  cursor:pointer;
+  align-items:center;
+  justify-content:center;
 
   position:relative;
+  z-index:10003;
 
-  z-index:10002;
+  cursor:pointer;
 }
 
 
 /* =========================================================
    HERO
-========================================================= */
+   ========================================================= */
 
 .hero{
-  background:linear-gradient(
-    135deg,
-    #003366,
-    #07558f
-  );
+  width:100%;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--primary),
+      var(--primary-light)
+    );
 
   color:#fff;
-
   text-align:center;
 
-  padding:85px 20px;
+  padding:90px 20px;
 }
 
-.hero h1{
-  font-size:clamp(30px,5vw,46px);
-  max-width:850px;
-  margin:auto;
-  line-height:1.2;
+.hero-content{
+  max-width:950px;
 }
 
-.hero p{
+.hero-title-main{
+  font-size:clamp(30px,5vw,50px);
+  line-height:1.15;
+
+  font-weight:900;
+
+  max-width:900px;
+
+  margin:0 auto;
+
+  text-transform:uppercase;
+}
+
+.hero-subtitle-main{
   max-width:720px;
-  margin:20px auto;
+
+  margin:22px auto 0;
+
   font-size:19px;
+  line-height:1.6;
+
+  color:rgba(255,255,255,.92);
 }
 
 .hero-buttons{
   display:flex;
   justify-content:center;
+  align-items:center;
+
   gap:14px;
+
   flex-wrap:wrap;
+
   margin-top:30px;
 }
 
 
 /* =========================================================
    BUTTONS
-========================================================= */
+   ========================================================= */
 
-.btn,
-button{
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  min-height:44px;
+
   border:0;
   border-radius:9px;
+
   padding:12px 20px;
+
   font-weight:700;
+
+  text-decoration:none;
+
+  cursor:pointer;
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    background .15s ease;
 }
 
-.btn-primary,
-button{
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn-primary{
   background:var(--secondary);
   color:var(--primary);
+
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
+
+.btn-primary:hover{
+  background:#ffc928;
 }
 
 .btn-secondary{
   background:#fff;
   color:var(--primary);
+
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
+
+.btn-secondary:hover{
+  background:#f1f5f9;
+}
+
+.btn-small{
+  padding:9px 14px;
+  font-size:14px;
 }
 
 
 /* =========================================================
-   SECTIONS
-========================================================= */
+   BUSINESS PROMOTION
+   ========================================================= */
 
-.services,
-.about{
-  padding:60px 20px;
-  max-width:1150px;
-  margin:auto;
-  text-align:center;
-}
+.business-promo{
+  width:100%;
 
-.services h1,
-.about h2,
-.services>h2{
-  color:var(--primary);
-  margin-bottom:15px;
-}
-
-
-/* =========================================================
-   CARDS
-========================================================= */
-
-.cards{
-  display:flex;
-  justify-content:center;
-  gap:22px;
-  flex-wrap:wrap;
-  margin-top:28px;
-}
-
-.card{
   background:#fff;
 
-  width:min(340px,100%);
+  text-align:center;
 
-  padding:25px;
+  padding:55px 20px;
 
-  border-radius:14px;
-
-  border-top:4px solid var(--secondary);
-
-  box-shadow:
-    0 5px 18px rgba(0,0,0,.08);
-
-  text-align:left;
+  border-bottom:1px solid #e7edf3;
 }
 
-.card h3{
+.business-promo .container{
+  max-width:850px;
+}
+
+.business-promo h2{
   color:var(--primary);
-  margin-bottom:10px;
+  font-size:clamp(25px,4vw,34px);
+  margin-bottom:12px;
 }
 
-.card p{
-  color:#555;
-  margin:7px 0;
-}
+.business-promo p{
+  max-width:700px;
+  margin:0 auto 22px;
 
-.card button,
-.card .btn{
-  margin-top:12px;
+  color:var(--muted);
+  font-size:17px;
 }
 
 
 /* =========================================================
-   STATISTICS
-========================================================= */
+   STATS
+   ========================================================= */
 
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-
-  padding:35px 20px;
-
-  max-width:1100px;
-  margin:auto;
+.stats-section{
+  width:100%;
+  padding:35px 0;
 }
 
-.stat-box{
+.stats-grid{
+  display:grid;
+
+  grid-template-columns:repeat(4,1fr);
+
+  gap:16px;
+}
+
+.stat-card{
   background:#fff;
 
   border-radius:12px;
 
   text-align:center;
 
-  padding:22px;
+  padding:23px 15px;
 
-  box-shadow:
-    0 4px 15px rgba(0,0,0,.07);
+  box-shadow:0 4px 15px rgba(0,0,0,.07);
+
+  border:1px solid #edf1f5;
 }
 
-.stat-box h2{
+.stat-card h2{
   font-size:32px;
   color:var(--primary);
+  margin-bottom:3px;
 }
 
-.stat-box p{
+.stat-card p{
+  color:var(--muted);
+  font-size:14px;
+  font-weight:600;
+}
+
+
+/* =========================================================
+   SERVICES
+   ========================================================= */
+
+.services-section{
+  width:100%;
+  padding:65px 0;
+}
+
+.section-title{
+  color:var(--primary);
+
+  text-align:center;
+
+  font-size:clamp(25px,4vw,34px);
+
+  margin-bottom:35px;
+}
+
+.services-grid{
+  display:grid;
+
+  grid-template-columns:repeat(4,1fr);
+
+  gap:20px;
+}
+
+.service-card{
+  background:#fff;
+
+  padding:26px 22px;
+
+  border-radius:14px;
+
+  border-top:4px solid var(--secondary);
+
+  box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+  text-align:center;
+
+  min-width:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.service-icon{
+  font-size:42px;
+  margin-bottom:12px;
+}
+
+.service-card h3{
+  color:var(--primary);
+  font-size:20px;
+  margin-bottom:9px;
+}
+
+.service-card p{
+  color:#555;
+
+  font-size:15px;
+
+  margin-bottom:15px;
+
+  flex:1;
+}
+
+.service-card .btn{
+  margin-top:auto;
+}
+
+
+/* =========================================================
+   HOW IT WORKS
+   ========================================================= */
+
+.how-section{
+  width:100%;
+
+  background:#fff;
+
+  padding:65px 0;
+
+  border-top:1px solid #e7edf3;
+  border-bottom:1px solid #e7edf3;
+}
+
+.steps-grid{
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:20px;
+
+  max-width:900px;
+
+  margin:0 auto;
+}
+
+.step-card{
+  background:var(--light);
+
+  border-radius:14px;
+
+  padding:28px 20px;
+
+  text-align:center;
+
+  border:1px solid #e4eaf0;
+}
+
+.step-number{
+  width:52px;
+  height:52px;
+
+  margin:0 auto 15px;
+
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:var(--primary);
+  color:#fff;
+
+  font-size:21px;
+  font-weight:800;
+}
+
+.step-card h3{
+  color:var(--primary);
+  margin-bottom:8px;
+}
+
+.step-card p{
+  color:var(--muted);
+}
+
+
+/* =========================================================
+   ABOUT
+   ========================================================= */
+
+.about-section{
+  width:100%;
+
+  padding:65px 0;
+}
+
+.about-text{
+  max-width:800px;
+
+  margin:0 auto 35px;
+
+  text-align:center;
+
+  color:var(--muted);
+
+  font-size:17px;
+}
+
+.about-grid{
+  display:grid;
+
+  grid-template-columns:repeat(3,1fr);
+
+  gap:20px;
+
+  max-width:950px;
+
+  margin:0 auto;
+}
+
+.about-card{
+  background:#fff;
+
+  padding:25px 20px;
+
+  border-radius:13px;
+
+  text-align:center;
+
+  box-shadow:0 5px 18px rgba(0,0,0,.07);
+
+  border:1px solid #edf1f5;
+}
+
+.about-card h3{
+  color:var(--primary);
+  margin-bottom:8px;
+}
+
+.about-card p{
   color:var(--muted);
 }
 
 
 /* =========================================================
    FORMS
-========================================================= */
+   ========================================================= */
 
 .form-wrap{
+  width:100%;
   max-width:700px;
-  margin:auto;
+
+  margin:0 auto;
 }
 
 .business-form{
+  width:100%;
   max-width:700px;
+
   margin:25px auto;
 
   display:flex;
@@ -369,13 +654,16 @@ button{
 
   border-radius:14px;
 
-  box-shadow:
-    0 5px 18px rgba(0,0,0,.07);
+  box-shadow:0 5px 18px rgba(0,0,0,.07);
+
+  border:1px solid #edf1f5;
 }
 
 .business-form label{
   font-weight:700;
+
   color:var(--primary);
+
   margin-top:5px;
 }
 
@@ -385,9 +673,11 @@ button{
 .search-box{
   width:100%;
 
+  min-width:0;
+
   padding:13px;
 
-  border:1px solid #d5dbe3;
+  border:1px solid var(--border);
 
   border-radius:8px;
 
@@ -413,24 +703,28 @@ button{
 
 .form-message{
   text-align:center;
+
   font-weight:700;
+
   min-height:25px;
+
   margin:10px;
 }
 
 
 /* =========================================================
    JOB TOOLBAR
-========================================================= */
+   ========================================================= */
 
 .job-toolbar{
+  width:100%;
   max-width:900px;
 
   margin:25px auto;
 
   display:grid;
 
-  grid-template-columns:1fr 180px;
+  grid-template-columns:minmax(0,1fr) 180px;
 
   gap:10px;
 }
@@ -438,11 +732,21 @@ button{
 
 /* =========================================================
    LISTINGS
-========================================================= */
+   ========================================================= */
 
 .listing-grid{
+  width:100%;
   max-width:1100px;
-  margin:auto;
+
+  margin:0 auto;
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  justify-content:center;
+
+  gap:20px;
 }
 
 .job-card,
@@ -452,17 +756,58 @@ button{
 
 
 /* =========================================================
+   CARDS
+   ========================================================= */
+
+.card{
+  background:#fff;
+
+  width:min(340px,100%);
+
+  padding:25px;
+
+  border-radius:14px;
+
+  border-top:4px solid var(--secondary);
+
+  box-shadow:0 5px 18px rgba(0,0,0,.08);
+
+  text-align:left;
+}
+
+.card h3{
+  color:var(--primary);
+  margin-bottom:10px;
+}
+
+.card p{
+  color:#555;
+  margin:7px 0;
+}
+
+.card button,
+.card .btn{
+  margin-top:12px;
+}
+
+
+/* =========================================================
    JOB META
-========================================================= */
+   ========================================================= */
 
 .job-card .meta{
   display:flex;
+
   gap:8px;
+
   flex-wrap:wrap;
+
   margin:10px 0;
 }
 
 .badge{
+  display:inline-block;
+
   background:#edf3f8;
 
   color:var(--primary);
@@ -477,10 +822,13 @@ button{
 
 /* =========================================================
    BUSINESS IMAGE
-========================================================= */
+   ========================================================= */
 
 .business-card img{
+  display:block;
+
   width:100%;
+
   height:220px;
 
   object-fit:contain;
@@ -492,15 +840,64 @@ button{
   margin-bottom:14px;
 }
 
+.business-detail-image{
+  display:block;
+
+  width:100%;
+
+  max-height:460px;
+
+  object-fit:contain;
+
+  background:#f5f8fc;
+
+  border-radius:12px;
+
+  margin-bottom:22px;
+}
+
+.business-detail-placeholder{
+  min-height:220px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  font-size:70px;
+
+  background:#f5f8fc;
+
+  border-radius:12px;
+
+  margin-bottom:22px;
+}
+
+.business-card{
+  transition:
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.business-card:hover{
+  transform:translateY(-2px);
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.12);
+}
+
 
 /* =========================================================
    ACTION BUTTONS
-========================================================= */
+   ========================================================= */
 
 .actions{
   display:flex;
+
   gap:8px;
+
   flex-wrap:wrap;
+
   margin-top:15px;
 }
 
@@ -515,7 +912,7 @@ button{
 
 /* =========================================================
    NOTICE
-========================================================= */
+   ========================================================= */
 
 .notice{
   padding:15px;
@@ -531,38 +928,8 @@ button{
 
 
 /* =========================================================
-   HIDDEN
-========================================================= */
-
-.hidden{
-  display:none !important;
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-footer{
-  background:var(--primary);
-
-  color:#fff;
-
-  text-align:center;
-
-  padding:30px 20px;
-
-  margin-top:40px;
-}
-
-footer p{
-  margin-top:7px;
-}
-
-
-/* =========================================================
    AUTH
-========================================================= */
+   ========================================================= */
 
 .auth-links{
   text-align:center;
@@ -576,13 +943,218 @@ footer p{
 
 
 /* =========================================================
+   HIDDEN
+   ========================================================= */
+
+.hidden{
+  display:none !important;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer{
+  background:var(--primary);
+
+  color:#fff;
+
+  text-align:center;
+
+  padding:35px 20px;
+
+  margin-top:40px;
+}
+
+.footer h3{
+  font-size:22px;
+  margin-bottom:7px;
+}
+
+.footer p{
+  margin-top:7px;
+}
+
+.footer-links{
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  flex-wrap:wrap;
+
+  gap:18px;
+
+  margin-top:18px;
+}
+
+.footer-links a{
+  color:#fff;
+
+  text-decoration:none;
+
+  font-weight:700;
+}
+
+.footer-links a:hover{
+  color:var(--secondary);
+}
+
+.copyright{
+  opacity:.75;
+  font-size:13px;
+  margin-top:20px !important;
+}
+
+
+/* =========================================================
+   MARKETPLACE
+   ========================================================= */
+
+.marketplace-tools{
+  padding-top:25px;
+}
+
+.marketplace-categories{
+  display:flex;
+
+  gap:10px;
+
+  flex-wrap:wrap;
+
+  justify-content:center;
+
+  margin:0 auto 18px;
+}
+
+.market-tab{
+  border:1px solid #d5dfeb;
+
+  background:#fff;
+
+  color:var(--primary);
+
+  border-radius:999px;
+
+  padding:10px 15px;
+
+  cursor:pointer;
+
+  font-weight:700;
+}
+
+.market-tab.active,
+.market-tab:hover{
+  background:var(--primary);
+  color:#fff;
+}
+
+.market-search-row{
+  display:grid;
+
+  grid-template-columns:minmax(0,2fr) minmax(150px,1fr);
+
+  gap:12px;
+
+  max-width:900px;
+
+  margin:0 auto 10px;
+}
+
+.market-search-row input,
+.market-search-row select{
+  width:100%;
+
+  min-width:0;
+
+  padding:13px 14px;
+
+  border:1px solid #ccd7e2;
+
+  border-radius:10px;
+
+  font-size:16px;
+
+  background:#fff;
+}
+
+.market-result-count{
+  text-align:center;
+
+  color:#607080;
+
+  margin:8px 0 20px;
+}
+
+.market-badge{
+  display:inline-block;
+
+  margin:12px 0 0;
+
+  background:#eef5fb;
+
+  color:var(--primary);
+
+  border-radius:999px;
+
+  padding:5px 9px;
+
+  font-size:13px;
+
+  font-weight:700;
+}
+
+.marketplace-card img{
+  width:100%;
+
+  height:210px;
+
+  object-fit:cover;
+
+  border-radius:10px 10px 0 0;
+}
+
+.marketplace-placeholder{
+  height:210px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  font-size:70px;
+
+  background:#f5f8fc;
+
+  border-radius:10px 10px 0 0;
+}
+
+.market-view{
+  margin-top:12px;
+
+  font-size:14px;
+
+  color:var(--primary);
+
+  font-weight:bold;
+}
+
+
+/* =========================================================
    MOBILE
-========================================================= */
+   ========================================================= */
 
 @media(max-width:768px){
 
   body{
     padding-top:74px;
+  }
+
+  .container{
+    padding-left:15px;
+    padding-right:15px;
   }
 
 
@@ -593,152 +1165,144 @@ footer p{
 
     padding:8px 15px;
 
-    z-index:10000;
+    position:fixed !important;
+
+    top:0;
+    left:0;
+    right:0;
+  }
+
+  .nav-container{
+    padding-left:0;
+    padding-right:0;
+
+    gap:8px;
   }
 
 
-  /* LOGO */
+  /* BRAND */
 
-  .logo-area{
-    max-width:calc(100% - 65px);
-  }
-
-  .logo-area img{
-    width:48px;
-    height:48px;
-  }
-
-  .logo-area h2{
+  .brand-wrap h2{
     font-size:17px;
   }
 
-  .logo-area span{
-    display:none;
+  .brand-tagline{
+    font-size:8px;
+    letter-spacing:1px;
   }
 
 
-  /* =====================================================
-     HAMBURGER
-  ====================================================== */
+  /* HAMBURGER */
 
   .menu-toggle{
     display:flex !important;
 
-    align-items:center;
-    justify-content:center;
-
-    width:50px;
-    height:50px;
-
     flex-shrink:0;
+
+    width:48px !important;
+    height:48px !important;
 
     background:transparent !important;
 
     color:#fff !important;
 
-    border:none !important;
+    border:0 !important;
 
-    font-size:32px;
+    padding:0 !important;
 
-    position:relative;
+    margin-left:auto !important;
 
-    z-index:10002;
+    font-size:30px;
 
-    -webkit-appearance:none;
-    appearance:none;
+    align-items:center;
+    justify-content:center;
+
+    position:relative !important;
+
+    z-index:10003 !important;
+
+    pointer-events:auto !important;
   }
 
 
-  /* =====================================================
-     MOBILE MENU CLOSED
-  ====================================================== */
+  /* MOBILE MENU */
 
-  #menu{
+  .nav-menu{
 
-    display:none;
+    display:none !important;
 
-    position:absolute;
+    position:fixed !important;
 
-    top:74px;
-    right:0;
+    top:74px !important;
 
-    width:270px;
-    max-width:90vw;
+    right:0 !important;
+
+    width:280px;
+
+    max-width:88vw;
+
+    max-height:calc(100vh - 74px);
+
+    overflow-y:auto;
+
+    padding:14px;
 
     background:var(--primary);
 
-    padding:14px;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,.30);
+
+    border-radius:0 0 0 14px;
 
     flex-direction:column;
 
     align-items:stretch;
 
+    justify-content:flex-start;
+
     gap:4px;
 
-    box-shadow:
-      0 8px 20px rgba(0,0,0,.30);
-
-    border-radius:
-      0 0 0 12px;
-
-    z-index:10001;
+    z-index:10002 !important;
   }
 
-
-  /* =====================================================
-     MOBILE MENU OPEN
-  ====================================================== */
-
-  #menu.show{
-
+  .nav-menu.show{
     display:flex !important;
-
   }
 
 
-  /* MENU LINKS */
-
-  #menu a{
-
+  .nav-menu > a{
     display:block;
 
     width:100%;
 
-    color:#fff;
-
-    text-decoration:none;
-
     padding:13px 12px;
+
+    color:#fff;
 
     border-radius:7px;
 
-    font-weight:700;
+    font-size:15px;
   }
 
-
-  #menu a:hover{
-
+  .nav-menu > a:hover{
     background:rgba(255,255,255,.10);
-
     color:var(--secondary);
-
   }
 
 
   /* LANGUAGE */
 
-  .language{
-
+  .language-box{
     width:100%;
 
-    margin-top:5px;
-
+    margin:6px 0 0;
   }
 
-  .language select{
-
+  #languageSelect{
     width:100%;
+    min-width:0;
 
+    height:42px;
   }
 
 
@@ -748,25 +1312,88 @@ footer p{
     padding:65px 18px;
   }
 
-  .hero p{
+  .hero-title-main{
+    font-size:clamp(29px,8vw,40px);
+  }
+
+  .hero-subtitle-main{
     font-size:17px;
+  }
+
+  .hero-buttons{
+    gap:10px;
+  }
+
+  .hero-buttons .btn{
+    width:100%;
+    max-width:280px;
+  }
+
+
+  /* BUSINESS PROMO */
+
+  .business-promo{
+    padding:45px 18px;
   }
 
 
   /* STATS */
 
-  .stats{
-    grid-template-columns:repeat(2,1fr);
+  .stats-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
 
-    padding:25px 15px;
+    gap:12px;
+  }
+
+  .stat-card{
+    padding:19px 10px;
+  }
+
+  .stat-card h2{
+    font-size:28px;
   }
 
 
-  /* SECTIONS */
+  /* SERVICES */
 
-  .services,
-  .about{
-    padding:45px 15px;
+  .services-section,
+  .how-section,
+  .about-section{
+    padding:50px 0;
+  }
+
+  .services-grid{
+    grid-template-columns:1fr;
+    gap:16px;
+  }
+
+  .service-card{
+    width:100%;
+  }
+
+
+  /* STEPS */
+
+  .steps-grid{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+
+  /* ABOUT */
+
+  .about-grid{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+
+  /* FORMS */
+
+  .business-form{
+    padding:19px;
+
+    border-radius:12px;
   }
 
 
@@ -779,15 +1406,45 @@ footer p{
 
   /* CARDS */
 
-  .card{
+  .card,
+  .job-card,
+  .business-card{
     width:100%;
+    max-width:100%;
   }
 
 
-  /* BUSINESS CARD */
+  /* MARKETPLACE */
 
-  .business-card{
-    width:100%;
+  .market-search-row{
+    grid-template-columns:1fr;
+  }
+
+  .marketplace-categories{
+    justify-content:flex-start;
+
+    overflow-x:auto;
+
+    flex-wrap:nowrap;
+
+    padding-bottom:5px;
+  }
+
+  .market-tab{
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+
+  .marketplace-card img,
+  .marketplace-placeholder{
+    height:180px;
+  }
+
+
+  /* BUSINESS DETAIL */
+
+  .business-detail-image{
+    max-height:320px;
   }
 
 }
@@ -795,7 +1452,7 @@ footer p{
 
 /* =========================================================
    SMALL PHONES
-========================================================= */
+   ========================================================= */
 
 @media(max-width:400px){
 
@@ -804,114 +1461,69 @@ footer p{
     padding-right:10px;
   }
 
-  .logo-area{
-    gap:6px;
-  }
-
-  .logo-area img{
-    width:44px;
-    height:44px;
-  }
-
-  .logo-area h2{
+  .brand-wrap h2{
     font-size:15px;
   }
 
+  .brand-tagline{
+    font-size:7px;
+  }
+
   .menu-toggle{
-    width:46px;
-    height:46px;
-    font-size:30px;
+    width:44px !important;
+    height:44px !important;
+    font-size:28px;
   }
 
-  #menu{
+  .nav-menu{
     width:250px;
+    max-width:90vw;
+  }
+
+  .hero{
+    padding:55px 15px;
+  }
+
+  .hero-title-main{
+    font-size:28px;
+  }
+
+  .hero-subtitle-main{
+    font-size:16px;
+  }
+
+  .stats-grid{
+    gap:9px;
+  }
+
+  .stat-card h2{
+    font-size:25px;
+  }
+
+  .stat-card p{
+    font-size:12px;
+  }
+
+  .business-form{
+    padding:16px;
   }
 
 }
 
-/* =========================================================
-   BUSINESS DETAIL
-========================================================= */
-
-.business-detail-image{
-  display:block;
-  width:100%;
-  max-height:460px;
-  object-fit:contain;
-  background:#f5f8fc;
-  border-radius:12px;
-  margin-bottom:22px;
-}
-
-.business-detail-placeholder{
-  min-height:220px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:70px;
-  background:#f5f8fc;
-  border-radius:12px;
-  margin-bottom:22px;
-}
-
-.business-card{
-  transition:transform .18s ease, box-shadow .18s ease;
-}
-
-.business-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 24px rgba(0,0,0,.12);
-}
-
-@media(max-width:768px){
-  .business-detail-image{
-    max-height:320px;
-  }
-}
 
 /* =========================================================
-   FINAL MOBILE MENU FIX v4
+   PREVENT HORIZONTAL OVERFLOW
    ========================================================= */
-@media (max-width: 768px) {
-  .header { position: fixed !important; top: 0; left: 0; right: 0; }
-  .menu-toggle {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 50px !important;
-    height: 50px !important;
-    padding: 0 !important;
-    margin-left: auto !important;
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    position: relative !important;
-    z-index: 10003 !important;
-  }
-  #menu {
-    display: none !important;
-    position: fixed !important;
-    top: 74px !important;
-    right: 0 !important;
-    z-index: 10002 !important;
-  }
-  #menu.show {
-    display: flex !important;
-  }
+
+html,
+body{
+  max-width:100%;
+  overflow-x:hidden;
 }
 
-
-/* =========================================================
-   EAGLE-J CONNECT MARKETPLACE
-========================================================= */
-.marketplace-tools{padding-top:25px}
-.marketplace-categories{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0 auto 18px}
-.market-tab{border:1px solid #d5dfeb;background:#fff;color:#003366;border-radius:999px;padding:10px 15px;cursor:pointer;font-weight:700}
-.market-tab.active,.market-tab:hover{background:#003366;color:#fff}
-.market-search-row{display:grid;grid-template-columns:2fr 1fr;gap:12px;max-width:900px;margin:0 auto 10px}
-.market-search-row input,.market-search-row select{width:100%;padding:13px 14px;border:1px solid #ccd7e2;border-radius:10px;font-size:16px;background:#fff}
-.market-result-count{text-align:center;color:#607080;margin:8px 0 20px}
-.market-badge{display:inline-block;margin:12px 0 0;background:#eef5fb;color:#003366;border-radius:999px;padding:5px 9px;font-size:13px;font-weight:700}
-.marketplace-card img{width:100%;height:210px;object-fit:cover;border-radius:10px 10px 0 0}
-.marketplace-placeholder{height:210px;display:flex;align-items:center;justify-content:center;font-size:70px;background:#f5f8fc;border-radius:10px 10px 0 0}
-.market-view{margin-top:12px;font-size:14px;color:#003366;font-weight:bold}
-@media(max-width:768px){.market-search-row{grid-template-columns:1fr}.marketplace-categories{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}.market-tab{white-space:nowrap}.marketplace-card img,.marketplace-placeholder{height:180px}}
+input,
+select,
+textarea,
+button{
+  max-width:100%;
+       } 
