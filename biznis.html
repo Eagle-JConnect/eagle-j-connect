@@ -37,15 +37,33 @@
 
 <main>
   <section class="hero">
-    <h1 data-i18n="business-title">🏢 Biznis ak Sèvis</h1>
-    <p>Jwenn biznis, pwodwi ak sèvis ki disponib nan kominote Ayiti ak Bahamas.</p>
+    <h1 data-i18n="business-title">🌎 Eagle-J Connect Marketplace</h1>
+    <p>Jwenn anplwaye, anplwayè, pwofesyonèl, sèvis, biznis ak byen nan kominote Ayiti ak Bahamas.</p>
     <div class="actions" style="justify-content:center">
-      <a class="btn" href="kreye-anons.html">📢 Kreye yon Anons</a>
+      <a class="btn" href="travay.html">💼 Chèche Travay</a>
+      <a class="btn" href="kreye-anons.html">📢 Mete yon Anons</a>
     </div>
   </section>
 
-  <section class="services">
-    <h2>Biznis ki disponib</h2>
+  <section class="services marketplace-tools">
+    <div class="marketplace-categories">
+      <button class="market-tab active" type="button" data-filter="all">🌎 Tout</button>
+      <button class="market-tab" type="button" data-filter="employee">👷 Anplwaye</button>
+      <button class="market-tab" type="button" data-filter="employer">🏢 Anplwayè</button>
+      <button class="market-tab" type="button" data-filter="professional">👨🏾‍🔧 Pwofesyonèl</button>
+      <button class="market-tab" type="button" data-filter="service">🛠️ Sèvis</button>
+      <button class="market-tab" type="button" data-filter="business">🛍️ Biznis</button>
+      <button class="market-tab" type="button" data-filter="property">🏠 Byen</button>
+    </div>
+    <div class="market-search-row">
+      <input id="marketSearch" type="search" placeholder="🔎 Chèche yon pwofesyonèl, sèvis, biznis oswa byen..." aria-label="Chèche nan marketplace">
+      <select id="marketLocation" aria-label="Filtre pa lokalizasyon">
+        <option value="">📍 Tout lokalizasyon</option>
+        <option value="bahamas">🇧🇸 Bahamas</option>
+        <option value="ayiti">🇭🇹 Ayiti</option>
+      </select>
+    </div>
+    <p id="marketResultCount" class="market-result-count"></p>
     <div id="businessListings" class="cards listing-grid">
       <p class="notice">⏳ Anons yo ap chaje...</p>
     </div>

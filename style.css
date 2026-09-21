@@ -898,3 +898,20 @@ footer p{
     display: flex !important;
   }
 }
+
+
+/* =========================================================
+   EAGLE-J CONNECT MARKETPLACE
+========================================================= */
+.marketplace-tools{padding-top:25px}
+.marketplace-categories{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0 auto 18px}
+.market-tab{border:1px solid #d5dfeb;background:#fff;color:#003366;border-radius:999px;padding:10px 15px;cursor:pointer;font-weight:700}
+.market-tab.active,.market-tab:hover{background:#003366;color:#fff}
+.market-search-row{display:grid;grid-template-columns:2fr 1fr;gap:12px;max-width:900px;margin:0 auto 10px}
+.market-search-row input,.market-search-row select{width:100%;padding:13px 14px;border:1px solid #ccd7e2;border-radius:10px;font-size:16px;background:#fff}
+.market-result-count{text-align:center;color:#607080;margin:8px 0 20px}
+.market-badge{display:inline-block;margin:12px 0 0;background:#eef5fb;color:#003366;border-radius:999px;padding:5px 9px;font-size:13px;font-weight:700}
+.marketplace-card img{width:100%;height:210px;object-fit:cover;border-radius:10px 10px 0 0}
+.marketplace-placeholder{height:210px;display:flex;align-items:center;justify-content:center;font-size:70px;background:#f5f8fc;border-radius:10px 10px 0 0}
+.market-view{margin-top:12px;font-size:14px;color:#003366;font-weight:bold}
+@media(max-width:768px){.market-search-row{grid-template-columns:1fr}.marketplace-categories{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding-bottom:5px}.market-tab{white-space:nowrap}.marketplace-card img,.marketplace-placeholder{height:180px}}

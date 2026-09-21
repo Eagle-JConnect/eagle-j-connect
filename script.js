@@ -405,6 +405,24 @@ async function registerUser(e){
 
   e.preventDefault();
 
+  // Prevent accidental double-clicks / repeated signup requests.
+  const form=qs("registerForm");
+  const submitButton=form?.querySelector('button[type="submit"]');
+  const RATE_LIMIT_KEY="eaglej_signup_last_attempt";
+  const COOLDOWN_MS=60000;
+  const lastAttempt=Number(localStorage.getItem(RATE_LIMIT_KEY)||0);
+  const remaining=COOLDOWN_MS-(Date.now()-lastAttempt);
+
+  if(remaining>0){
+    const seconds=Math.ceil(remaining/1000);
+    msg(
+      "registerMessage",
+      `⏳ Tanpri tann ${seconds} segonn anvan ou eseye kreye yon lòt kont. Sa ede evite limit demann Supabase la.`,
+      "warning"
+    );
+    return;
+  }
+
   const fullName=qs("fullName").value.trim();
   const email=qs("email").value.trim();
   const phone=qs("phone").value.trim();
@@ -450,6 +468,14 @@ async function registerUser(e){
 
     return;
 
+  }
+
+  // Record only after local validation succeeds.
+  localStorage.setItem(RATE_LIMIT_KEY,String(Date.now()));
+  if(submitButton){
+    submitButton.disabled=true;
+    submitButton.dataset.originalText=submitButton.textContent;
+    submitButton.textContent="⏳ Ap kreye kont...";
   }
 
   msg(
@@ -550,10 +576,32 @@ async function registerUser(e){
 
     console.error(err);
 
-    msg(
-      "registerMessage",
-      "❌ "+err.message
-    );
+    const raw=String(err?.message || "");
+    const rateLimited=/rate limit|too many requests|too many/i.test(raw);
+
+    if(rateLimited){
+      // Keep the user from immediately repeating a request that Supabase
+      // has already rate-limited. The server-side limit cannot be removed
+      // by browser code; this simply prevents extra requests and explains it.
+      localStorage.setItem(RATE_LIMIT_KEY,String(Date.now()));
+      msg(
+        "registerMessage",
+        "⏳ Supabase limite kantite demann yo pou yon ti tan. Tanpri tann apeprè 1 minit anvan ou eseye ankò. Pa klike bouton an plizyè fwa.",
+        "warning"
+      );
+    }else{
+      msg(
+        "registerMessage",
+        "❌ "+raw
+      );
+    }
+
+  }finally{
+
+    if(submitButton){
+      submitButton.disabled=false;
+      submitButton.textContent=submitButton.dataset.originalText || "✅ Kreye Kont";
+    }
 
   }
 
@@ -1323,6 +1371,10 @@ async function submitBusiness(e){
     category:
       qs("category").value,
 
+    /* Keep listing type inside the existing category field so no database column change is required. */
+    listing_type:
+      qs("listingType")?.value || "business",
+
     location:
       qs("location").value.trim(),
 
@@ -1344,6 +1396,7 @@ async function submitBusiness(e){
   if(
     !values.business_name ||
     !values.category ||
+    !values.listing_type ||
     !values.location ||
     !values.description
   ){
@@ -1405,6 +1458,8 @@ async function submitBusiness(e){
         body:JSON.stringify({
 
           ...values,
+
+          category: `${values.listing_type}:${values.category}`,
 
           image_url:null
 
@@ -1538,198 +1593,95 @@ async function submitBusiness(e){
 async function loadBusinesses(){
 
   const box=qs("businessListings");
-
   if(!box)return;
 
-
-  box.innerHTML=
-    "<p>⏳ Anons yo ap chaje...</p>";
-
+  box.innerHTML="<p>⏳ Anons yo ap chaje...</p>";
 
   try{
-
-    const rows=await api(
-      "/rest/v1/businesses?select=*&order=created_at.desc"
-    );
-
-
-    if(!rows?.length){
-
-      box.innerHTML=
-        "<p>Pa gen anons biznis pou kounye a.</p>";
-
-      return;
-
-    }
-
-
-    box.innerHTML=
-      rows.map(
-        b=>{
-
-          const wa=
-            waNumber(b.whatsapp);
-
-          const phone=
-            attr(b.phone);
-
-
-          return `
-
-          <article
-
-            class="card business-card"
-
-            onclick="openBusinessAd('${attr(b.id)}')"
-
-            style="cursor:pointer"
-
-            role="button"
-
-            tabindex="0"
-
-            onkeydown="
-              if(event.key==='Enter' || event.key===' '){
-                event.preventDefault();
-                openBusinessAd('${attr(b.id)}')
-              }
-            "
-
-          >
-
-            ${
-              b.image_url
-                ? `
-                  <img
-
-                    src="${attr(b.image_url)}"
-
-                    alt="${attr(b.business_name)}"
-
-                  >
-                `
-                : `
-                  <div
-                    style="
-                      padding:35px 10px;
-                      text-align:center;
-                      font-size:45px;
-                      background:#f5f8fc;
-                    "
-                  >
-                    🏢
-                  </div>
-                `
-            }
-
-
-            <h3>
-              ${esc(b.business_name)}
-            </h3>
-
-
-            <p>
-              📂 ${esc(b.category)}
-            </p>
-
-
-            <p>
-              📍 ${esc(b.location)}
-            </p>
-
-
-            ${
-              b.price
-                ? `
-                  <p>
-                    💰 ${esc(b.price)}
-                  </p>
-                `
-                : ""
-            }
-
-
-            <p>
-              ${esc(b.description)}
-            </p>
-
-
-            <div
-              class="actions"
-              onclick="event.stopPropagation()"
-            >
-
-              ${
-                phone
-                  ? `
-                    <a
-                      href="tel:${phone}"
-                      onclick="event.stopPropagation()"
-                    >
-
-                      <button type="button">
-                        📞 Rele
-                      </button>
-
-                    </a>
-                  `
-                  : ""
-              }
-
-
-              ${
-                wa
-                  ? `
-                    <a
-                      target="_blank"
-                      rel="noopener"
-                      href="https://wa.me/${wa}"
-                      onclick="event.stopPropagation()"
-                    >
-
-                      <button type="button">
-                        💬 WhatsApp
-                      </button>
-
-                    </a>
-                  `
-                  : ""
-              }
-
-            </div>
-
-
-            <div
-              style="
-                margin-top:12px;
-                font-size:14px;
-                color:#003366;
-                font-weight:bold;
-              "
-            >
-              👆 Klike pou wè detay
-            </div>
-
-
-          </article>
-
-          `;
-
-        }
-      ).join("");
-
-
+    const rows=await api("/rest/v1/businesses?select=*&order=created_at.desc");
+    window.__marketplaceRows=Array.isArray(rows)?rows:[];
+    renderMarketplaceListings();
   }catch(err){
-
     console.error("Business listings error:",err);
-
-    box.innerHTML=
-      `<div class="notice error">❌ Nou pa kapab chaje anons biznis yo.<br><small>${esc(err?.message || "Tanpri verifye koneksyon an epi eseye ankò.")}</small><br><button type="button" onclick="loadBusinesses()">🔄 Eseye ankò</button></div>`;
-
+    box.innerHTML=`<div class="notice error">❌ Nou pa kapab chaje anons yo.<br><small>${esc(err?.message || "Tanpri verifye koneksyon an epi eseye ankò.")}</small><br><button type="button" onclick="loadBusinesses()">🔄 Eseye ankò</button></div>`;
   }
-
 }
 
+function marketplaceType(category){
+  const c=String(category||"").toLowerCase();
+  if(c.includes(":")) return c.split(":",1)[0];
+  if(/employee|anplwaye/.test(c)) return "employee";
+  if(/employer|anplway/.test(c)) return "employer";
+  if(/service|sèvis/.test(c)) return "service";
+  if(/professional|pwofes/.test(c)) return "professional";
+  if(/property|bien|byen|real-estate|imob/.test(c)) return "property";
+  return "business";
+}
+
+function marketplaceCategory(category){
+  const c=String(category||"");
+  return c.includes(":") ? c.split(":").slice(1).join(":") : c;
+}
+
+function marketplaceLabel(type){
+  return ({employee:"👷 Anplwaye", employer:"🏢 Anplwayè", professional:"👨🏾‍🔧 Pwofesyonèl", service:"🛠️ Sèvis", business:"🛍️ Biznis", property:"🏠 Byen"})[type] || "🛍️ Biznis";
+}
+
+function renderMarketplaceListings(){
+  const box=qs("businessListings");
+  if(!box)return;
+  const rows=window.__marketplaceRows || [];
+  const active=document.querySelector(".market-tab.active")?.dataset.filter || "all";
+  const search=(qs("marketSearch")?.value||"").trim().toLowerCase();
+  const loc=(qs("marketLocation")?.value||"").trim().toLowerCase();
+
+  const filtered=rows.filter(b=>{
+    const type=marketplaceType(b.category);
+    const hay=[b.business_name,b.category,b.location,b.description,b.price].filter(Boolean).join(" ").toLowerCase();
+    const typeOk=active==="all" || type===active;
+    const searchOk=!search || hay.includes(search);
+    const locOk=!loc || String(b.location||"").toLowerCase().includes(loc) ||
+      (loc==="bahamas" && /bahamas|nassau|abaco|freeport/i.test(String(b.location||""))) ||
+      (loc==="ayiti" && /ayiti|haiti|port-au-prince|cap-haïtien|cap-haitien/i.test(String(b.location||"")));
+    return typeOk && searchOk && locOk;
+  });
+
+  if(qs("marketResultCount")) qs("marketResultCount").textContent=`${filtered.length} anons jwenn`;
+  if(!filtered.length){
+    box.innerHTML='<div class="notice">🔎 Pa gen rezilta pou rechèch sa a. Eseye yon lòt mo oswa yon lòt kategori.</div>';
+    return;
+  }
+
+  box.innerHTML=filtered.map(b=>{
+    const wa=waNumber(b.whatsapp);
+    const phone=attr(b.phone);
+    const type=marketplaceType(b.category);
+    const cat=marketplaceCategory(b.category);
+    return `<article class="card business-card marketplace-card" onclick="openBusinessAd('${attr(b.id)}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openBusinessAd('${attr(b.id)}')}">
+      ${b.image_url?`<img src="${attr(b.image_url)}" alt="${attr(b.business_name)}">`:`<div class="marketplace-placeholder">${type==='property'?'🏠':type==='service'?'🛠️':type==='professional'?'👨🏾‍🔧':type==='employer'?'🏢':'🛍️'}</div>`}
+      <div class="market-badge">${marketplaceLabel(type)}</div>
+      <h3>${esc(b.business_name)}</h3>
+      <p>📂 ${esc(cat)}</p>
+      <p>📍 ${esc(b.location)}</p>
+      ${b.price?`<p>💰 ${esc(b.price)}</p>`:""}
+      <p>${esc(b.description)}</p>
+      <div class="actions" onclick="event.stopPropagation()">
+        ${phone?`<a href="tel:${phone}" onclick="event.stopPropagation()"><button type="button">📞 Rele</button></a>`:""}
+        ${wa?`<a target="_blank" rel="noopener" href="https://wa.me/${wa}" onclick="event.stopPropagation()"><button type="button">💬 WhatsApp</button></a>`:""}
+      </div>
+      <div class="market-view">👆 Klike pou wè detay</div>
+    </article>`;
+  }).join("");
+}
+
+function setupMarketplaceFilters(){
+  document.querySelectorAll(".market-tab").forEach(btn=>btn.addEventListener("click",()=>{
+    document.querySelectorAll(".market-tab").forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+    renderMarketplaceListings();
+  }));
+  ["marketSearch","marketLocation"].forEach(id=>qs(id)?.addEventListener("input",renderMarketplaceListings));
+}
 
 /* =========================================================
    OPEN BUSINESS AD
