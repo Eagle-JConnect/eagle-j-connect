@@ -1,63 +1,33 @@
 <!DOCTYPE html>
 <html lang="ht">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <title>Eagle-J Connect — Biznis ak Sèvis</title>
 
-  <title>Biznis | Eagle-J Connect</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
-
+  <link rel="stylesheet" href="style.css">
 </head>
-
 
 <body>
 
-
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
-
+  <!-- HEADER -->
   <header class="header">
 
-
     <!-- LOGO -->
-
     <div class="logo-area">
+      <a href="index.html">
+        <img src="Logo.jpg" alt="Eagle-J Connect">
+      </a>
 
-      <img
-        src="Logo.jpg"
-        alt="Eagle-J Connect Logo"
-      >
-
-      <div>
-
-        <h2>
-          Eagle-J Connect
-        </h2>
-
-        <span>
-          Ayiti + Bahamas
-        </span>
-
+      <div class="site-title">
+        <strong>Eagle-J Connect</strong>
+        <span>Ayiti + Bahamas</span>
       </div>
-
     </div>
 
 
-    <!-- =================================================
-         MOBILE MENU BUTTON
-    ================================================== -->
-
+    <!-- MENU BUTTON -->
     <button
       id="menuToggle"
       class="menu-toggle"
@@ -69,200 +39,163 @@
     </button>
 
 
-    <!-- =================================================
-         NAVIGATION MENU
-    ================================================== -->
-
+    <!-- NAVIGATION -->
     <nav id="menu">
 
-
-      <a
-        id="nav-home"
-        href="index.html"
-      >
+      <a id="nav-home" href="index.html">
         Akèy
       </a>
 
-
-      <a
-        id="nav-jobs"
-        href="travay.html"
-      >
+      <a id="nav-jobs" href="travay.html">
         Travay
       </a>
 
-
-      <a
-        id="nav-business"
-        href="biznis.html"
-      >
+      <a id="nav-business" href="biznis.html">
         Biznis
       </a>
 
-
-      <a
-        id="nav-contact"
-        href="kontak.html"
-      >
+      <a id="nav-contact" href="kontak.html">
         Kontak
       </a>
 
-
-      <a
-        id="nav-register"
-        href="enskri.html"
-      >
+      <a id="nav-register" href="enskri.html">
         Enskri
       </a>
 
-
-      <!-- LANGUAGE -->
-
       <div class="language">
-
-        <select
-          id="languageSelect"
-          onchange="changeLanguage()"
-        >
-
-          <option value="ht">
-            🇭🇹 Kreyòl
-          </option>
-
-          <option value="en">
-            🇺🇸 English
-          </option>
-
-          <option value="fr">
-            🇫🇷 Français
-          </option>
-
+        <select id="languageSelect" onchange="changeLanguage()">
+          <option value="ht">🇭🇹 Kreyòl</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="fr">🇫🇷 Français</option>
         </select>
-
       </div>
-
 
     </nav>
 
   </header>
 
 
+  <!-- MAIN -->
+  <main class="page-container">
 
-  <!-- =====================================================
-       BUSINESS / SERVICES
-  ====================================================== -->
+    <section class="page-hero">
 
-  <section class="services">
+      <h1 id="businessTitle">
+        Biznis ak Sèvis
+      </h1>
 
-
-    <h1 data-i18n="business-title">
-      Biznis ak Sèvis
-    </h1>
-
-
-    <p>
-      Dekouvri pwodwi ak sèvis kominote a ap ofri.
-    </p>
-
-
-    <!-- BUSINESS LISTINGS -->
-
-    <div
-      id="businessListings"
-      class="cards listing-grid"
-    >
-
-      <p>
-        ⏳ Anons yo ap chaje...
+      <p id="businessSubtitle">
+        Dekouvri biznis ak sèvis ki disponib nan kominote Ayiti ak Bahamas.
       </p>
 
-    </div>
+    </section>
 
 
-  </section>
+    <!-- SEARCH -->
+    <section class="search-section">
+
+      <input
+        type="text"
+        id="businessSearch"
+        placeholder="Chèche yon biznis oswa sèvis..."
+      >
+
+    </section>
 
 
+    <!-- BUSINESS LIST -->
+    <section>
 
-  <!-- =====================================================
-       CREATE BUSINESS AD
-  ====================================================== -->
+      <div
+        id="businessList"
+        class="business-grid"
+      >
 
-  <section
-    style="
-      background:#F4B400;
-      padding:45px 20px;
-      text-align:center;
-    "
-  >
+        <p>
+          Ap chèche biznis yo...
+        </p>
 
+      </div>
 
-    <h2>
-      Mete biznis ou sou Eagle-J Connect
-    </h2>
+    </section>
 
-
-    <p
-      style="
-        margin:12px auto 20px;
-      "
-    >
-      Kreye yon anons ak yon foto,
-      kontak ak deskripsyon biznis ou.
-    </p>
+  </main>
 
 
-    <a
-      href="kreye-anons.html"
-      class="btn"
-      style="
-        background:#003366;
-        color:white;
-        text-decoration:none;
-      "
-    >
-      📢 Kreye yon Anons
-    </a>
+  <!-- MENU SCRIPT -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const button = document.getElementById("menuToggle");
+      const menu = document.getElementById("menu");
+
+      if (!button || !menu) {
+        console.error("Bouton meni oswa meni pa jwenn.");
+        return;
+      }
+
+      button.addEventListener("click", function (event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        menu.classList.toggle("show");
+
+        const opened = menu.classList.contains("show");
+
+        button.setAttribute(
+          "aria-expanded",
+          opened ? "true" : "false"
+        );
+
+      });
 
 
-  </section>
+      /* Fè meni an fèmen lè yon moun klike sou yon lyen */
+      menu.querySelectorAll("a").forEach(function (link) {
+
+        link.addEventListener("click", function () {
+
+          menu.classList.remove("show");
+
+          button.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+        });
+
+      });
 
 
+      /* Fè meni an fèmen si moun klike deyò meni an */
+      document.addEventListener("click", function (event) {
 
-  <!-- =====================================================
-       FOOTER
-  ====================================================== -->
+        if (
+          !menu.contains(event.target) &&
+          !button.contains(event.target)
+        ) {
 
-  <footer>
+          menu.classList.remove("show");
 
+          button.setAttribute(
+            "aria-expanded",
+            "false"
+          );
 
-    <h3>
-      Eagle-J Connect
-    </h3>
+        }
 
+      });
 
-    <p>
-      Konekte Opòtinite ant Ayiti ak Bahamas.
-    </p>
-
-
-    <p>
-      © 2026 Eagle-J Connect
-    </p>
-
-
-  </footer>
+    });
+  </script>
 
 
-
-  <!-- =====================================================
-       JAVASCRIPT
-  ====================================================== -->
-
+  <!-- LANGUAGE -->
   <script src="language.js"></script>
 
+  <!-- MAIN JAVASCRIPT -->
   <script src="script.js"></script>
 
-
 </body>
-
 </html>
