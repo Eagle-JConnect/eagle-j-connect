@@ -396,28 +396,6 @@ async function api(path,options={}){
 
 }
 
-/* Public read helper: marketplace listings are public data.
-   Do not attach a logged-in user's JWT here because an RLS policy that
-   allows public/anon reads can otherwise hide the rows for authenticated users. */
-async function publicApi(path,options={}){
-  const headers=Object.assign({
-    "apikey":SUPABASE_KEY,
-    "Content-Type":"application/json"
-  }, options.headers || {});
-
-  const r=await fetch(SUPABASE_URL+path,{...options,headers});
-  const text=await r.text();
-  let data=null;
-  try{ data=text ? JSON.parse(text) : null; }catch(e){ data=text; }
-
-  if(!r.ok){
-    throw new Error(
-      data?.message || data?.msg || data?.error_description || "Request failed"
-    );
-  }
-  return data;
-}
-
 
 /* =========================================================
    REGISTRATION
@@ -1632,7 +1610,7 @@ async function loadBusinesses(){
   box.innerHTML="<p>⏳ Anons yo ap chaje...</p>";
 
   try{
-    const rows=await publicApi("/rest/v1/businesses?select=*&order=created_at.desc");
+    const rows=await api("/rest/v1/businesses?select=*&order=created_at.desc");
     window.__marketplaceRows=Array.isArray(rows)?rows:[];
     renderMarketplaceListings();
   }catch(err){
@@ -1761,14 +1739,15 @@ async function loadBusinessDetail(){
 
   try{
 
+    const cleanId=String(id).trim();
     const rows=await api(
-      `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&select=*`
+      `/rest/v1/businesses?id=eq.${encodeURIComponent(cleanId)}&select=*`
     );
 
-    const b=rows?.[0];
+    const b=Array.isArray(rows) ? rows[0] : null;
 
     if(!b){
-      box.innerHTML="<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib.</p>";
+      box.innerHTML="<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib ankò.</p>";
       return;
     }
 
@@ -1813,10 +1792,10 @@ async function loadBusinessDetail(){
 
   }catch(err){
 
-    console.error(err);
+    console.error("Business detail error:",err);
 
     box.innerHTML=
-      "<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p>";
+      `<div class="notice error">❌ Nou pa kapab chaje detay anons sa a.<br><small>${esc(err?.message || "Tanpri eseye ankò.")}</small><br><button type="button" onclick="loadBusinessDetail()">🔄 Eseye ankò</button></div>`;
 
   }
 
