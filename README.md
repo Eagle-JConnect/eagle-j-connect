@@ -16,7 +16,7 @@ Eagle-J Connect is a responsive marketplace/job platform for the Haiti + Bahamas
 - Business listing type is stored in the existing `category` field as `type:category`, so no schema migration is required.
 - Image upload remains connected to the `business-images` Supabase bucket.
 - Added accessibility improvements to navigation, buttons and cards.
-- Added cache-busting `?v=final1` to frontend assets.
+- Added cache-busting `?v=final3` to frontend assets.
 
 ## Deployment
 
@@ -59,3 +59,17 @@ Do not expose a Supabase service-role key in the browser. The project uses the e
 - Admin link appears only for verified admin users.
 - Business detail links and marketplace filters are wired consistently.
 - Haiti/Haiti and Bahamas/Nassau location aliases are supported by marketplace filtering.
+
+## Supabase business publishing fix
+
+Run `business-rls-fix.sql` once in the Supabase SQL Editor. It:
+- adds `businesses.user_id` when missing;
+- allows public reads;
+- allows authenticated users to create, edit and delete only their own ads;
+- ensures the `business-images` public bucket exists;
+- adds secure storage policies for upload/update/delete.
+
+The frontend now sends the signed-in user's UUID as `user_id` when publishing an ad.
+
+
+FINAL v5: hardened Supabase business creation session handling and explicit Authorization on business INSERT.

@@ -801,7 +801,8 @@ async function submitBusiness(e){
     whatsapp:qs("whatsapp")?.value.trim() || null,
     price:qs("price")?.value.trim() || null,
     description:qs("description")?.value.trim() || "",
-    image_url:null
+    image_url:null,
+    user_id:session.user.id
   };
 
   if(!values.business_name || !category || !values.location || !values.description){
@@ -844,7 +845,14 @@ async function submitBusiness(e){
         }
       );
 
-      if(!up.ok) throw new Error("Foto a pa t kapab monte.");
+      if(!up.ok){
+        let uploadError="Foto a pa t kapab monte.";
+        try{
+          const uploadBody=await up.json();
+          uploadError=uploadBody?.message || uploadBody?.error || uploadError;
+        }catch(_){}
+        throw new Error(uploadError);
+      }
 
       const imageURL=`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
