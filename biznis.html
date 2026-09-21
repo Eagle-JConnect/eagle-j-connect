@@ -2,18 +2,35 @@
 <html lang="ht">
 
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Biznis | Eagle-J Connect</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body>
 
-  <!-- HEADER -->
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
   <header class="header">
+
+
+    <!-- LOGO -->
 
     <div class="logo-area">
 
@@ -23,14 +40,24 @@
       >
 
       <div>
-        <h2>Eagle-J Connect</h2>
-        <span>Ayiti + Bahamas</span>
+
+        <h2>
+          Eagle-J Connect
+        </h2>
+
+        <span>
+          Ayiti + Bahamas
+        </span>
+
       </div>
 
     </div>
 
 
-    <!-- MOBILE MENU BUTTON -->
+    <!-- =================================================
+         MOBILE MENU BUTTON
+    ================================================== -->
+
     <button
       id="menuToggle"
       class="menu-toggle"
@@ -42,8 +69,12 @@
     </button>
 
 
-    <!-- NAVIGATION -->
+    <!-- =================================================
+         NAVIGATION MENU
+    ================================================== -->
+
     <nav id="menu">
+
 
       <a
         id="nav-home"
@@ -52,12 +83,14 @@
         Akèy
       </a>
 
+
       <a
         id="nav-jobs"
         href="travay.html"
       >
         Travay
       </a>
+
 
       <a
         id="nav-business"
@@ -66,12 +99,14 @@
         Biznis
       </a>
 
+
       <a
         id="nav-contact"
         href="kontak.html"
       >
         Kontak
       </a>
+
 
       <a
         id="nav-register"
@@ -82,6 +117,7 @@
 
 
       <!-- LANGUAGE -->
+
       <div class="language">
 
         <select
@@ -105,24 +141,32 @@
 
       </div>
 
+
     </nav>
 
   </header>
 
 
-  <!-- BUSINESS SECTION -->
+
+  <!-- =====================================================
+       BUSINESS / SERVICES
+  ====================================================== -->
+
   <section class="services">
+
 
     <h1 data-i18n="business-title">
       Biznis ak Sèvis
     </h1>
+
 
     <p>
       Dekouvri pwodwi ak sèvis kominote a ap ofri.
     </p>
 
 
-    <!-- BUSINESS LIST -->
+    <!-- BUSINESS LISTINGS -->
+
     <div
       id="businessListings"
       class="cards listing-grid"
@@ -134,10 +178,15 @@
 
     </div>
 
+
   </section>
 
 
-  <!-- CREATE BUSINESS AD -->
+
+  <!-- =====================================================
+       CREATE BUSINESS AD
+  ====================================================== -->
+
   <section
     style="
       background:#F4B400;
@@ -146,18 +195,21 @@
     "
   >
 
+
     <h2>
       Mete biznis ou sou Eagle-J Connect
     </h2>
+
 
     <p
       style="
         margin:12px auto 20px;
       "
     >
-      Kreye yon anons ak yon foto, kontak ak
-      deskripsyon biznis ou.
+      Kreye yon anons ak yon foto,
+      kontak ak deskripsyon biznis ou.
     </p>
+
 
     <a
       href="kreye-anons.html"
@@ -171,99 +223,46 @@
       📢 Kreye yon Anons
     </a>
 
+
   </section>
 
 
-  <!-- FOOTER -->
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
   <footer>
+
 
     <h3>
       Eagle-J Connect
     </h3>
 
+
     <p>
       Konekte Opòtinite ant Ayiti ak Bahamas.
     </p>
+
 
     <p>
       © 2026 Eagle-J Connect
     </p>
 
+
   </footer>
 
 
-  <!-- SCRIPTS -->
+
+  <!-- =====================================================
+       JAVASCRIPT
+  ====================================================== -->
+
   <script src="language.js"></script>
+
   <script src="script.js"></script>
 
 
-  <!-- MOBILE MENU SAFETY -->
-  <script>
-
-    document.addEventListener(
-      "DOMContentLoaded",
-      function(){
-
-        const button =
-          document.getElementById("menuToggle");
-
-        const menu =
-          document.getElementById("menu");
-
-
-        if(!button || !menu){
-
-          console.error(
-            "Eagle-J Connect: Menu pa jwenn."
-          );
-
-          return;
-
-        }
-
-
-        button.addEventListener(
-          "click",
-          function(){
-
-            menu.classList.toggle("show");
-
-            const opened =
-              menu.classList.contains("show");
-
-            button.setAttribute(
-              "aria-expanded",
-              opened ? "true" : "false"
-            );
-
-          }
-        );
-
-
-        menu.querySelectorAll("a").forEach(
-          function(link){
-
-            link.addEventListener(
-              "click",
-              function(){
-
-                menu.classList.remove("show");
-
-                button.setAttribute(
-                  "aria-expanded",
-                  "false"
-                );
-
-              }
-            );
-
-          }
-        );
-
-      }
-    );
-
-  </script>
-
 </body>
+
 </html>
