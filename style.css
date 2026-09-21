@@ -868,3 +868,33 @@ footer p{
     max-height:320px;
   }
 }
+
+/* =========================================================
+   FINAL MOBILE MENU FIX v4
+   ========================================================= */
+@media (max-width: 768px) {
+  .header { position: fixed !important; top: 0; left: 0; right: 0; }
+  .menu-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 50px !important;
+    height: 50px !important;
+    padding: 0 !important;
+    margin-left: auto !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 10003 !important;
+  }
+  #menu {
+    display: none !important;
+    position: fixed !important;
+    top: 74px !important;
+    right: 0 !important;
+    z-index: 10002 !important;
+  }
+  #menu.show {
+    display: flex !important;
+  }
+}
