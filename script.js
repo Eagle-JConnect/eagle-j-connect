@@ -417,13 +417,17 @@ async function loginUser(e){
     }
 
 
-    const profile=profiles?.[0] || {
+    const profile=profiles?.[0];
 
-      full_name:"",
-      phone:"",
-      account_type:"job_seeker"
+    if(!profile){
+      clearSession();
+      throw new Error("Kont ou pa gen pwofil aktif sou Eagle-J Connect.");
+    }
 
-    };
+    if(profile.account_status && profile.account_status!=="active"){
+      clearSession();
+      throw new Error("Kont ou pa aktif. Tanpri kontakte administratè a.");
+    }
 
 
     localStorage.setItem(
@@ -710,18 +714,22 @@ async function postJob(e){
     return;
   }
 
-  msg("jobMessage","⏳ Travay la ap pibliye...","warning");
+  msg("jobMessage","⏳ Travay la ap voye bay Admin pou validasyon...","warning");
 
   try{
     await api("/rest/v1/jobs",{
       method:"POST",
-      body:JSON.stringify({...vals,employer_id:s.user.id}),
+      body:JSON.stringify({...vals,employer_id:s.user.id,status:"pending"}),
       headers:{Prefer:"return=representation"}
     });
 
     qs("jobForm")?.reset();
 
-    msg("jobMessage","✅ Travay la pibliye avèk siksè!","success");
+    msg(
+      "jobMessage",
+      "✅ Travay la resevwa. Li pap parèt piblik jiskaske Admin valide li.",
+      "success"
+    );
 
     await loadMyJobs(s.user.id,s.token);
 
@@ -756,7 +764,7 @@ async function loadJobs(){
   box.innerHTML = '<div class="loading-state"><span>⏳</span><p>Travay yo ap chaje...</p></div>';
 
   try{
-    const rows = await api("/rest/v1/jobs?select=*&order=created_at.desc");
+    const rows = await api("/rest/v1/jobs?status=eq.approved&select=*&order=created_at.desc");
     publicJobs = Array.isArray(rows) ? rows : [];
     renderJobs();
   }catch(err){
@@ -817,6 +825,15 @@ function renderJobs(){
   }).join("");
 }
 
+function jobStatusLabel(status){
+  return ({
+    pending:"⏳ Ap tann validasyon",
+    approved:"✅ Piblik",
+    rejected:"❌ Refize",
+    unavailable:"🚫 Pa disponib"
+  })[status] || "📌 "+(status || "—");
+}
+
 /* =========================================================
    MY JOBS
 ========================================================= */
@@ -841,7 +858,7 @@ async function loadMyJobs(userId,token){
 
     box.innerHTML=jobs.map(job=>`
       <article class="job-card card">
-        <div class="card-kicker">TRAVAY POU OU</div>
+        <div class="card-kicker">TRAVAY POU OU · ${esc(jobStatusLabel(job.status))}</div>
         <h3>${esc(job.title || "Travay")}</h3>
         <p><strong>${esc(job.company || job.company_name || "")}</strong></p>
         <div class="meta">
@@ -888,7 +905,8 @@ async function submitBusiness(e){
     price:qs("price")?.value.trim() || null,
     description:qs("description")?.value.trim() || "",
     image_url:null,
-    user_id:session.user.id
+    user_id:session.user.id,
+    status:"pending"
   };
 
   if(!values.business_name || !category || !values.location || !values.description){
@@ -901,7 +919,7 @@ async function submitBusiness(e){
     return;
   }
 
-  msg("formMessage","⏳ Anons lan ap pibliye...","warning");
+  msg("formMessage","⏳ Anons lan ap voye bay Admin pou validasyon...","warning");
 
   try{
     const rows=await api("/rest/v1/businesses",{
@@ -952,9 +970,11 @@ async function submitBusiness(e){
     }
 
     qs("businessForm")?.reset();
-    msg("formMessage","✅ Anons ou a pibliye avèk siksè!","success");
-
-    await loadBusinesses();
+    msg(
+      "formMessage",
+      "✅ Anons ou resevwa. Li pap parèt piblik jiskaske Admin valide li.",
+      "success"
+    );
 
   }catch(err){
     console.error(err);
@@ -975,7 +995,7 @@ async function loadBusinesses(){
   box.innerHTML="<div class='loading-state'><span>⏳</span><p>Anons yo ap chaje...</p></div>";
 
   try{
-    const rows=await api("/rest/v1/businesses?select=*&order=created_at.desc");
+    const rows=await api("/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc");
     window.__businessRows=Array.isArray(rows)?rows:[];
 
     renderBusinesses();
@@ -1131,7 +1151,7 @@ async function loadBusinessDetail(){
   try{
 
     const rows=await api(
-      `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&select=*`
+      `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
     );
 
     const b=rows?.[0];

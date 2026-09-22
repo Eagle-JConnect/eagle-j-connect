@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Admin Dashboard | Eagle-J Connect</title>
-<link rel="stylesheet" href="style.css?v=final6">
+<link rel="stylesheet" href="style.css?v=final7">
 </head>
 <body>
 <header class="header">
@@ -15,60 +15,94 @@
     </a>
     <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false" aria-controls="menu">☰</button>
     <nav id="menu" aria-label="Navigasyon prensipal">
-      <a href="index.html" data-i18n="nav-home">Akèy</a>
-      <a href="travay.html" data-i18n="nav-jobs">Travay</a>
-      <a href="biznis.html" data-i18n="nav-business">Biznis</a>
-      <a href="anons-list.html" data-i18n="nav-ads">Anons</a>
-      <a href="kontak.html" data-i18n="nav-contact">Kontak</a>
-      <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a>
-      <a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a>
-      <a href="profil.html" data-i18n="nav-account" data-auth="user">Kont Mwen</a>
-      <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
-      <div class="language">
-        <select id="languageSelect" aria-label="Chwazi lang">
-          <option value="ht">🇭🇹 Kreyòl</option>
-          <option value="en">🇺🇸 English</option>
-          <option value="fr">🇫🇷 Français</option>
-        </select>
-      </div>
+      <a href="index.html">Akèy</a>
+      <a href="travay.html">Travay</a>
+      <a href="biznis.html">Biznis</a>
+      <a href="anons-list.html">Anons</a>
+      <a href="kontak.html">Kontak</a>
+      <a href="enskri.html" data-auth="guest">Enskri</a>
+      <a href="login.html" data-auth="guest">Konekte</a>
+      <a href="profil.html" data-auth="user">Kont Mwen</a>
+      <a href="#" id="logoutBtn" data-auth="user">Dekonekte</a>
+      <div class="language"><select id="languageSelect" aria-label="Chwazi lang"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div>
     </nav>
   </div>
 </header>
+
 <main class="admin-wrap">
   <div class="admin-card">
     <h1>🛡️ Dashboard Administratè</h1>
-    <p>Kontwòl itilizatè yo ak done prensipal Eagle-J Connect.</p>
+    <p>Se Admin ki valide sa ki vin piblik sou Eagle-J Connect.</p>
     <div id="adminMessage" class="notice-admin hidden"></div>
   </div>
+
   <div id="adminApp" class="hidden">
-    <div class="admin-grid">
+    <div class="admin-grid admin-grid-6">
+      <div class="admin-stat"><strong id="adminPendingJobCount">0</strong><span>Travay pou valide</span></div>
+      <div class="admin-stat"><strong id="adminPendingBusinessCount">0</strong><span>Anons pou valide</span></div>
+      <div class="admin-stat"><strong id="adminActiveJobCount">0</strong><span>Travay piblik</span></div>
+      <div class="admin-stat"><strong id="adminActiveBusinessCount">0</strong><span>Anons piblik</span></div>
       <div class="admin-stat"><strong id="adminUserCount">0</strong><span>Itilizatè</span></div>
-      <div class="admin-stat"><strong id="adminEmployerCount">0</strong><span>Anplwayè</span></div>
-      <div class="admin-stat"><strong id="adminJobSeekerCount">0</strong><span>Anplwaye / Job Seekers</span></div>
+      <div class="admin-stat"><strong id="adminDisabledUserCount">0</strong><span>Kont dezaktive</span></div>
     </div>
-    <div class="admin-card">
+
+    <section class="admin-card">
+      <h2>⏳ Travay ki bezwen validasyon</h2>
+      <div class="admin-actions">
+        <select id="adminJobStatusFilter">
+          <option value="pending">⏳ Pending</option>
+          <option value="approved">✅ Piblik</option>
+          <option value="rejected">❌ Refize</option>
+          <option value="unavailable">🚫 Pa disponib</option>
+          <option value="">Tout</option>
+        </select>
+        <input id="adminJobSearch" type="search" placeholder="🔎 Tit, konpayi oswa lokalizasyon...">
+        <button type="button" onclick="loadAdminJobs()">🔄 Rafrechi</button>
+      </div>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Travay</th><th>Konpayi</th><th>Lokalizasyon</th><th>Status</th><th>Dat</th><th>Aksyon</th></tr></thead><tbody id="adminJobsBody"><tr><td colspan="6">⏳ Nap chaje...</td></tr></tbody></table></div>
+    </section>
+
+    <section class="admin-card">
+      <h2>📢 Anons biznis/sèvis ki bezwen validasyon</h2>
+      <div class="admin-actions">
+        <select id="adminBusinessStatusFilter">
+          <option value="pending">⏳ Pending</option>
+          <option value="approved">✅ Piblik</option>
+          <option value="rejected">❌ Refize</option>
+          <option value="unavailable">🚫 Pa disponib</option>
+          <option value="">Tout</option>
+        </select>
+        <input id="adminBusinessSearch" type="search" placeholder="🔎 Non biznis, kategori oswa lokalizasyon...">
+        <button type="button" onclick="loadAdminBusinesses()">🔄 Rafrechi</button>
+      </div>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Biznis/Anons</th><th>Kategori</th><th>Lokalizasyon</th><th>Status</th><th>Dat</th><th>Aksyon</th></tr></thead><tbody id="adminBusinessesBody"><tr><td colspan="6">⏳ Nap chaje...</td></tr></tbody></table></div>
+    </section>
+
+    <section class="admin-card">
       <h2>👥 Jere itilizatè yo</h2>
       <div class="admin-actions">
-        <input id="adminUserSearch" type="search" placeholder="🔎 Chèche non, telefòn oswa ID...">
-        <select id="adminTypeFilter"><option value="">Tout kalite kont</option><option value="job_seeker">👷 Moun k ap chèche travay</option><option value="employer">🏢 Anplwayè</option><option value="admin">🛡️ Administratè</option></select>
+        <input id="adminUserSearch" type="search" placeholder="🔎 Non, telefòn oswa ID...">
+        <select id="adminTypeFilter"><option value="">Tout kalite kont</option><option value="job_seeker">👷 Job Seeker</option><option value="employer">🏢 Anplwayè</option><option value="admin">🛡️ Administratè</option></select>
+        <select id="adminAccountStatusFilter"><option value="">Tout status</option><option value="active">✅ Aktif</option><option value="disabled">🚫 Dezaktive</option></select>
         <button type="button" onclick="loadAdminUsers()">🔄 Rafrechi</button>
       </div>
-      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Non</th><th>Imèl</th><th>Telefòn</th><th>Kalite kont</th><th>ID</th><th>Aksyon</th></tr></thead><tbody id="adminUsersBody"><tr><td colspan="6">⏳ Nap chaje...</td></tr></tbody></table></div>
-    </div>
+      <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Non</th><th>Imèl</th><th>Telefòn</th><th>Kalite</th><th>Status</th><th>Aksyon</th></tr></thead><tbody id="adminUsersBody"><tr><td colspan="6">⏳ Nap chaje...</td></tr></tbody></table></div>
+    </section>
   </div>
 </main>
+
 <footer>
   <div class="container">
     <div class="footer-grid">
       <div><h3>Eagle-J Connect</h3><p>Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.</p></div>
-      <div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a><a href="enskri.html">Enskri</a></div>
+      <div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a></div>
     </div>
     <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
   </div>
 </footer>
-<script src="language.js?v=final6"></script>
-<script src="script.js?v=final6"></script>
-<script src="menu.js?v=final6"></script>
-<script src="admin.js?v=final6"></script>
+<script src="language.js?v=final7"></script>
+<script src="script.js?v=final7"></script>
+<script src="menu.js?v=final7"></script>
+<script src="admin.js?v=final7"></script>
 </body>
 </html>

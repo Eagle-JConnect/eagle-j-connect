@@ -1,0 +1,19 @@
+EAGLE-J CONNECT v7 DEPLOYMENT
+
+1. Open Supabase SQL Editor.
+2. Run moderation-v7.sql ONCE.
+3. Make sure your own Auth user UUID is inserted into public.admin_users.
+4. Upload the project files to the GitHub Pages repository.
+5. Log in with the admin account.
+6. Open admin.html.
+7. Test:
+   - create a job -> it must say pending and NOT appear publicly
+   - create a business ad -> pending and NOT public
+   - approve in Admin -> public
+   - mark unavailable -> hidden from public
+   - disable a user -> their approved posts become hidden and login is blocked
+   - remove a profile -> the frontend will no longer allow that user to log in
+
+SECURITY:
+- Never put a Supabase service-role/secret key in the browser.
+- This version uses the existing publishable key and RLS policies.

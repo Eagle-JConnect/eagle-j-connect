@@ -19,3 +19,23 @@
 
 ## Remaining external dependency
 The live Supabase database must contain the expected `jobs` table and allow public SELECT according to its RLS/grants. The included `jobs-rls-fix.sql` addresses the policy layer; it cannot create a missing table or infer an unknown custom schema.
+
+
+# v7 Moderation Upgrade
+
+## New workflow
+1. User registers.
+2. Employer creates a job -> `pending`.
+3. User creates a business/service ad -> `pending`.
+4. Admin reviews it in `admin.html`.
+5. Admin chooses Approve / Reject / Unavailable / Delete.
+6. Only `approved` records appear on public Jobs/Business pages.
+
+## User management
+- Admin can disable an account.
+- Admin can reactivate an account.
+- Admin can remove the user's profile from the site.
+- The frontend does not expose a service-role key.
+
+## Required Supabase action
+Run `moderation-v7.sql` once in Supabase SQL Editor, then upload the v7 frontend files to GitHub Pages.

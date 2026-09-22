@@ -95,3 +95,18 @@ The project was reviewed page-by-page and the main runtime issues found were cor
 ### Supabase action for jobs
 
 If the Jobs page still shows an API/RLS error after uploading this version, run `jobs-rls-fix.sql` in the Supabase SQL Editor. The frontend itself is now wired to the `jobs` table.
+
+
+## v7 — Admin moderation and publishing control
+
+- New jobs and marketplace ads are created as `pending`.
+- Only an administrator can change them to `approved`, making them public.
+- Admin can reject, mark unavailable, or delete jobs and business ads.
+- Existing jobs/business ads remain approved when the migration is first run.
+- Admin can disable users or remove their profile from the site.
+- Disabled/removed profiles cannot be used by the frontend login flow.
+- Public jobs/business ads are hidden when the owner's profile is disabled.
+- Added `moderation-v7.sql` for the complete Supabase RLS/status migration.
+- `admin.html` / `admin.js` now provide moderation queues and user management.
+
+Run `moderation-v7.sql` in Supabase SQL Editor before testing v7.
