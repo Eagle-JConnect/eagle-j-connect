@@ -1,250 +1,963 @@
-/* Eagle-J Connect v7 — Admin moderation dashboard */
-(function(){
-  const SUPABASE_URL="https://glwyqrvufmjscjbbszzz.supabase.co";
-  const SUPABASE_KEY="sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
-  let users=[], jobs=[], businesses=[];
+/* Eagle-J Connect — Admin Dashboard v8 */
 
-  const $=id=>document.getElementById(id);
-  const esc=v=>{const d=document.createElement("div");d.textContent=v??"";return d.innerHTML;};
+(function () {
+  const SUPABASE_URL = "https://glwyqrvufmjscjbbszzz.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 
-  function session(){
-    const token=localStorage.getItem("supabase_access_token");
-    const raw=localStorage.getItem("supabase_user");
-    if(!token||!raw)return null;
-    try{return {token,user:JSON.parse(raw)};}catch(e){return null;}
+  let users = [];
+  let jobs = [];
+  let businesses = [];
+
+  const $ = id => document.getElementById(id);
+
+  const esc = value => {
+    const div = document.createElement("div");
+    div.textContent = value ?? "";
+    return div.innerHTML;
+  };
+
+  function getSession() {
+    const token = localStorage.getItem("supabase_access_token");
+    const rawUser = localStorage.getItem("supabase_user");
+
+    if (!token || !rawUser) return null;
+
+    try {
+      const user = JSON.parse(rawUser);
+
+      if (!user?.id) return null;
+
+      return {
+        token,
+        user
+      };
+    } catch (error) {
+      return null;
+    }
   }
 
-  function message(text,type="error"){
-    const el=$("adminMessage");
-    if(!el)return;
-    el.textContent=text;
-    el.className="notice-admin "+type;
+  function clearSession() {
+    localStorage.removeItem("supabase_access_token");
+    localStorage.removeItem("supabase_refresh_token");
+    localStorage.removeItem("supabase_user");
+    localStorage.removeItem("supabase_user_id");
+    localStorage.removeItem("supabase_user_email");
+    localStorage.removeItem("supabase_full_name");
+    localStorage.removeItem("supabase_phone");
+    localStorage.removeItem("supabase_account_type");
+  }
+
+  function showMessage(text, type = "error") {
+    const el = $("adminMessage");
+
+    if (!el) return;
+
+    el.textContent = text;
+    el.className = "notice-admin " + type;
     el.classList.remove("hidden");
   }
 
-  async function api(path,options={}){
-    const s=session();
-    const headers={apikey:SUPABASE_KEY,"Content-Type":"application/json",...(options.headers||{})};
-    if(s?.token)headers.Authorization=`Bearer ${s.token}`;
-    const r=await fetch(SUPABASE_URL+path,{...options,headers});
-    const text=await r.text();
-    let data=null; try{data=text?JSON.parse(text):null;}catch(e){data=text;}
-    if(!r.ok)throw new Error(data?.message||data?.msg||data?.error_description||`Request failed (${r.status})`);
+  function hideAdminApp() {
+    $("adminApp")?.classList.add("hidden");
+  }
+
+  function showAdminApp() {
+    $("adminApp")?.classList.remove("hidden");
+  }
+
+  async function api(path, options = {}) {
+    const session = getSession();
+
+    const headers = {
+      apikey: SUPABASE_KEY,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    };
+
+    if (session?.token) {
+      headers.Authorization = `Bearer ${session.token}`;
+    }
+
+    const response = await fetch(SUPABASE_URL + path, {
+      ...options,
+      headers
+    });
+
+    const text = await response.text();
+
+    let data = null;
+
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      data = text;
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data?.message ||
+        data?.msg ||
+        data?.error_description ||
+        data?.details ||
+        `Request failed (${response.status})`
+      );
+    }
+
     return data;
   }
 
-  function statusLabel(status){
-    return ({
-      pending:"⏳ Pending",
-      approved:"✅ Piblik",
-      rejected:"❌ Refize",
-      unavailable:"🚫 Pa disponib",
-      active:"✅ Aktif",
-      disabled:"🚫 Dezaktive"
-    })[status] || status || "—";
+  function statusLabel(status) {
+    const labels = {
+      pending: "⏳ Pending",
+      approved: "✅ Piblik",
+      rejected: "❌ Refize",
+      unavailable: "🚫 Pa disponib",
+      active: "✅ Aktif",
+      disabled: "🚫 Dezaktive"
+    };
+
+    return labels[status] || status || "—";
   }
 
-  async function checkAdmin(){
-    const s=session();
-    if(!s){location.href="login.html";return false;}
-    try{
-      const rows=await api(`/rest/v1/admin_users?user_id=eq.${encodeURIComponent(s.user.id)}&select=user_id`);
-      if(!Array.isArray(rows)||!rows.length)throw new Error("Kont sa a pa gen dwa administratè.");
-      $("adminApp")?.classList.remove("hidden");
-      await Promise.all([loadAdminUsers(),loadAdminJobs(),loadAdminBusinesses()]);
+  /*
+   * ADMIN SECURITY
+   *
+   * Admin UID la dwe egziste nan public.admin_users.
+   * Nou verifye user_id a dirèkteman.
+   */
+  async function checkAdmin() {
+    const session = getSession();
+
+    hideAdminApp();
+
+    if (!session) {
+      showMessage("❌ Ou dwe konekte anvan ou antre nan Admin Dashboard.", "error");
+
+      setTimeout(() => {
+        location.href = "login.html";
+      }, 1200);
+
+      return false;
+    }
+
+    if (!session.user.id) {
+      clearSession();
+
+      showMessage("❌ Sesyon itilizatè a pa valab.", "error");
+
+      setTimeout(() => {
+        location.href = "login.html";
+      }, 1200);
+
+      return false;
+    }
+
+    try {
+      const rows = await api(
+        `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(
+          session.user.id
+        )}&select=user_id`
+      );
+
+      if (!Array.isArray(rows) || rows.length === 0) {
+        hideAdminApp();
+
+        showMessage(
+          "❌ Aksè refize. Kont sa a pa gen dwa administratè.",
+          "error"
+        );
+
+        return false;
+      }
+
+      showAdminApp();
+
+      await Promise.all([
+        loadAdminUsers(),
+        loadAdminJobs(),
+        loadAdminBusinesses()
+      ]);
+
       return true;
-    }catch(e){
-      message("❌ Aksè refize: "+e.message,"error");
+
+    } catch (error) {
+      console.error("Admin verification error:", error);
+
+      hideAdminApp();
+
+      showMessage(
+        "❌ Nou pa kapab verifye aksè administratè a: " +
+        error.message,
+        "error"
+      );
+
       return false;
     }
   }
 
-  window.loadAdminUsers=async function(){
-    const body=$("adminUsersBody");
-    if(body)body.innerHTML='<tr><td colspan="6">⏳ Nap chaje itilizatè yo...</td></tr>';
-    try{
-      users=await api('/rest/v1/profiles?select=id,full_name,email,phone,account_type,account_status&order=full_name.asc');
-      if(!Array.isArray(users))users=[];
+  /* =========================
+     USERS
+  ========================= */
+
+  window.loadAdminUsers = async function () {
+    const body = $("adminUsersBody");
+
+    if (body) {
+      body.innerHTML =
+        '<tr><td colspan="6">⏳ Nap chaje itilizatè yo...</td></tr>';
+    }
+
+    try {
+      users = await api(
+        "/rest/v1/profiles" +
+        "?select=id,full_name,email,phone,account_type,account_status" +
+        "&order=full_name.asc"
+      );
+
+      users = Array.isArray(users) ? users : [];
+
       renderUsers();
-    }catch(e){
-      if(body)body.innerHTML=`<tr><td colspan="6">❌ ${esc(e.message)}</td></tr>`;
-      message("❌ Nou pa kapab chaje itilizatè yo. Verifye admin RLS la.","error");
+
+    } catch (error) {
+      console.error(error);
+
+      if (body) {
+        body.innerHTML =
+          `<tr><td colspan="6">❌ ${esc(error.message)}</td></tr>`;
+      }
+
+      showMessage(
+        "❌ Nou pa kapab chaje itilizatè yo. Verifye RLS admin lan.",
+        "error"
+      );
     }
   };
 
-  function renderUsers(){
-    const q=($("adminUserSearch")?.value||"").toLowerCase().trim();
-    const type=$("adminTypeFilter")?.value||"";
-    const accountStatus=$("adminAccountStatusFilter")?.value||"";
-    const filtered=users.filter(u=>{
-      const hay=[u.full_name,u.phone,u.id,u.email].join(" ").toLowerCase();
-      return (!q||hay.includes(q))&&(!type||u.account_type===type)&&(!accountStatus||u.account_status===accountStatus);
+  function renderUsers() {
+    const query =
+      ($("adminUserSearch")?.value || "")
+        .toLowerCase()
+        .trim();
+
+    const type =
+      $("adminTypeFilter")?.value || "";
+
+    const accountStatus =
+      $("adminAccountStatusFilter")?.value || "";
+
+    const filtered = users.filter(user => {
+      const haystack = [
+        user.full_name,
+        user.phone,
+        user.id,
+        user.email
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+      return (
+        (!query || haystack.includes(query)) &&
+        (!type || user.account_type === type) &&
+        (!accountStatus || user.account_status === accountStatus)
+      );
     });
 
-    $("adminUserCount").textContent=users.length;
-    $("adminDisabledUserCount").textContent=users.filter(u=>u.account_status==="disabled").length;
+    if ($("adminUserCount")) {
+      $("adminUserCount").textContent = users.length;
+    }
 
-    const body=$("adminUsersBody");
-    if(!body)return;
-    if(!filtered.length){body.innerHTML='<tr><td colspan="6">Pa gen itilizatè ki koresponn.</td></tr>';return;}
+    if ($("adminDisabledUserCount")) {
+      $("adminDisabledUserCount").textContent =
+        users.filter(
+          user => user.account_status === "disabled"
+        ).length;
+    }
 
-    body.innerHTML=filtered.map(u=>{
-      const self=session()?.user?.id===u.id;
-      const disabled=u.account_status==="disabled";
-      return `<tr>
-        <td>${esc(u.full_name||"—")}</td>
-        <td class="email-cell">${esc(u.email||"—")}</td>
-        <td>${esc(u.phone||"—")}</td>
-        <td>${esc(u.account_type||"—")}</td>
-        <td>${esc(statusLabel(u.account_status||"active"))}</td>
-        <td>
-          ${self
-            ? `<span class="admin-muted">Kont pa ou</span>`
-            : `<button class="save-btn" type="button" onclick="setUserStatus('${esc(u.id)}','${disabled?"active":"disabled"}')">${disabled?"🔓 Aktive":"🚫 Dezaktive"}</button>
-               <button class="danger-btn" type="button" onclick="removeUser('${esc(u.id)}')">🗑️ Retire</button>`}
-        </td>
-      </tr>`;
+    const body = $("adminUsersBody");
+
+    if (!body) return;
+
+    if (!filtered.length) {
+      body.innerHTML =
+        '<tr><td colspan="6">Pa gen itilizatè ki koresponn.</td></tr>';
+      return;
+    }
+
+    const currentUserId = getSession()?.user?.id;
+
+    body.innerHTML = filtered.map(user => {
+      const isSelf = currentUserId === user.id;
+      const disabled = user.account_status === "disabled";
+
+      return `
+        <tr>
+          <td>${esc(user.full_name || "—")}</td>
+
+          <td class="email-cell">
+            ${esc(user.email || "—")}
+          </td>
+
+          <td>
+            ${esc(user.phone || "—")}
+          </td>
+
+          <td>
+            ${esc(user.account_type || "—")}
+          </td>
+
+          <td>
+            ${esc(
+              statusLabel(
+                user.account_status || "active"
+              )
+            )}
+          </td>
+
+          <td>
+            ${
+              isSelf
+                ? `<span class="admin-muted">Kont pa ou</span>`
+                : `
+                  <button
+                    class="save-btn"
+                    type="button"
+                    onclick="setUserStatus(
+                      '${esc(user.id)}',
+                      '${disabled ? "active" : "disabled"}'
+                    )"
+                  >
+                    ${disabled ? "🔓 Aktive" : "🚫 Dezaktive"}
+                  </button>
+
+                  <button
+                    class="danger-btn"
+                    type="button"
+                    onclick="removeUser('${esc(user.id)}')"
+                  >
+                    🗑️ Retire
+                  </button>
+                `
+            }
+          </td>
+        </tr>
+      `;
     }).join("");
   }
 
-  window.setUserStatus=async function(id,status){
-    try{
-      await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(id)}`,{
-        method:"PATCH",
-        headers:{Prefer:"return=minimal"},
-        body:JSON.stringify({account_status:status})
-      });
-      message(status==="disabled"?"🚫 Kont lan dezaktive.":"✅ Kont lan aktive ankò.","success");
+  window.setUserStatus = async function (id, status) {
+    const currentUserId = getSession()?.user?.id;
+
+    if (!id || id === currentUserId) {
+      showMessage(
+        "❌ Ou pa kapab chanje pwòp kont Admin ou la.",
+        "error"
+      );
+      return;
+    }
+
+    try {
+      await api(
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(id)}`,
+        {
+          method: "PATCH",
+          headers: {
+            Prefer: "return=minimal"
+          },
+          body: JSON.stringify({
+            account_status: status
+          })
+        }
+      );
+
+      showMessage(
+        status === "disabled"
+          ? "🚫 Kont lan dezaktive."
+          : "✅ Kont lan aktive ankò.",
+        "success"
+      );
+
       await loadAdminUsers();
-    }catch(e){message("❌ "+e.message,"error");}
+
+    } catch (error) {
+      console.error(error);
+
+      showMessage(
+        "❌ " + error.message,
+        "error"
+      );
+    }
   };
 
-  window.removeUser=async function(id){
-    const s=session();
-    if(!s||s.user.id===id)return;
-    if(!confirm("Retire pwofil itilizatè sa a? Li pap kapab konekte atravè sit la apre sa. Sa pa efase Auth user la nan Supabase."))return;
-    try{
-      await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(id)}`,{method:"DELETE"});
-      message("🗑️ Pwofil itilizatè a retire.","success");
+  window.removeUser = async function (id) {
+    const session = getSession();
+
+    if (!session || session.user.id === id) {
+      return;
+    }
+
+    const confirmed = confirm(
+      "Retire pwofil itilizatè sa a?\n\n" +
+      "Sa ap efase pwofil la nan public.profiles, " +
+      "men li PAP efase Auth user la nan Supabase."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api(
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(id)}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      showMessage(
+        "🗑️ Pwofil itilizatè a retire.",
+        "success"
+      );
+
       await loadAdminUsers();
-    }catch(e){message("❌ Pa kapab retire itilizatè a: "+e.message,"error");}
+
+    } catch (error) {
+      console.error(error);
+
+      showMessage(
+        "❌ Pa kapab retire pwofil la: " +
+        error.message,
+        "error"
+      );
+    }
   };
 
-  function jobMatches(job){
-    const q=($("adminJobSearch")?.value||"").toLowerCase().trim();
-    return !q||[job.title,job.company,job.location,job.description].filter(Boolean).join(" ").toLowerCase().includes(q);
+  /* =========================
+     JOBS
+  ========================= */
+
+  function jobMatches(job) {
+    const query =
+      ($("adminJobSearch")?.value || "")
+        .toLowerCase()
+        .trim();
+
+    if (!query) return true;
+
+    return [
+      job.title,
+      job.company,
+      job.company_name,
+      job.location,
+      job.description
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(query);
   }
 
-  window.loadAdminJobs=async function(){
-    const body=$("adminJobsBody");
-    if(body)body.innerHTML='<tr><td colspan="6">⏳ Nap chaje travay yo...</td></tr>';
-    try{
-      const status=$("adminJobStatusFilter")?.value||"";
-      const filter=status?`&status=eq.${encodeURIComponent(status)}`:"";
-      jobs=await api(`/rest/v1/jobs?select=*&order=created_at.desc${filter}`);
-      jobs=Array.isArray(jobs)?jobs:[];
+  window.loadAdminJobs = async function () {
+    const body = $("adminJobsBody");
+
+    if (body) {
+      body.innerHTML =
+        '<tr><td colspan="6">⏳ Nap chaje travay yo...</td></tr>';
+    }
+
+    try {
+      const status =
+        $("adminJobStatusFilter")?.value || "";
+
+      const filter = status
+        ? `&status=eq.${encodeURIComponent(status)}`
+        : "";
+
+      jobs = await api(
+        `/rest/v1/jobs?select=*&order=created_at.desc${filter}`
+      );
+
+      jobs = Array.isArray(jobs) ? jobs : [];
+
       renderJobs();
-      $("adminPendingJobCount").textContent=jobs.filter(j=>j.status==="pending").length;
-      $("adminActiveJobCount").textContent=jobs.filter(j=>j.status==="approved").length;
-    }catch(e){
-      if(body)body.innerHTML=`<tr><td colspan="6">❌ ${esc(e.message)}</td></tr>`;
-      message("❌ Nou pa kapab chaje travay yo: "+e.message,"error");
+
+      if ($("adminPendingJobCount")) {
+        $("adminPendingJobCount").textContent =
+          jobs.filter(j => j.status === "pending").length;
+      }
+
+      if ($("adminActiveJobCount")) {
+        $("adminActiveJobCount").textContent =
+          jobs.filter(j => j.status === "approved").length;
+      }
+
+    } catch (error) {
+      console.error(error);
+
+      if (body) {
+        body.innerHTML =
+          `<tr><td colspan="6">❌ ${esc(error.message)}</td></tr>`;
+      }
+
+      showMessage(
+        "❌ Nou pa kapab chaje travay yo: " +
+        error.message,
+        "error"
+      );
     }
   };
 
-  function renderJobs(){
-    const body=$("adminJobsBody");if(!body)return;
-    const rows=jobs.filter(jobMatches);
-    if(!rows.length){body.innerHTML='<tr><td colspan="6">Pa gen travay nan kategori sa a.</td></tr>';return;}
-    body.innerHTML=rows.map(j=>`
+  function renderJobs() {
+    const body = $("adminJobsBody");
+
+    if (!body) return;
+
+    const rows = jobs.filter(jobMatches);
+
+    if (!rows.length) {
+      body.innerHTML =
+        '<tr><td colspan="6">Pa gen travay nan kategori sa a.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = rows.map(job => `
       <tr>
-        <td><strong>${esc(j.title||"Travay")}</strong><br><small>${esc(j.description||"")}</small></td>
-        <td>${esc(j.company||j.company_name||"—")}</td>
-        <td>${esc(j.location||"—")}</td>
-        <td>${esc(statusLabel(j.status))}</td>
-        <td>${esc(j.created_at?new Date(j.created_at).toLocaleDateString():"—")}</td>
-        <td>${moderationButtons("job",j.id,j.status)}</td>
-      </tr>`).join("");
+        <td>
+          <strong>
+            ${esc(job.title || "Travay")}
+          </strong>
+          <br>
+          <small>
+            ${esc(job.description || "")}
+          </small>
+        </td>
+
+        <td>
+          ${esc(
+            job.company ||
+            job.company_name ||
+            "—"
+          )}
+        </td>
+
+        <td>
+          ${esc(job.location || "—")}
+        </td>
+
+        <td>
+          ${esc(statusLabel(job.status))}
+        </td>
+
+        <td>
+          ${esc(
+            job.created_at
+              ? new Date(job.created_at)
+                  .toLocaleDateString()
+              : "—"
+          )}
+        </td>
+
+        <td>
+          ${moderationButtons(
+            "job",
+            job.id,
+            job.status
+          )}
+        </td>
+      </tr>
+    `).join("");
   }
 
-  function businessMatches(b){
-    const q=($("adminBusinessSearch")?.value||"").toLowerCase().trim();
-    return !q||[b.business_name,b.category,b.location,b.description].filter(Boolean).join(" ").toLowerCase().includes(q);
+  /* =========================
+     BUSINESSES
+  ========================= */
+
+  function businessMatches(business) {
+    const query =
+      ($("adminBusinessSearch")?.value || "")
+        .toLowerCase()
+        .trim();
+
+    if (!query) return true;
+
+    return [
+      business.business_name,
+      business.category,
+      business.location,
+      business.description
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase()
+      .includes(query);
   }
 
-  window.loadAdminBusinesses=async function(){
-    const body=$("adminBusinessesBody");
-    if(body)body.innerHTML='<tr><td colspan="6">⏳ Nap chaje anons yo...</td></tr>';
-    try{
-      const status=$("adminBusinessStatusFilter")?.value||"";
-      const filter=status?`&status=eq.${encodeURIComponent(status)}`:"";
-      businesses=await api(`/rest/v1/businesses?select=*&order=created_at.desc${filter}`);
-      businesses=Array.isArray(businesses)?businesses:[];
+  window.loadAdminBusinesses = async function () {
+    const body = $("adminBusinessesBody");
+
+    if (body) {
+      body.innerHTML =
+        '<tr><td colspan="6">⏳ Nap chaje anons yo...</td></tr>';
+    }
+
+    try {
+      const status =
+        $("adminBusinessStatusFilter")?.value || "";
+
+      const filter = status
+        ? `&status=eq.${encodeURIComponent(status)}`
+        : "";
+
+      businesses = await api(
+        `/rest/v1/businesses?select=*&order=created_at.desc${filter}`
+      );
+
+      businesses = Array.isArray(businesses)
+        ? businesses
+        : [];
+
       renderBusinesses();
-      $("adminPendingBusinessCount").textContent=businesses.filter(b=>b.status==="pending").length;
-      $("adminActiveBusinessCount").textContent=businesses.filter(b=>b.status==="approved").length;
-    }catch(e){
-      if(body)body.innerHTML=`<tr><td colspan="6">❌ ${esc(e.message)}</td></tr>`;
-      message("❌ Nou pa kapab chaje anons yo: "+e.message,"error");
+
+      if ($("adminPendingBusinessCount")) {
+        $("adminPendingBusinessCount").textContent =
+          businesses.filter(
+            b => b.status === "pending"
+          ).length;
+      }
+
+      if ($("adminActiveBusinessCount")) {
+        $("adminActiveBusinessCount").textContent =
+          businesses.filter(
+            b => b.status === "approved"
+          ).length;
+      }
+
+    } catch (error) {
+      console.error(error);
+
+      if (body) {
+        body.innerHTML =
+          `<tr><td colspan="6">❌ ${esc(error.message)}</td></tr>`;
+      }
+
+      showMessage(
+        "❌ Nou pa kapab chaje anons yo: " +
+        error.message,
+        "error"
+      );
     }
   };
 
-  function renderBusinesses(){
-    const body=$("adminBusinessesBody");if(!body)return;
-    const rows=businesses.filter(businessMatches);
-    if(!rows.length){body.innerHTML='<tr><td colspan="6">Pa gen anons nan kategori sa a.</td></tr>';return;}
-    body.innerHTML=rows.map(b=>`
+  function renderBusinesses() {
+    const body = $("adminBusinessesBody");
+
+    if (!body) return;
+
+    const rows = businesses.filter(
+      businessMatches
+    );
+
+    if (!rows.length) {
+      body.innerHTML =
+        '<tr><td colspan="6">Pa gen anons nan kategori sa a.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = rows.map(business => `
       <tr>
-        <td><strong>${esc(b.business_name||"Anons")}</strong><br><small>${esc(b.description||"")}</small></td>
-        <td>${esc(b.category||"—")}</td>
-        <td>${esc(b.location||"—")}</td>
-        <td>${esc(statusLabel(b.status))}</td>
-        <td>${esc(b.created_at?new Date(b.created_at).toLocaleDateString():"—")}</td>
-        <td>${moderationButtons("business",b.id,b.status)}</td>
-      </tr>`).join("");
+        <td>
+          <strong>
+            ${esc(
+              business.business_name ||
+              "Anons"
+            )}
+          </strong>
+
+          <br>
+
+          <small>
+            ${esc(
+              business.description || ""
+            )}
+          </small>
+        </td>
+
+        <td>
+          ${esc(
+            business.category || "—"
+          )}
+        </td>
+
+        <td>
+          ${esc(
+            business.location || "—"
+          )}
+        </td>
+
+        <td>
+          ${esc(
+            statusLabel(business.status)
+          )}
+        </td>
+
+        <td>
+          ${esc(
+            business.created_at
+              ? new Date(
+                  business.created_at
+                ).toLocaleDateString()
+              : "—"
+          )}
+        </td>
+
+        <td>
+          ${moderationButtons(
+            "business",
+            business.id,
+            business.status
+          )}
+        </td>
+      </tr>
+    `).join("");
   }
 
-  function moderationButtons(kind,id,status){
-    const prefix=kind==="job"?"Job":"Business";
-    return `<div class="admin-button-group">
-      ${status!=="approved"?`<button class="save-btn" type="button" onclick="moderate('${kind}','${esc(id)}','approved')">✅ Valide</button>`:""}
-      ${status!=="rejected"?`<button class="danger-outline" type="button" onclick="moderate('${kind}','${esc(id)}','rejected')">❌ Refize</button>`:""}
-      ${status!=="unavailable"?`<button class="warning-btn" type="button" onclick="moderate('${kind}','${esc(id)}','unavailable')">🚫 Pa disponib</button>`:""}
-      <button class="danger-btn" type="button" onclick="deleteListing('${kind}','${esc(id)}')">🗑️ Efase</button>
-    </div>`;
+  /* =========================
+     MODERATION
+  ========================= */
+
+  function moderationButtons(
+    kind,
+    id,
+    status
+  ) {
+    return `
+      <div class="admin-button-group">
+
+        ${
+          status !== "approved"
+            ? `
+              <button
+                class="save-btn"
+                type="button"
+                onclick="moderate(
+                  '${kind}',
+                  '${esc(id)}',
+                  'approved'
+                )"
+              >
+                ✅ Valide
+              </button>
+            `
+            : ""
+        }
+
+        ${
+          status !== "rejected"
+            ? `
+              <button
+                class="danger-outline"
+                type="button"
+                onclick="moderate(
+                  '${kind}',
+                  '${esc(id)}',
+                  'rejected'
+                )"
+              >
+                ❌ Refize
+              </button>
+            `
+            : ""
+        }
+
+        ${
+          status !== "unavailable"
+            ? `
+              <button
+                class="warning-btn"
+                type="button"
+                onclick="moderate(
+                  '${kind}',
+                  '${esc(id)}',
+                  'unavailable'
+                )"
+              >
+                🚫 Pa disponib
+              </button>
+            `
+            : ""
+        }
+
+        <button
+          class="danger-btn"
+          type="button"
+          onclick="deleteListing(
+            '${kind}',
+            '${esc(id)}'
+          )"
+        >
+          🗑️ Efase
+        </button>
+
+      </div>
+    `;
   }
 
-  window.moderate=async function(kind,id,status){
-    try{
-      const table=kind==="job"?"jobs":"businesses";
-      await api(`/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`,{
-        method:"PATCH",
-        headers:{Prefer:"return=minimal"},
-        body:JSON.stringify({status})
-      });
-      message(`✅ ${kind==="job"?"Travay la":"Anons la"} mete kòm ${statusLabel(status)}.`,"success");
-      await Promise.all([loadAdminJobs(),loadAdminBusinesses()]);
-    }catch(e){message("❌ Pa kapab chanje status la: "+e.message,"error");}
+  window.moderate = async function (
+    kind,
+    id,
+    status
+  ) {
+    try {
+      const table =
+        kind === "job"
+          ? "jobs"
+          : "businesses";
+
+      await api(
+        `/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`,
+        {
+          method: "PATCH",
+          headers: {
+            Prefer: "return=minimal"
+          },
+          body: JSON.stringify({
+            status
+          })
+        }
+      );
+
+      showMessage(
+        `✅ ${
+          kind === "job"
+            ? "Travay la"
+            : "Anons la"
+        } mete kòm ${statusLabel(status)}.`,
+        "success"
+      );
+
+      if (kind === "job") {
+        await loadAdminJobs();
+      } else {
+        await loadAdminBusinesses();
+      }
+
+    } catch (error) {
+      console.error(error);
+
+      showMessage(
+        "❌ Pa kapab chanje status la: " +
+        error.message,
+        "error"
+      );
+    }
   };
 
-  window.deleteListing=async function(kind,id){
-    if(!confirm("Efase anons sa a nèt nan baz done a?"))return;
-    try{
-      const table=kind==="job"?"jobs":"businesses";
-      await api(`/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`,{method:"DELETE"});
-      message("🗑️ Anons la efase.","success");
-      await Promise.all([loadAdminJobs(),loadAdminBusinesses()]);
-    }catch(e){message("❌ Pa kapab efase anons la: "+e.message,"error");}
+  window.deleteListing = async function (
+    kind,
+    id
+  ) {
+    const confirmed = confirm(
+      "Efase anons sa a nèt nan baz done a?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const table =
+        kind === "job"
+          ? "jobs"
+          : "businesses";
+
+      await api(
+        `/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      showMessage(
+        "🗑️ Anons la efase.",
+        "success"
+      );
+
+      if (kind === "job") {
+        await loadAdminJobs();
+      } else {
+        await loadAdminBusinesses();
+      }
+
+    } catch (error) {
+      console.error(error);
+
+      showMessage(
+        "❌ Pa kapab efase anons la: " +
+        error.message,
+        "error"
+      );
+    }
   };
 
-  document.addEventListener("DOMContentLoaded",()=>{
-    $("adminUserSearch")?.addEventListener("input",renderUsers);
-    $("adminTypeFilter")?.addEventListener("change",renderUsers);
-    $("adminAccountStatusFilter")?.addEventListener("change",renderUsers);
-    $("adminJobSearch")?.addEventListener("input",renderJobs);
-    $("adminJobStatusFilter")?.addEventListener("change",loadAdminJobs);
-    $("adminBusinessSearch")?.addEventListener("input",renderBusinesses);
-    $("adminBusinessStatusFilter")?.addEventListener("change",loadAdminBusinesses);
-    checkAdmin();
-  });
-})();
+  /* =========================
+     LOGOUT
+  ========================= */
+
+  function logoutAdmin() {
+    clearSession();
+    location.href = "login.html";
+  }
+
+  window.logoutAdmin = logoutAdmin;
+
+  /* =========================
+     START
+  ========================= */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+      $("adminUserSearch")
+        ?.addEventListener(
+          "input",
+          renderUsers
+        );
+
+      $("adminTypeFilter")
+        ?.addEventListener(
+          "change",
+          renderUsers
+        );
+
+      $("adminAccountStatusFilter")
+        ?.addEventListener(
+          "change",
+          renderUsers
+        );
+
+      $("adminJobSearch")
+        ?.addEventListener(
+          "input",
+          renderJobs
+        );
+
+      $("adminJobStatusFilter")
+        ?.addEventListener(
+          "change",
+          loadAdminJobs
+        );
+
+      $("adminBusinessSearch")
+        ?.addEventListener(
+          "input",
+          renderBusinesses
+        );
+
+      $("adminBusinessStatusFilter")
+        ?.addEventListener(
+          "change",
+          loadAdminBusinesses
+        );
+
+      checkAdmin();
+    }
+  );
+
+})(); 
