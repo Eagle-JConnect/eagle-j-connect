@@ -85,10 +85,12 @@ button:disabled{opacity:.6;cursor:not-allowed}
   position:relative;isolation:isolate;overflow:hidden;
   color:#fff;text-align:center;
   padding:104px 20px 96px;
-  background:
-    radial-gradient(circle at 15% 20%,rgba(19,162,255,.22),transparent 34%),
-    radial-gradient(circle at 85% 10%,rgba(244,180,0,.16),transparent 28%),
-    linear-gradient(135deg,var(--navy),var(--navy-2) 58%,#07558f);
+  background-image:
+    linear-gradient(rgba(3,22,48,.48),rgba(3,22,48,.62)),
+    url("eagle-j-background.jpg");
+  background-size:cover;
+  background-position:center center;
+  background-repeat:no-repeat;
 }
 .hero::after{
   content:"";position:absolute;width:420px;height:420px;border:1px solid rgba(255,255,255,.08);border-radius:50%;

@@ -318,28 +318,22 @@
     if(!s||s.user.id===id)return;
 
     if(!confirm(
-      "Retire itilizatè sa a nèt? "+
-      "Sa ap efase pwofil li ansanm ak kont Auth li nan Supabase. "+
-      "Aksyon sa a pa ka retounen."
+      "Retire pwofil itilizatè sa a? "+
+      "Li pap kapab konekte atravè sit la apre sa. "+
+      "Sa pa efase Auth user la nan Supabase."
     ))return;
 
     try{
 
       await api(
-        `/rest/v1/rpc/admin_delete_user`,
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(id)}`,
         {
-          method:"POST",
-          headers:{
-            Prefer:"return=minimal"
-          },
-          body:JSON.stringify({
-            target_user_id:id
-          })
+          method:"DELETE"
         }
       );
 
       message(
-        "🗑️ Itilizatè a efase nèt.",
+        "🗑️ Pwofil itilizatè a retire.",
         "success"
       );
 
