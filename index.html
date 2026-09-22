@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eagle-J Connect | Ayiti + Bahamas</title>
-  <meta name="description" content="Eagle-J Connect konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.">
-  <link rel="stylesheet" href="style.css?v=final7">
+  <title>Eagle-J Connect | Opòtinite, Travay & Biznis</title>
+  <meta name="description" content="Eagle-J Connect — yon platfòm pou dekouvri travay, biznis, sèvis ak nouvo opòtinite ant Ayiti ak Bahamas.">
+  <link rel="stylesheet" href="style.css?v=home2026">
 </head>
-<body>
+<body class="home-page">
 
 <header class="header">
   <div class="container nav-container">
@@ -28,9 +28,9 @@
       <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
       <div class="language">
         <select id="languageSelect" aria-label="Chwazi lang">
-          <option value="ht">🇭🇹 Kreyòl</option>
-          <option value="en">🇺🇸 English</option>
-          <option value="fr">🇫🇷 Français</option>
+          <option value="ht">Kreyòl</option>
+          <option value="en">English</option>
+          <option value="fr">Français</option>
         </select>
       </div>
     </nav>
@@ -38,111 +38,93 @@
 </header>
 
 <main>
-  <section class="hero">
-    <div class="container hero-content">
-      <p class="card-kicker" style="color:#9edcff;letter-spacing:2px">AYITI • BAHAMAS • OPÒTINITE</p>
-      <h1 class="hero-title-main">OPEN THE WAY.<br>CREATE WEALTH.</h1>
-      <p class="hero-subtitle-main" data-i18n="hero-text">
-        Konekte ak moun, dekouvri travay, fè biznis epi jwenn sèvis ki ede w grandi.
-      </p>
-      <div class="hero-buttons">
-        <a href="enskri.html" class="btn btn-primary" data-i18n="create-account">Kreye Kont</a>
-        <a href="travay.html" class="btn btn-secondary" data-i18n="find-job">Chèche Travay</a>
+  <section class="home-hero">
+    <div class="hero-glow hero-glow-one"></div>
+    <div class="hero-glow hero-glow-two"></div>
+    <div class="container home-hero-grid">
+      <div class="home-hero-copy">
+        <div class="eyebrow"><span></span> EAGLE-J CONNECT <span></span></div>
+        <h1>PLIS PASE YON PLATFÒM.<br><strong>SE OPÒTINITE W.</strong></h1>
+        <p class="home-hero-lead">Konekte ak moun, dekouvri travay, fè biznis, jwenn sèvis epi kreye nouvo opòtinite pou tèt ou.</p>
+        <div class="hero-buttons home-hero-actions">
+          <a href="enskri.html" class="btn btn-primary btn-large">Kòmanse kounye a <span>→</span></a>
+          <a href="travay.html" class="btn btn-ghost">Eksplore Travay</a>
+        </div>
+        <div class="hero-trust-row">
+          <span>Travay</span><i></i><span>Biznis</span><i></i><span>Anons</span><i></i><span>Sèvis</span>
+        </div>
+      </div>
+      <div class="home-hero-visual">
+        <div class="hero-image-frame">
+          <img src="eagle-hero.jpg" alt="Eagle-J Connect — eagle in flight">
+          <div class="hero-image-badge"><b>YOUR GOALS</b><span>Our platform • A brighter future</span></div>
+        </div>
+        <div class="floating-card floating-card-top"><span class="floating-icon">↗</span><div><b>Opòtinite</b><small>Ap tann ou</small></div></div>
+        <div class="floating-card floating-card-bottom"><span class="floating-icon">◆</span><div><b>Konekte</b><small>Aprann • Grandi • Reyisi</small></div></div>
       </div>
     </div>
   </section>
 
-  <section class="business-promo">
-    <div class="container">
-      <h2>Ou gen yon biznis, sèvis oswa pwofesyon?</h2>
-      <p>Fè kominote Ayiti ak Bahamas dekouvri sa w ap ofri sou Eagle-J Connect.</p>
-      <a href="kreye-anons.html" class="btn btn-primary">📢 Kreye yon Anons</a>
+  <section class="home-quick-nav">
+    <div class="container quick-nav-grid">
+      <a href="travay.html" class="quick-card"><span class="quick-icon">💼</span><div><b>Travay</b><small>Chèche opòtinite</small></div><span class="arrow">→</span></a>
+      <a href="biznis.html" class="quick-card"><span class="quick-icon">◆</span><div><b>Biznis</b><small>Jwenn sèvis ak pwofesyonèl</small></div><span class="arrow">→</span></a>
+      <a href="anons-list.html" class="quick-card"><span class="quick-icon">▣</span><div><b>Anons</b><small>Gade sa moun ap ofri</small></div><span class="arrow">→</span></a>
+      <a href="kreye-anons.html" class="quick-card quick-card-accent"><span class="quick-icon">+</span><div><b>Pibliye</b><small>Mete opòtinite pa w la</small></div><span class="arrow">→</span></a>
     </div>
   </section>
 
-  <section id="stats" class="stats-section" aria-labelledby="stats-title">
+  <section id="stats" class="home-stats-section stats-section" aria-labelledby="stats-title">
     <div class="container">
-      <h2 id="stats-title" class="stats-title">Dekouvri sa ki disponib</h2>
-      <p class="stats-description">Klike sou nenpòt kategori pou wè lis ki disponib la.</p>
+      <div class="section-heading-center">
+        <div class="section-kicker">EAGLE-J CONNECT</div>
+        <h2 id="stats-title">Gade sa k ap grandi sou platfòm lan</h2>
+        <p>Klike sou yon kategori pou kòmanse eksplore.</p>
+      </div>
       <div class="stats-grid">
-        <a class="stat-card stat-link" href="travay.html" aria-label="Gade tout travay">
-          <h2 id="stat-jobs">0</h2><p>💼 Travay</p><span class="stat-action">Gade travay →</span>
-        </a>
-        <a class="stat-card stat-link" href="biznis.html" aria-label="Gade tout biznis">
-          <h2 id="stat-business">0</h2><p>🛍️ Biznis</p><span class="stat-action">Gade biznis →</span>
-        </a>
-        <a class="stat-card stat-link" href="itilizate.html" aria-label="Gade itilizatè yo">
-          <h2 id="stat-users">0</h2><p>👥 Itilizatè</p><span class="stat-action">Gade itilizatè →</span>
-        </a>
-        <a class="stat-card stat-link" href="anons-list.html" aria-label="Gade tout anons">
-          <h2 id="stat-ads">0</h2><p>📢 Anons</p><span class="stat-action">Gade anons →</span>
-        </a>
+        <a class="stat-card stat-link home-stat-card" href="travay.html" aria-label="Gade tout travay"><span class="stat-symbol">💼</span><h2 id="stat-jobs">0</h2><p>Travay</p><span class="stat-action">Eksplore →</span></a>
+        <a class="stat-card stat-link home-stat-card" href="biznis.html" aria-label="Gade tout biznis"><span class="stat-symbol">◆</span><h2 id="stat-business">0</h2><p>Biznis</p><span class="stat-action">Eksplore →</span></a>
+        <a class="stat-card stat-link home-stat-card" href="itilizate.html" aria-label="Gade itilizatè yo"><span class="stat-symbol">●</span><h2 id="stat-users">0</h2><p>Itilizatè</p><span class="stat-action">Dekouvri →</span></a>
+        <a class="stat-card stat-link home-stat-card" href="anons-list.html" aria-label="Gade tout anons"><span class="stat-symbol">▣</span><h2 id="stat-ads">0</h2><p>Anons</p><span class="stat-action">Gade anons →</span></a>
       </div>
     </div>
   </section>
 
-  <section class="services">
+  <section class="home-services">
     <div class="container">
-      <h2 class="section-title">Tout sa ou ka fè sou Eagle-J Connect</h2>
-      <p class="section-description">Yon sèl platfòm pou dekouvri opòtinite, mete sa w ap ofri devan kominote a, epi konekte dirèkteman.</p>
-
-      <div class="cards">
-        <article class="card">
-          <div class="card-kicker">01 • TRAVAY</div>
-          <h3>💼 Jwenn yon travay</h3>
-          <p>Chèche travay selon tit, konpayi, lokalizasyon ak kalite travay.</p>
-          <a href="travay.html" class="btn btn-primary">Gade Travay →</a>
-        </article>
-
-        <article class="card">
-          <div class="card-kicker">02 • MARKETPLACE</div>
-          <h3>🛍️ Dekouvri biznis</h3>
-          <p>Jwenn pwofesyonèl, sèvis, biznis, anplwayè ak lòt anons.</p>
-          <a href="biznis.html" class="btn btn-primary">Eksplore Biznis →</a>
-        </article>
-
-        <article class="card">
-          <div class="card-kicker">03 • OPÒTINITE</div>
-          <h3>📢 Pibliye sa w ofri</h3>
-          <p>Mete sèvis, biznis, pwofesyon oswa byen ou devan moun k ap chèche yo.</p>
-          <a href="kreye-anons.html" class="btn btn-primary">Pibliye Anons →</a>
-        </article>
+      <div class="section-heading-center">
+        <div class="section-kicker">ONE PLATFORM</div>
+        <h2>Tout sa ou ka fè sou Eagle-J Connect</h2>
+        <p>Yon espas ki fèt pou ede moun jwenn opòtinite epi ede moun ki gen yon bagay pou ofri jwenn kliyan, patnè oswa kandida.</p>
+      </div>
+      <div class="home-service-grid">
+        <article class="home-service-card"><div class="service-number">01</div><div class="service-big-icon">💼</div><h3>Jwenn yon travay</h3><p>Chèche travay selon tit, konpayi, lokalizasyon ak kalite travay.</p><a href="travay.html">Gade travay <span>→</span></a></article>
+        <article class="home-service-card"><div class="service-number">02</div><div class="service-big-icon">◆</div><h3>Dekouvri biznis</h3><p>Jwenn pwofesyonèl, sèvis, biznis ak anplwayè nan kominote a.</p><a href="biznis.html">Eksplore biznis <span>→</span></a></article>
+        <article class="home-service-card"><div class="service-number">03</div><div class="service-big-icon">▣</div><h3>Pibliye sa w ofri</h3><p>Mete sèvis, pwodwi, pwofesyon oswa opòtinite ou devan moun k ap chèche yo.</p><a href="kreye-anons.html">Kreye anons <span>→</span></a></article>
       </div>
     </div>
   </section>
 
-  <section class="how-section">
-    <div class="container">
-      <h2 class="section-title">Kijan sa mache?</h2>
-      <div class="steps-grid">
-        <article class="step-card">
-          <div class="step-number">1</div>
-          <h3>Kreye kont</h3>
-          <p>Kreye pwofil ou pou jwenn aksè ak opòtinite yo.</p>
-        </article>
-        <article class="step-card">
-          <div class="step-number">2</div>
-          <h3>Chèche oswa pibliye</h3>
-          <p>Jwenn yon travay oswa mete pwòp sèvis ak biznis ou sou platfòm lan.</p>
-        </article>
-        <article class="step-card">
-          <div class="step-number">3</div>
-          <h3>Konekte dirèkteman</h3>
-          <p>Kontakte moun, biznis oswa anplwayè ki gen opòtinite pou ou.</p>
-        </article>
+  <section class="home-how">
+    <div class="container home-how-grid">
+      <div class="home-how-copy"><div class="section-kicker">SENP & RAPID</div><h2>Konekte. Dekouvri.<br><strong>Grandi.</strong></h2><p>Eagle-J Connect fèt pou fè premye pa a pi fasil — kit w ap chèche yon travay, devlope yon biznis oswa mete yon sèvis devan nouvo moun.</p><a href="enskri.html" class="btn btn-primary">Kreye kont ou →</a></div>
+      <div class="home-steps">
+        <div class="home-step"><span>01</span><div><h3>Kreye kont</h3><p>Kreye pwofil ou pou jwenn aksè ak opòtinite yo.</p></div></div>
+        <div class="home-step"><span>02</span><div><h3>Chèche oswa pibliye</h3><p>Jwenn sa w bezwen oswa mete pwòp sèvis ou sou platfòm lan.</p></div></div>
+        <div class="home-step"><span>03</span><div><h3>Konekte dirèkteman</h3><p>Kontakte moun, biznis oswa anplwayè ki gen opòtinite pou ou.</p></div></div>
       </div>
     </div>
   </section>
 
-  <section class="cta">
-    <div class="container">
-      <h2>Chemen ou kòmanse ak yon koneksyon.</h2>
-      <p>Kreye kont ou epi kòmanse dekouvri nouvo opòtinite jodi a.</p>
-      <div class="hero-buttons">
-        <a href="enskri.html" class="btn btn-primary">Kreye Kont</a>
-        <a href="kontak.html" class="btn btn-secondary">Kontakte Nou</a>
-      </div>
+  <section class="home-business-cta">
+    <div class="container home-business-cta-inner">
+      <div><div class="section-kicker light">POU BIZNIS & PWOFESYONÈL</div><h2>Ou gen yon bagay pou ofri?</h2><p>Fè plis moun dekouvri biznis, sèvis oswa pwofesyon ou sou Eagle-J Connect.</p></div>
+      <a href="kreye-anons.html" class="btn btn-primary btn-large">Pibliye yon anons →</a>
     </div>
+  </section>
+
+  <section class="home-final-cta">
+    <div class="container"><div class="section-kicker">EAGLE-J CONNECT</div><h2>Chemen ou ka kòmanse ak yon sèl koneksyon.</h2><p>Antre sou platfòm lan epi kòmanse dekouvri nouvo posiblite.</p><div class="hero-buttons"><a href="enskri.html" class="btn btn-primary btn-large">Kòmanse kounye a</a><a href="kontak.html" class="btn btn-secondary">Kontakte Nou</a></div></div>
   </section>
 </main>
 
@@ -156,8 +138,8 @@
   </div>
 </footer>
 
-<script src="language.js?v=final7"></script>
-<script src="script.js?v=final7"></script>
-<script src="menu.js?v=final7"></script>
+<script src="language.js?v=home2026"></script>
+<script src="script.js?v=home2026"></script>
+<script src="menu.js?v=home2026"></script>
 </body>
 </html>
