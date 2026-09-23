@@ -1,52 +1,64 @@
-/* Eagle-J Connect - Supabase application */
+// =========================================================
+// EAGLE-J CONNECT - SCRIPT.JS
+// =========================================================
 
 const SUPABASE_URL = "https://glwyqrvufmjscjbbszzz.supabase.co";
 const SUPABASE_KEY = "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 const IMAGE_BUCKET = "business-images";
 
 
-/* =========================================================
-   BASIC FUNCTIONS
-========================================================= */
+// =========================================================
+// BASIC HELPERS
+// =========================================================
 
-function qs(id) {
-  return document.getElementById(id);
+function qs(selector) {
+  return document.querySelector(selector);
+}
+
+function msg(id, text) {
+  const el = qs("#" + id);
+  if (el) {
+    el.textContent = text;
+  }
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 
-/* =========================================================
-   SESSION
-========================================================= */
+// =========================================================
+// SESSION
+// =========================================================
 
 function getSession() {
-
   const token = localStorage.getItem("supabase_access_token");
   const userText = localStorage.getItem("supabase_user");
 
   if (token && userText) {
-
     try {
-
       const user = JSON.parse(userText);
 
       if (user?.id) {
-
         return {
           token,
           user
         };
-
       }
-
-    } catch (e) {}
-
+    } catch (error) {
+      console.warn("Could not read saved user:", error);
+    }
   }
 
   const id = localStorage.getItem("supabase_user_id");
   const email = localStorage.getItem("supabase_user_email");
 
   if (token && id) {
-
     return {
       token,
       user: {
@@ -54,36 +66,28 @@ function getSession() {
         email
       }
     };
-
   }
 
   return null;
-
 }
 
 
 function saveSession(data) {
-
   if (data?.access_token) {
-
     localStorage.setItem(
       "supabase_access_token",
       data.access_token
     );
-
   }
 
   if (data?.refresh_token) {
-
     localStorage.setItem(
       "supabase_refresh_token",
       data.refresh_token
     );
-
   }
 
   if (data?.user) {
-
     localStorage.setItem(
       "supabase_user",
       JSON.stringify(data.user)
@@ -98,160 +102,98 @@ function saveSession(data) {
       "supabase_user_email",
       data.user.email || ""
     );
-
   }
-
 }
 
 
 function clearSession() {
-
-  [
-    "supabase_access_token",
-    "supabase_refresh_token",
-    "supabase_user",
-    "supabase_user_id",
-    "supabase_user_email",
-    "user_full_name",
-    "user_phone",
-    "user_account_type",
-    "user_is_admin"
-  ].forEach(
-    key => localStorage.removeItem(key)
-  );
-
+  localStorage.removeItem("supabase_access_token");
+  localStorage.removeItem("supabase_refresh_token");
+  localStorage.removeItem("supabase_user");
+  localStorage.removeItem("supabase_user_id");
+  localStorage.removeItem("supabase_user_email");
 }
 
 
-window.logoutUser = () => {
-
-  clearSession();
-
-  location.href = "login.html";
-
-};
-
-
-/* =========================================================
-   MOBILE MENU
-========================================================= */
-
-function setupMobileMenu() {
-  /* menu.js controls the mobile menu */
-}
-
-
-window.toggleMenu = function () {
-
-  const button = document.getElementById("menuToggle");
-
-  if (button) {
-    button.click();
-  }
-
-};
-
-
-/* =========================================================
-   MESSAGES
-========================================================= */
-
-function msg(id, text, type = "error") {
-
-  if (window.EJC?.t) {
-    text = window.EJC.t(text);
-  }
-
-  const el = qs(id);
-
-  if (!el) return;
-
-  el.textContent = text;
-
-  el.style.color =
-    type === "success"
-      ? "#18864b"
-      : type === "warning"
-        ? "#b26a00"
-        : "#c62828";
-
-}
-
-
-/* =========================================================
-   SECURITY / TEXT HELPERS
-========================================================= */
-
-function esc(value) {
-
-  const d = document.createElement("div");
-
-  d.textContent = value ?? "";
-
-  return d.innerHTML;
-
-}
-
-
-function attr(value) {
-
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/"/g, "&quot;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-
-}
-
-
-function waNumber(value) {
-
-  return String(value || "")
-    .replace(/\D/g, "");
-
-}
-
-
-function fmtDate(value) {
-
-  try {
-
-    return new Date(value).toLocaleDateString();
-
-  } catch (e) {
-
-    return "";
-
-  }
-
-}
-
-
-/* =========================================================
-   SUPABASE API
-========================================================= */
+// =========================================================
+// API
+// =========================================================
 
 async function api(path, options = {}) {
+
+  const {
+    skipAuth = false,
+    ...fetchOptions
+  } = options;
 
   const headers = Object.assign(
     {
       "apikey": SUPABASE_KEY,
       "Content-Type": "application/json"
     },
-    options.headers || {}
+    fetchOptions.headers || {}
   );
 
   const session = getSession();
 
   if (
+    !skipAuth &&
     session?.token &&
     !headers.Authorization
   ) {
-
     headers.Authorization =
       `Bearer ${session.token}`;
-
   }
+
+  const response = await fetch(
+    SUPABASE_URL + path,
+    {
+      ...fetchOptions,
+      headers
+    }
+  );
+
+  const text = await response.text();
+
+  let data = null;
+
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch (error) {
+    data = text;
+  }
+
+  if (!response.ok) {
+
+    throw new Error(
+      data?.message ||
+      data?.msg ||
+      data?.error_description ||
+      data?.details ||
+      data?.hint ||
+      data?.error ||
+      "Request failed"
+    );
+  }
+
+  return data;
+}
+
+
+// =========================================================
+// AUTH API
+// =========================================================
+
+async function authRequest(path, options = {}) {
+
+  const headers = {
+    "apikey": SUPABASE_KEY,
+    "Content-Type": "application/json",
+    ...(options.headers || {})
+  };
+
+  // Never send an old user JWT during login/signup.
+  delete headers.Authorization;
 
   const response = await fetch(
     SUPABASE_URL + path,
@@ -266,15 +208,9 @@ async function api(path, options = {}) {
   let data = null;
 
   try {
-
-    data = text
-      ? JSON.parse(text)
-      : null;
-
-  } catch (e) {
-
+    data = text ? JSON.parse(text) : null;
+  } catch (error) {
     data = text;
-
   }
 
   if (!response.ok) {
@@ -285,21 +221,309 @@ async function api(path, options = {}) {
       data?.error_description ||
       data?.details ||
       data?.hint ||
-      "Request failed"
+      data?.error ||
+      "Authentication request failed"
     );
-
   }
 
   return data;
-
 }
 
 
-/* =========================================================
-   ADMIN CHECK
-========================================================= */
+// =========================================================
+// REFRESH AUTH SESSION
+// =========================================================
 
-async function checkCurrentUserIsAdmin(userId) {
+async function refreshAuthSession() {
+
+  const refreshToken =
+    localStorage.getItem("supabase_refresh_token");
+
+  if (!refreshToken) {
+    return null;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
+      {
+        method: "POST",
+
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          refresh_token: refreshToken
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (
+      !response.ok ||
+      !data?.access_token ||
+      !data?.user?.id
+    ) {
+      return null;
+    }
+
+    saveSession(data);
+
+    return {
+      token: data.access_token,
+      user: data.user
+    };
+
+  } catch (error) {
+
+    console.warn(
+      "Session refresh failed:",
+      error
+    );
+
+    return null;
+  }
+}
+
+
+// =========================================================
+// VERIFY AUTH SESSION
+// =========================================================
+
+async function verifyAuthSession() {
+
+  let session = getSession();
+
+  if (
+    !session?.token ||
+    !session?.user?.id
+  ) {
+    return null;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${SUPABASE_URL}/auth/v1/user`,
+      {
+        method: "GET",
+
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization":
+            `Bearer ${session.token}`
+        }
+      }
+    );
+
+    if (response.ok) {
+
+      const user = await response.json();
+
+      if (user?.id) {
+
+        const updatedUser = {
+          ...session.user,
+          ...user
+        };
+
+        localStorage.setItem(
+          "supabase_user",
+          JSON.stringify(updatedUser)
+        );
+
+        localStorage.setItem(
+          "supabase_user_id",
+          updatedUser.id
+        );
+
+        localStorage.setItem(
+          "supabase_user_email",
+          updatedUser.email || ""
+        );
+
+        return {
+          token: session.token,
+          user: updatedUser
+        };
+      }
+    }
+
+    // Access token may have expired.
+    const refreshed =
+      await refreshAuthSession();
+
+    if (refreshed) {
+      return refreshed;
+    }
+
+    clearSession();
+
+    return null;
+
+  } catch (error) {
+
+    console.warn(
+      "Auth verification failed:",
+      error
+    );
+
+    const refreshed =
+      await refreshAuthSession();
+
+    if (refreshed) {
+      return refreshed;
+    }
+
+    clearSession();
+
+    return null;
+  }
+}
+
+
+// =========================================================
+// LOGIN
+// =========================================================
+
+async function loginUser(email, password) {
+
+  const data = await authRequest(
+    "/auth/v1/token?grant_type=password",
+    {
+      method: "POST",
+
+      body: JSON.stringify({
+        email,
+        password
+      })
+    }
+  );
+
+  saveSession(data);
+
+  return data;
+}
+
+
+// =========================================================
+// REGISTER
+// =========================================================
+
+async function registerUser(
+  email,
+  password,
+  fullName = ""
+) {
+
+  const body = {
+    email,
+    password
+  };
+
+  if (fullName) {
+    body.data = {
+      full_name: fullName
+    };
+  }
+
+  const data = await authRequest(
+    "/auth/v1/signup",
+    {
+      method: "POST",
+      body: JSON.stringify(body)
+    }
+  );
+
+  if (data?.access_token) {
+    saveSession(data);
+  }
+
+  return data;
+}
+
+
+// =========================================================
+// LOGOUT
+// =========================================================
+
+async function logoutUser() {
+
+  const session = getSession();
+
+  try {
+
+    if (session?.token) {
+
+      await fetch(
+        `${SUPABASE_URL}/auth/v1/logout`,
+        {
+          method: "POST",
+
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization":
+              `Bearer ${session.token}`
+          }
+        }
+      );
+    }
+
+  } catch (error) {
+
+    console.warn(
+      "Logout request failed:",
+      error
+    );
+
+  } finally {
+
+    clearSession();
+
+    window.location.href = "login.html";
+  }
+}
+
+
+// =========================================================
+// GET PROFILE
+// =========================================================
+
+async function getProfile(userId) {
+
+  if (!userId) {
+    return null;
+  }
+
+  try {
+
+    const rows = await api(
+      `/rest/v1/profiles?id=eq.${encodeURIComponent(userId)}&select=*`
+    );
+
+    return rows?.[0] || null;
+
+  } catch (error) {
+
+    console.warn(
+      "Could not load profile:",
+      error
+    );
+
+    return null;
+  }
+}
+
+
+// =========================================================
+// CHECK ADMIN
+// =========================================================
+
+async function checkAdmin(userId) {
 
   if (!userId) {
     return false;
@@ -307,1293 +531,246 @@ async function checkCurrentUserIsAdmin(userId) {
 
   try {
 
-    const rows = await api(
-      `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
+    const profile = await getProfile(userId);
+
+    if (!profile) {
+      return false;
+    }
+
+    return (
+      profile.is_admin === true ||
+      profile.role === "admin" ||
+      profile.user_role === "admin"
     );
-
-    const isAdmin =
-      Array.isArray(rows) &&
-      rows.length > 0;
-
-    localStorage.setItem(
-      "user_is_admin",
-      isAdmin ? "true" : "false"
-    );
-
-    return isAdmin;
 
   } catch (error) {
 
     console.warn(
-      "Admin verification:",
-      error.message
-    );
-
-    localStorage.setItem(
-      "user_is_admin",
-      "false"
+      "Admin check failed:",
+      error
     );
 
     return false;
-
   }
-
 }
 
 
-/* =========================================================
-   REGISTRATION
-========================================================= */
+// =========================================================
+// LOGIN FORM
+// =========================================================
 
-async function registerUser(e) {
+async function handleLogin(e) {
 
-  e.preventDefault();
-
-  const firstName =
-    qs("firstName")?.value.trim() || "";
-
-  const lastName =
-    qs("lastName")?.value.trim() || "";
-
-  const legacyFullName =
-    qs("fullName")?.value.trim() || "";
-
-  const fullName =
-    (
-      legacyFullName ||
-      `${firstName} ${lastName}`
-    ).trim();
+  if (e) {
+    e.preventDefault();
+  }
 
   const email =
-    qs("email")?.value.trim().toLowerCase() || "";
-
-  const phone =
-    qs("phone")?.value.trim() || "";
-
-  const accountType =
-    qs("accountType")?.value || "";
+    qs("#email")?.value.trim() || "";
 
   const password =
-    qs("password")?.value || "";
+    qs("#password")?.value || "";
 
-  const confirm =
-    qs("confirmPassword")?.value || "";
-
-  if (
-    !fullName ||
-    !email ||
-    !phone ||
-    !accountType ||
-    !password ||
-    !confirm
-  ) {
+  if (!email || !password) {
 
     msg(
-      "registerMessage",
-      "⚠️ Tanpri ranpli tout chan obligatwa yo."
+      "loginMessage",
+      "⚠️ Tanpri antre email ak modpas ou."
     );
 
     return;
+  }
 
+  msg(
+    "loginMessage",
+    "⏳ Ap konekte..."
+  );
+
+  try {
+
+    const data =
+      await loginUser(
+        email,
+        password
+      );
+
+    if (!data?.access_token) {
+
+      throw new Error(
+        "Login pa retounen yon access token."
+      );
+    }
+
+    const session =
+      await verifyAuthSession();
+
+    if (!session) {
+
+      throw new Error(
+        "Nou pa t kapab verifye session ou."
+      );
+    }
+
+    const isAdmin =
+      await checkAdmin(session.user.id);
+
+    msg(
+      "loginMessage",
+      "✅ Koneksyon reyisi!"
+    );
+
+    setTimeout(() => {
+
+      if (isAdmin) {
+        window.location.href =
+          "admin.html";
+      } else {
+        window.location.href =
+          "dashboard.html";
+      }
+
+    }, 500);
+
+  } catch (error) {
+
+    console.error(
+      "LOGIN ERROR:",
+      error
+    );
+
+    msg(
+      "loginMessage",
+      "❌ " + error.message
+    );
+  }
+}
+
+
+// =========================================================
+// REGISTER FORM
+// =========================================================
+
+async function handleRegister(e) {
+
+  if (e) {
+    e.preventDefault();
+  }
+
+  const email =
+    qs("#email")?.value.trim() || "";
+
+  const password =
+    qs("#password")?.value || "";
+
+  const fullName =
+    qs("#fullName")?.value.trim() || "";
+
+  if (!email || !password) {
+
+    msg(
+      "registerMessage",
+      "⚠️ Tanpri ranpli email ak modpas."
+    );
+
+    return;
   }
 
   if (password.length < 6) {
 
     msg(
       "registerMessage",
-      "❌ Modpas la dwe gen omwen 6 karaktè."
+      "⚠️ Modpas la dwe gen omwen 6 karaktè."
     );
 
     return;
-
-  }
-
-  if (password !== confirm) {
-
-    msg(
-      "registerMessage",
-      "❌ Modpas yo pa menm."
-    );
-
-    return;
-
   }
 
   msg(
     "registerMessage",
-    "⏳ Nap kreye kont ou...",
-    "warning"
+    "⏳ Ap kreye kont..."
   );
 
   try {
 
-    const data = await api(
-      "/auth/v1/signup",
-      {
-        method: "POST",
-
-        body: JSON.stringify({
-
-          email,
-
-          password,
-
-          data: {
-            full_name: fullName,
-
-            first_name:
-              firstName ||
-              fullName.split(" ")[0],
-
-            last_name: lastName,
-
-            phone,
-
-            account_type: accountType
-          }
-
-        })
-
-      }
-    );
+    const data =
+      await registerUser(
+        email,
+        password,
+        fullName
+      );
 
     if (data?.access_token) {
-      saveSession(data);
-    }
 
-    if (
-      data?.user?.id &&
-      data?.access_token
-    ) {
-
-      try {
-
-        await api(
-          "/rest/v1/profiles",
-          {
-            method: "POST",
-
-            body: JSON.stringify({
-
-              id: data.user.id,
-
-              full_name: fullName,
-
-              email,
-
-              phone,
-
-              account_type: accountType
-
-            }),
-
-            headers: {
-              Prefer: "return=representation"
-            }
-
-          }
-        );
-
-      } catch (profileError) {
-
-        console.warn(
-          "Profile insert:",
-          profileError
-        );
-
-      }
-
-    }
-
-    qs("registerForm")?.reset();
-
-    msg(
-      "registerMessage",
-
-      data?.access_token
-        ? "✅ Kont ou kreye avèk siksè. W ap antre kounye a..."
-        : "✅ Kont ou kreye. Verifye imèl ou si sa nesesè, epi konekte pou kontinye.",
-
-      "success"
-    );
-
-    setTimeout(
-      () => {
-        location.href = "login.html";
-      },
-      1400
-    );
-
-  } catch (err) {
-
-    console.error(err);
-
-    msg(
-      "registerMessage",
-      "❌ " + err.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-async function loginUser(e) {
-
-  e.preventDefault();
-
-  const email =
-    qs("loginEmail")?.value.trim() || "";
-
-  const password =
-    qs("loginPassword")?.value || "";
-
-  const message = "loginMessage";
-
-  if (!email || !password) {
-
-    msg(
-      message,
-      "⚠️ Tanpri mete imèl ak modpas ou."
-    );
-
-    return;
-
-  }
-
-  msg(
-    message,
-    "⏳ Nap konekte...",
-    "warning"
-  );
-
-  try {
-
-    const data = await api(
-      "/auth/v1/token?grant_type=password",
-      {
-        method: "POST",
-
-        headers: {
-          Authorization:
-            "Bearer " + SUPABASE_KEY
-        },
-
-        body: JSON.stringify({
-          email,
-          password
-        })
-
-      }
-    );
-
-    if (
-      !data?.access_token ||
-      !data?.user?.id
-    ) {
-
-      throw new Error(
-        "Supabase pa retounen yon sesyon valab."
+      msg(
+        "registerMessage",
+        "✅ Kont la kreye avèk siksè!"
       );
 
-    }
-
-    saveSession(data);
-
-    let profiles = [];
-
-    try {
-
-      profiles = await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
-      );
-
-    } catch (err) {
-
-      console.warn(
-        "Profile request:",
-        err
-      );
-
-    }
-
-    const profile = profiles?.[0];
-
-    if (!profile) {
-
-      clearSession();
-
-      throw new Error(
-        "Kont ou pa gen pwofil aktif sou Eagle-J Connect."
-      );
-
-    }
-
-    if (
-      profile.account_status &&
-      profile.account_status !== "active"
-    ) {
-
-      clearSession();
-
-      throw new Error(
-        "Kont ou pa aktif. Tanpri kontakte administratè a."
-      );
-
-    }
-
-    localStorage.setItem(
-      "user_full_name",
-      profile.full_name || ""
-    );
-
-    localStorage.setItem(
-      "user_phone",
-      profile.phone || ""
-    );
-
-    localStorage.setItem(
-      "user_account_type",
-      profile.account_type || ""
-    );
-
-    const user = Object.assign(
-      {},
-      data.user,
-      {
-        full_name:
-          profile.full_name,
-
-        phone:
-          profile.phone,
-
-        account_type:
-          profile.account_type
-      }
-    );
-
-    localStorage.setItem(
-      "supabase_user",
-      JSON.stringify(user)
-    );
-
-    const isAdmin =
-      await checkCurrentUserIsAdmin(
-        data.user.id
-      );
-
-    msg(
-      message,
-
-      isAdmin
-        ? "🛡️ Admin verifye. W ap antre nan Dashboard Admin..."
-        : "✅ Ou konekte avèk siksè!",
-
-      "success"
-    );
-
-    setTimeout(
-      () => {
-
-        if (isAdmin) {
-
-          location.href = "admin.html";
-
-          return;
-
-        }
-
-        if (
-          profile.account_type === "employer"
-        ) {
-
-          location.href = "employer.html";
-
-        } else {
-
-          location.href = "dashboard.html";
-
-        }
-
-      },
-      500
-    );
-
-  } catch (err) {
-
-    console.error(err);
-
-    msg(
-      message,
-      "❌ " + err.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-async function loadDashboard() {
-
-  const session = getSession();
-
-  if (!session) {
-
-    location.href = "login.html";
-
-    return;
-
-  }
-
-  qs("dashboardLoading")
-    ?.classList.add("hidden");
-
-  const card = qs("profileCard");
-  const error = qs("dashboardError");
-
-  try {
-
-    const rows = await api(
-      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
-    );
-
-    const p = rows?.[0];
-
-    if (!p) {
-
-      throw new Error(
-        "Pwofil ou pa jwenn."
-      );
-
-    }
-
-    if (qs("profileName")) {
-
-      qs("profileName").textContent =
-        p.full_name || "—";
-
-    }
-
-    if (qs("profileEmail")) {
-
-      qs("profileEmail").textContent =
-        session.user.email || "—";
-
-    }
-
-    if (qs("profilePhone")) {
-
-      qs("profilePhone").textContent =
-        p.phone || "—";
-
-    }
-
-    if (qs("profileType")) {
-
-      qs("profileType").textContent =
-        p.account_type === "employer"
-          ? "🏢 Anplwayè"
-          : "👷 Moun k ap chèche travay";
-
-    }
-
-    if (
-      p.account_type === "employer"
-    ) {
-
-      qs("employerActions")
-        ?.classList.remove("hidden");
+      setTimeout(() => {
+        window.location.href =
+          "dashboard.html";
+      }, 700);
 
     } else {
 
-      qs("jobSeekerActions")
-        ?.classList.remove("hidden");
-
+      msg(
+        "registerMessage",
+        "✅ Kont la kreye. Tanpri verifye email ou si sa nesesè."
+      );
     }
 
-    if (card) {
-      card.style.display = "block";
-    }
-
-  } catch (err) {
-
-    if (error) {
-
-      error.textContent =
-        "❌ " + err.message;
-
-      error.style.display =
-        "block";
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   EMPLOYER DASHBOARD
-========================================================= */
-
-async function loadEmployerDashboard() {
-
-  const session = getSession();
-
-  if (!session) {
-
-    location.href = "login.html";
-
-    return;
-
-  }
-
-  try {
-
-    const rows = await api(
-      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
-    );
-
-    const p = rows?.[0];
-
-    if (
-      !p ||
-      p.account_type !== "employer"
-    ) {
-
-      location.href = "dashboard.html";
-
-      return;
-
-    }
-
-    if (qs("employerName")) {
-
-      qs("employerName").textContent =
-        p.full_name || "Anplwayè";
-
-    }
-
-    if (qs("profileName")) {
-
-      qs("profileName").textContent =
-        p.full_name || "—";
-
-    }
-
-    if (qs("profileEmail")) {
-
-      qs("profileEmail").textContent =
-        session.user.email || "—";
-
-    }
-
-    if (qs("profilePhone")) {
-
-      qs("profilePhone").textContent =
-        p.phone || "—";
-
-    }
-
-    await loadMyJobs(
-      session.user.id,
-      session.token
-    );
-
-  } catch (err) {
-
-    console.error(err);
-
-    if (qs("employerMessage")) {
-
-      qs("employerMessage").textContent =
-        "❌ " + err.message;
-
-    }
-
-  }
-
-}
-
-
-/* =========================================================
-   POST JOB
-   ---------------------------------------------------------
-   IMPORTANT:
-   jobs table columns are:
-
-   id
-   employer_id
-   title
-   company_name
-   location
-   job_type
-   salary
-   description
-   contact_phone
-   created_at
-   status
-
-   Nou pa itilize:
-   company
-   contact
-========================================================= */
-
-async function postJob(e) {
-
-  e.preventDefault();
-
-  const session = getSession();
-
-  if (!session) {
-
-    location.href = "login.html";
-
-    return;
-
-  }
-
-  const values = {
-
-    title:
-      qs("jobTitle")?.value.trim() || "",
-
-    company_name:
-      qs("jobCompany")?.value.trim() || "",
-
-    location:
-      qs("jobLocation")?.value.trim() || "",
-
-    job_type:
-      qs("jobType")?.value || "",
-
-    salary:
-      qs("jobSalary")?.value.trim() || null,
-
-    description:
-      qs("jobDescription")?.value.trim() || "",
-
-    contact_phone:
-      qs("jobContact")?.value.trim() || ""
-
-  };
-
-  if (
-    !values.title ||
-    !values.company_name ||
-    !values.location ||
-    !values.job_type ||
-    !values.description ||
-    !values.contact_phone
-  ) {
-
-    msg(
-      "jobMessage",
-      "⚠️ Tanpri ranpli tout chan obligatwa yo."
-    );
-
-    return;
-
-  }
-
-  msg(
-    "jobMessage",
-    "⏳ Travay la ap voye bay Admin pou validasyon...",
-    "warning"
-  );
-
-  try {
-
-    /*
-      Nou mete sèlman kolòn ki egziste nan jobs.
-      Sa anpeche erè "column does not exist".
-    */
-
-    const jobData = {
-
-      employer_id:
-        session.user.id,
-
-      title:
-        values.title,
-
-      company_name:
-        values.company_name,
-
-      location:
-        values.location,
-
-      job_type:
-        values.job_type,
-
-      salary:
-        values.salary,
-
-      description:
-        values.description,
-
-      contact_phone:
-        values.contact_phone,
-
-      status:
-        "pending"
-
-    };
-
-    await api(
-      "/rest/v1/jobs",
-      {
-        method: "POST",
-
-        headers: {
-          Prefer:
-            "return=representation"
-        },
-
-        body:
-          JSON.stringify(jobData)
-
-      }
-    );
-
-    qs("jobForm")?.reset();
-
-    msg(
-      "jobMessage",
-      "✅ Travay la resevwa. Li pap parèt piblik jiskaske Admin valide li.",
-      "success"
-    );
-
-    await loadMyJobs(
-      session.user.id,
-      session.token
-    );
-
-  } catch (err) {
+  } catch (error) {
 
     console.error(
-      "POST JOB ERROR:",
-      err
+      "REGISTER ERROR:",
+      error
     );
 
     msg(
-      "jobMessage",
-      "❌ " + err.message
+      "registerMessage",
+      "❌ " + error.message
     );
-
   }
-
 }
 
 
-/* =========================================================
-   PUBLIC JOBS
-========================================================= */
-
-let publicJobs = [];
-
-
-function jobTypeLabel(type) {
-
-  const map = {
-
-    full_time:
-      "Full-time",
-
-    part_time:
-      "Part-time",
-
-    contract:
-      "Contract",
-
-    temporary:
-      "Temporary",
-
-    fulltime:
-      "Full-time",
-
-    parttime:
-      "Part-time"
-
-  };
-
-  return map[
-    String(type || "").toLowerCase()
-  ]
-
-  ||
-
-  String(type || "")
-    .replace(/_/g, " ")
-
-  ||
-
-  "—";
-
-}
-
-
-async function loadJobs() {
-
-  const box =
-    qs("jobsList") ||
-    qs("jobListings");
-
-  if (!box) return;
-
-  box.innerHTML =
-    '<div class="loading-state"><span>⏳</span><p>Travay yo ap chaje...</p></div>';
-
-  try {
-
-    const rows =
-      await api(
-        "/rest/v1/jobs?status=eq.approved&select=*&order=created_at.desc"
-      );
-
-    publicJobs =
-      Array.isArray(rows)
-        ? rows
-        : [];
-
-    renderJobs();
-
-  } catch (err) {
-
-    console.error(
-      "Public jobs:",
-      err
-    );
-
-    publicJobs = [];
-
-    box.innerHTML =
-      `<div class="notice">
-        ❌ Nou pa kapab chaje travay yo kounye a.
-        <br>
-        <small>
-          ${esc(
-            err.message ||
-            "Request failed"
-          )}
-        </small>
-      </div>`;
-
-  }
-
-}
-
-
-function renderJobs() {
-
-  const box =
-    qs("jobsList") ||
-    qs("jobListings");
-
-  if (!box) return;
-
-  const search =
-    (
-      qs("searchJob")?.value ||
-      ""
-    )
-    .trim()
-    .toLowerCase();
-
-  const filter =
-    qs("jobFilter")?.value ||
-    "";
-
-  const jobs =
-    publicJobs.filter(job => {
-
-      const haystack = [
-
-        job.title,
-
-        job.company_name,
-
-        job.location,
-
-        job.description,
-
-        job.job_type,
-
-        job.salary
-
-      ]
-
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-      const type =
-        job.job_type || "";
-
-      return (
-        (!search ||
-          haystack.includes(search)) &&
-
-        (!filter ||
-          type === filter)
-      );
-
-    });
-
-  if (!jobs.length) {
-
-    box.innerHTML =
-      `<div class="empty-state">
-
-        <div class="empty-icon">
-          💼
-        </div>
-
-        <h3>
-          ${
-            publicJobs.length
-              ? "Pa gen travay ki koresponn"
-              : "Pa gen travay ki disponib"
-          }
-        </h3>
-
-        <p>
-          ${
-            publicJobs.length
-              ? "Eseye yon lòt rechèch oswa yon lòt kalite travay."
-              : "Lè yon anplwayè poste yon travay, li ap parèt isit la."
-          }
-        </p>
-
-      </div>`;
-
-    return;
-
-  }
-
-  box.innerHTML =
-    jobs.map(job => {
-
-      const title =
-        job.title ||
-        "Travay";
-
-      const company =
-        job.company_name ||
-        "Konpayi";
-
-      const location =
-        job.location ||
-        "Lokalizasyon pa presize";
-
-      const type =
-        job.job_type ||
-        "";
-
-      const salary =
-        job.salary ||
-        "";
-
-      const contact =
-        job.contact_phone ||
-        "";
-
-      return `
-        <article class="job-card card">
-
-          <div class="card-kicker">
-            OPÒTINITE TRAVAY
-          </div>
-
-          <h3>
-            ${esc(title)}
-          </h3>
-
-          <p>
-            <strong>
-              ${esc(company)}
-            </strong>
-          </p>
-
-          <div class="meta">
-
-            <span class="badge">
-              📍 ${esc(location)}
-            </span>
-
-            ${
-              type
-                ? `
-                  <span class="badge">
-                    💼 ${esc(
-                      jobTypeLabel(type)
-                    )}
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              salary
-                ? `
-                  <span class="badge">
-                    💰 ${esc(salary)}
-                  </span>
-                `
-                : ""
-            }
-
-          </div>
-
-          ${
-            job.description
-              ? `
-                <p>
-                  ${esc(
-                    job.description
-                  )}
-                </p>
-              `
-              : ""
-          }
-
-          ${
-            contact
-              ? `
-                <p class="job-contact">
-                  <strong>
-                    Kontak:
-                  </strong>
-                  ${esc(contact)}
-                </p>
-              `
-              : ""
-          }
-
-        </article>
-      `;
-
-    }).join("");
-
-}
-
-
-function jobStatusLabel(status) {
-
-  return ({
-
-    pending:
-      "⏳ Ap tann validasyon",
-
-    approved:
-      "✅ Piblik",
-
-    rejected:
-      "❌ Refize",
-
-    unavailable:
-      "🚫 Pa disponib"
-
-  })[status]
-
-  ||
-
-  "📌 " +
-  (status || "—");
-
-}
-
-
-/* =========================================================
-   MY JOBS
-========================================================= */
-
-async function loadMyJobs(
-  userId,
-  token
-) {
-
-  const box =
-    qs("myJobs") ||
-    qs("myJobsList");
-
-  if (!box) return;
-
-  box.innerHTML =
-    "<p>⏳ Travay yo ap chaje...</p>";
-
-  try {
-
-    const jobs =
-      await api(
-        `/rest/v1/jobs?employer_id=eq.${encodeURIComponent(userId)}&select=*&order=created_at.desc`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
-      );
-
-    if (!jobs?.length) {
-
-      box.innerHTML =
-        "<p>Ou poko poste okenn travay.</p>";
-
-      return;
-
-    }
-
-    box.innerHTML =
-      jobs.map(job => `
-
-        <article class="job-card card">
-
-          <div class="card-kicker">
-
-            TRAVAY POU OU ·
-
-            ${esc(
-              jobStatusLabel(
-                job.status
-              )
-            )}
-
-          </div>
-
-          <h3>
-            ${esc(
-              job.title ||
-              "Travay"
-            )}
-          </h3>
-
-          <p>
-            <strong>
-              ${esc(
-                job.company_name ||
-                ""
-              )}
-            </strong>
-          </p>
-
-          <div class="meta">
-
-            <span class="badge">
-              📍 ${esc(
-                job.location ||
-                "—"
-              )}
-            </span>
-
-            <span class="badge">
-              💼 ${esc(
-                jobTypeLabel(
-                  job.job_type
-                )
-              )}
-            </span>
-
-            ${
-              job.salary
-                ? `
-                  <span class="badge">
-                    💰 ${esc(
-                      job.salary
-                    )}
-                  </span>
-                `
-                : ""
-            }
-
-          </div>
-
-          <p>
-            ${esc(
-              job.description ||
-              ""
-            )}
-          </p>
-
-          ${
-            job.contact_phone
-              ? `
-                <p>
-                  <strong>
-                    📞 Kontak:
-                  </strong>
-                  ${esc(
-                    job.contact_phone
-                  )}
-                </p>
-              `
-              : ""
-          }
-
-        </article>
-
-      `).join("");
-
-  } catch (err) {
-
-    console.error(err);
-
-    box.innerHTML =
-      "<p>❌ Nou pa kapab chaje travay ou yo.</p>";
-
-  }
-
-}
-
-
-/* =========================================================
-   BUSINESS ADS - CREATE
-========================================================= */
+// =========================================================
+// SUBMIT BUSINESS
+// =========================================================
 
 async function submitBusiness(e) {
 
   e.preventDefault();
 
+  // IMPORTANT:
+  // Verify the REAL Supabase session first.
   const session =
-    getSession();
+    await verifyAuthSession();
 
   if (!session) {
 
     msg(
       "formMessage",
-      "⚠️ Tanpri konekte anvan ou pibliye yon anons."
+      "⚠️ Session ou ekspire. Tanpri konekte ankò."
     );
 
-    setTimeout(
-      () => location.href = "login.html",
-      900
-    );
+    setTimeout(() => {
+      window.location.href =
+        "login.html";
+    }, 900);
 
     return;
-
   }
 
   const file =
-    qs("businessImage")
-      ?.files?.[0] ||
-    null;
+    qs("#businessImage")?.files?.[0] || null;
 
   const listingType =
-    qs("listingType")
-      ?.value ||
+    qs("#listingType")?.value ||
     "business";
 
   const category =
-    qs("category")
-      ?.value ||
+    qs("#category")?.value ||
     "";
 
   const encodedCategory =
@@ -1602,88 +779,99 @@ async function submitBusiness(e) {
   const values = {
 
     business_name:
-      qs("businessName")
-        ?.value.trim() ||
-      "",
+      qs("#businessName")?.value.trim() || "",
 
     category:
       encodedCategory,
 
     location:
-      qs("location")
-        ?.value.trim() ||
-      "",
+      qs("#location")?.value.trim() || "",
 
     phone:
-      qs("phone")
-        ?.value.trim() ||
-      null,
+      qs("#phone")?.value.trim() || null,
 
     whatsapp:
-      qs("whatsapp")
-        ?.value.trim() ||
-      null,
+      qs("#whatsapp")?.value.trim() || null,
 
     price:
-      qs("price")
-        ?.value.trim() ||
-      null,
+      qs("#price")?.value.trim() || null,
 
     description:
-      qs("description")
-        ?.value.trim() ||
-      "",
+      qs("#description")?.value.trim() || "",
 
-    image_url: null,
+    image_url:
+      null,
 
     user_id:
       session.user.id,
 
     status:
       "pending"
-
   };
 
-  if (
-    !values.business_name ||
-    !category ||
-    !values.location ||
-    !values.description
-  ) {
+
+  // -------------------------------------------------------
+  // VALIDATION
+  // -------------------------------------------------------
+
+  if (!values.business_name) {
 
     msg(
       "formMessage",
-      "⚠️ Tanpri ranpli tout chan obligatwa yo."
+      "⚠️ Tanpri mete non biznis la."
     );
 
     return;
-
   }
 
-  if (
-    file &&
-    (
-      !file.type.startsWith("image/") ||
-      file.size > 5 * 1024 * 1024
-    )
-  ) {
+  if (!category) {
 
     msg(
       "formMessage",
-      "❌ Foto a dwe yon imaj ki pi piti pase 5MB."
+      "⚠️ Tanpri chwazi yon kategori."
     );
 
     return;
-
   }
+
+  if (!values.location) {
+
+    msg(
+      "formMessage",
+      "⚠️ Tanpri mete lokalizasyon an."
+    );
+
+    return;
+  }
+
+  if (!values.description) {
+
+    msg(
+      "formMessage",
+      "⚠️ Tanpri mete yon deskripsyon."
+    );
+
+    return;
+  }
+
 
   msg(
     "formMessage",
-    "⏳ Anons lan ap voye bay Admin pou validasyon...",
-    "warning"
+    "⏳ Ap voye anons la..."
   );
 
+
   try {
+
+    console.log(
+      "Submitting business as user:",
+      session.user.id
+    );
+
+
+    // -----------------------------------------------------
+    // INSERT BUSINESS
+    // -----------------------------------------------------
 
     const rows =
       await api(
@@ -1692,7 +880,10 @@ async function submitBusiness(e) {
           method: "POST",
 
           headers: {
-            Prefer:
+            "Authorization":
+              `Bearer ${session.token}`,
+
+            "Prefer":
               "return=representation"
           },
 
@@ -1701,1353 +892,876 @@ async function submitBusiness(e) {
         }
       );
 
-    const b =
-      Array.isArray(rows)
-        ? rows[0]
-        : rows;
 
-    if (!b?.id) {
+    const business =
+      rows?.[0];
+
+    if (!business?.id) {
 
       throw new Error(
-        "Anons lan pa retounen yon ID."
+        "Biznis la pa t retounen apre insert la."
       );
-
     }
 
-    /* UPLOAD IMAGE */
+
+    // -----------------------------------------------------
+    // UPLOAD IMAGE
+    // -----------------------------------------------------
 
     if (file) {
 
-      const ext =
-        (
-          file.name
-            .split(".")
-            .pop() ||
-          "jpg"
-        ).toLowerCase();
+      msg(
+        "formMessage",
+        "⏳ Anons la kreye. Ap telechaje foto a..."
+      );
 
-      const fileName =
-        `${b.id}-${Date.now()}.${ext}`;
+      const safeName =
+        file.name
+          .replace(/[^a-zA-Z0-9._-]/g, "_");
 
-      const upload =
+      const filePath =
+        `${session.user.id}/${Date.now()}-${safeName}`;
+
+
+      const uploadResponse =
         await fetch(
-          `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
+          `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${filePath}`,
           {
             method: "POST",
 
             headers: {
-
-              apikey:
+              "apikey":
                 SUPABASE_KEY,
 
-              Authorization:
+              "Authorization":
                 `Bearer ${session.token}`,
 
               "Content-Type":
-                file.type,
-
-              "x-upsert":
-                "true"
-
+                file.type || "application/octet-stream"
             },
 
             body: file
-
           }
         );
 
-      if (!upload.ok) {
 
-        let uploadError =
-          "Foto a pa t kapab monte.";
+      if (!uploadResponse.ok) {
 
-        try {
+        const uploadText =
+          await uploadResponse.text();
 
-          const uploadBody =
-            await upload.json();
-
-          uploadError =
-            uploadBody?.message ||
-            uploadBody?.error ||
-            uploadError;
-
-        } catch (_) {}
-
-        throw new Error(
-          uploadError
+        console.warn(
+          "Image upload failed:",
+          uploadText
         );
 
+        // Do not delete the business.
+        // The business can still exist without image.
+        msg(
+          "formMessage",
+          "⚠️ Anons la anrejistre, men foto a pa t telechaje."
+        );
+
+      } else {
+
+        const imageUrl =
+          `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${filePath}`;
+
+
+        // -------------------------------------------------
+        // UPDATE BUSINESS WITH IMAGE URL
+        // -------------------------------------------------
+
+        await api(
+          `/rest/v1/businesses?id=eq.${encodeURIComponent(business.id)}`,
+          {
+            method: "PATCH",
+
+            headers: {
+              "Authorization":
+                `Bearer ${session.token}`,
+
+              "Prefer":
+                "return=minimal"
+            },
+
+            body:
+              JSON.stringify({
+                image_url:
+                  imageUrl
+              })
+          }
+        );
       }
-
-      const imageURL =
-        `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
-
-      await api(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
-        {
-          method: "PATCH",
-
-          body:
-            JSON.stringify({
-              image_url:
-                imageURL
-            })
-        }
-      );
-
     }
 
-    qs("businessForm")
-      ?.reset();
+
+    // -----------------------------------------------------
+    // SUCCESS
+    // -----------------------------------------------------
 
     msg(
       "formMessage",
-      "✅ Anons ou resevwa. Li pap parèt piblik jiskaske Admin valide li.",
-      "success"
+      "✅ Anons ou soumèt avèk siksè! Li pral tann apwobasyon admin."
     );
 
-  } catch (err) {
 
-    console.error(err);
+    const form =
+      qs("#businessForm");
+
+    if (form) {
+      form.reset();
+    }
+
+
+    setTimeout(() => {
+
+      window.location.href =
+        "dashboard.html";
+
+    }, 1800);
+
+
+  } catch (error) {
+
+    console.error(
+      "BUSINESS SUBMIT ERROR:",
+      error
+    );
 
     msg(
       "formMessage",
-      "❌ " + err.message
+      "❌ " + error.message
     );
-
   }
-
 }
 
 
-/* =========================================================
-   BUSINESS LISTINGS
-========================================================= */
+// =========================================================
+// LOAD APPROVED BUSINESSES
+// =========================================================
 
 async function loadBusinesses() {
 
-  const box =
-    qs("businessListings");
+  const container =
+    qs("#businessList");
 
-  if (!box) return;
+  if (!container) {
+    return;
+  }
 
-  box.innerHTML =
-    "<div class='loading-state'><span>⏳</span><p>Anons yo ap chaje...</p></div>";
+  container.innerHTML =
+    "<p>⏳ Ap chaje anons...</p>";
 
   try {
 
     const rows =
       await api(
-        "/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc"
+        "/rest/v1/businesses" +
+        "?status=eq.approved" +
+        "&select=*" +
+        "&order=created_at.desc"
       );
 
-    window.__businessRows =
-      Array.isArray(rows)
-        ? rows
-        : [];
+    if (!rows?.length) {
 
-    renderBusinesses();
+      container.innerHTML =
+        "<p>Pa gen anons disponib pou kounye a.</p>";
 
-  } catch (err) {
+      return;
+    }
 
-    console.error(err);
 
-    box.innerHTML =
-      "<div class='empty-state'><span>⚠️</span><p>Nou pa kapab chaje anons yo.</p></div>";
+    container.innerHTML =
+      rows.map(business => {
 
-  }
+        const image =
+          business.image_url
+            ? `
+              <img
+                src="${escapeHtml(business.image_url)}"
+                alt="${escapeHtml(business.business_name)}"
+                class="business-image"
+              >
+            `
+            : "";
 
-}
 
+        return `
+          <article class="business-card">
 
-function businessType(category) {
+            ${image}
 
-  const raw =
-    String(category || "");
+            <div class="business-card-content">
 
-  const parts =
-    raw.split(":");
-
-  return parts.length > 1
-    ? parts[0]
-    : "";
-
-}
-
-
-function businessCategory(category) {
-
-  const raw =
-    String(category || "");
-
-  const parts =
-    raw.split(":");
-
-  return parts.length > 1
-    ? parts.slice(1).join(":")
-    : raw;
-
-}
-
-
-function businessTypeLabel(type) {
-
-  return ({
-
-    employee:
-      "👷 Anplwaye",
-
-    employer:
-      "🏢 Anplwayè",
-
-    professional:
-      "🧑🏾‍🔧 Pwofesyonèl",
-
-    service:
-      "🛠️ Sèvis",
-
-    business:
-      "🛍️ Biznis",
-
-    property:
-      "🏠 Byen"
-
-  })[type]
-
-  ||
-
-  "📌 Anons";
-
-}
-
-
-function renderBusinesses() {
-
-  const box =
-    qs("businessListings");
-
-  if (!box) return;
-
-  let rows =
-    Array.isArray(
-      window.__businessRows
-    )
-      ? [
-          ...window.__businessRows
-        ]
-      : [];
-
-  const active =
-    document
-      .querySelector(
-        ".market-tab.active"
-      )
-      ?.dataset.filter ||
-    "all";
-
-  const search =
-    (
-      qs("marketSearch")
-        ?.value ||
-      ""
-    )
-    .trim()
-    .toLowerCase();
-
-  const location =
-    (
-      qs("marketLocation")
-        ?.value ||
-      ""
-    )
-    .trim()
-    .toLowerCase();
-
-  if (
-    active &&
-    active !== "all"
-  ) {
-
-    rows =
-      rows.filter(
-        b =>
-          businessType(
-            b.category
-          ) === active
-      );
-
-  }
-
-  if (search) {
-
-    rows =
-      rows.filter(
-        b =>
-          [
-            b.business_name,
-            b.category,
-            b.location,
-            b.description,
-            b.price
-          ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase()
-          .includes(search)
-      );
-
-  }
-
-  if (location) {
-
-    rows =
-      rows.filter(
-        b =>
-          String(
-            b.location || ""
-          )
-          .toLowerCase()
-          .includes(location)
-      );
-
-  }
-
-  const count =
-    qs("marketResultCount");
-
-  if (count) {
-
-    count.textContent =
-      `${rows.length} anons disponib`;
-
-  }
-
-  if (!rows.length) {
-
-    const currentLang =
-      (
-        window.EagleJLanguage &&
-        window.EagleJLanguage.getLanguage
-      )
-        ? window.EagleJLanguage.getLanguage()
-        : "en";
-
-    const emptyCopy = {
-
-      ht: [
-        "Pa gen rezilta",
-        "Eseye chanje rechèch ou oswa filtre a."
-      ],
-
-      en: [
-        "No results",
-        "Try changing your search or filter."
-      ],
-
-      fr: [
-        "Aucun résultat",
-        "Essayez de modifier votre recherche ou votre filtre."
-      ]
-
-    };
-
-    const ec =
-      emptyCopy[currentLang] ||
-      emptyCopy.en;
-
-    box.innerHTML =
-      `<div class='empty-state'>
-        <span>🔎</span>
-        <h3>${ec[0]}</h3>
-        <p>${ec[1]}</p>
-      </div>`;
-
-    return;
-
-  }
-
-  box.innerHTML =
-    rows.map(b => {
-
-      const wa =
-        waNumber(
-          b.whatsapp
-        );
-
-      const phone =
-        attr(
-          b.phone
-        );
-
-      const type =
-        businessType(
-          b.category
-        );
-
-      const cat =
-        businessCategory(
-          b.category
-        );
-
-      return `
-
-        <article
-          class="business-card card"
-
-          onclick="openBusinessAd('${attr(b.id)}')"
-
-          role="button"
-
-          tabindex="0"
-
-          onkeydown="
-            if(event.key==='Enter'||event.key===' '){
-              event.preventDefault();
-              openBusinessAd('${attr(b.id)}')
-            }
-          "
-        >
-
-          ${
-            b.image_url
-
-              ? `
-
-                <img
-                  src="${attr(
-                    b.image_url
-                  )}"
-
-                  alt="${attr(
-                    b.business_name
-                  )}"
-
-                  loading="lazy"
-
-                  onerror="
-                    this.style.display='none';
-                    this.nextElementSibling?.classList.remove('hidden')
-                  "
-                >
-
-              `
-
-              : `
-
-                <div class="business-card-placeholder">
-                  🏢
-                </div>
-
-              `
-          }
-
-          <div class="business-card-body">
-
-            <div class="card-kicker">
-
-              ${esc(
-                businessTypeLabel(
-                  type
-                )
-              )}
-
-            </div>
-
-            <h3>
-              ${esc(
-                b.business_name ||
-                "Anons"
-              )}
-            </h3>
-
-            <div class="meta">
-
-              <span class="badge">
-                📍 ${esc(
-                  b.location ||
-                  "—"
+              <h3>
+                ${escapeHtml(
+                  business.business_name
                 )}
-              </span>
+              </h3>
+
+              <p>
+                <strong>Kategori:</strong>
+                ${escapeHtml(
+                  business.category
+                )}
+              </p>
+
+              <p>
+                <strong>Kote:</strong>
+                ${escapeHtml(
+                  business.location
+                )}
+              </p>
 
               ${
-                cat
+                business.phone
                   ? `
-                    <span class="badge">
-                      ${esc(cat)}
-                    </span>
+                    <p>
+                      <strong>Telefòn:</strong>
+                      ${escapeHtml(
+                        business.phone
+                      )}
+                    </p>
                   `
                   : ""
               }
 
+              ${
+                business.whatsapp
+                  ? `
+                    <p>
+                      <strong>WhatsApp:</strong>
+                      ${escapeHtml(
+                        business.whatsapp
+                      )}
+                    </p>
+                  `
+                  : ""
+              }
+
+              ${
+                business.price
+                  ? `
+                    <p>
+                      <strong>Pri:</strong>
+                      ${escapeHtml(
+                        business.price
+                      )}
+                    </p>
+                  `
+                  : ""
+              }
+
+              <p>
+                ${escapeHtml(
+                  business.description
+                )}
+              </p>
+
             </div>
 
+          </article>
+        `;
+
+      }).join("");
+
+
+  } catch (error) {
+
+    console.error(
+      "LOAD BUSINESSES ERROR:",
+      error
+    );
+
+    container.innerHTML =
+      `<p>❌ ${escapeHtml(error.message)}</p>`;
+  }
+}
+
+
+// =========================================================
+// POST JOB
+// =========================================================
+
+async function postJob(e) {
+
+  e.preventDefault();
+
+  const session =
+    await verifyAuthSession();
+
+  if (!session) {
+
+    msg(
+      "jobMessage",
+      "⚠️ Tanpri konekte anvan ou poste yon travay."
+    );
+
+    setTimeout(() => {
+      window.location.href =
+        "login.html";
+    }, 900);
+
+    return;
+  }
+
+
+  const title =
+    qs("#jobTitle")?.value.trim() || "";
+
+  const company_name =
+    qs("#companyName")?.value.trim() || "";
+
+  const location =
+    qs("#jobLocation")?.value.trim() || "";
+
+  const job_type =
+    qs("#jobType")?.value.trim() || "";
+
+  const salary =
+    qs("#salary")?.value.trim() || "";
+
+  const description =
+    qs("#jobDescription")?.value.trim() || "";
+
+  const contact_phone =
+    qs("#contactPhone")?.value.trim() || "";
+
+
+  if (!title) {
+
+    msg(
+      "jobMessage",
+      "⚠️ Tanpri mete tit travay la."
+    );
+
+    return;
+  }
+
+  if (!company_name) {
+
+    msg(
+      "jobMessage",
+      "⚠️ Tanpri mete non konpayi an."
+    );
+
+    return;
+  }
+
+  if (!location) {
+
+    msg(
+      "jobMessage",
+      "⚠️ Tanpri mete lokalizasyon an."
+    );
+
+    return;
+  }
+
+  if (!description) {
+
+    msg(
+      "jobMessage",
+      "⚠️ Tanpri mete deskripsyon travay la."
+    );
+
+    return;
+  }
+
+
+  msg(
+    "jobMessage",
+    "⏳ Ap poste travay la..."
+  );
+
+
+  try {
+
+    const values = {
+
+      employer_id:
+        session.user.id,
+
+      title,
+
+      company_name,
+
+      location,
+
+      job_type,
+
+      salary,
+
+      description,
+
+      contact_phone,
+
+      status:
+        "pending"
+    };
+
+
+    await api(
+      "/rest/v1/jobs",
+      {
+        method: "POST",
+
+        headers: {
+          "Authorization":
+            `Bearer ${session.token}`,
+
+          "Prefer":
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify(values)
+      }
+    );
+
+
+    msg(
+      "jobMessage",
+      "✅ Travay la soumèt avèk siksè! Li pral tann apwobasyon admin."
+    );
+
+
+    const form =
+      qs("#jobForm");
+
+    if (form) {
+      form.reset();
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "POST JOB ERROR:",
+      error
+    );
+
+    msg(
+      "jobMessage",
+      "❌ " + error.message
+    );
+  }
+}
+
+
+// =========================================================
+// LOAD MY JOBS
+// =========================================================
+
+async function loadMyJobs() {
+
+  const container =
+    qs("#myJobs");
+
+  if (!container) {
+    return;
+  }
+
+  const session =
+    await verifyAuthSession();
+
+  if (!session) {
+
+    container.innerHTML =
+      "<p>⚠️ Tanpri konekte ankò.</p>";
+
+    return;
+  }
+
+
+  try {
+
+    const rows =
+      await api(
+        "/rest/v1/jobs" +
+        `?employer_id=eq.${encodeURIComponent(session.user.id)}` +
+        "&select=*" +
+        "&order=created_at.desc"
+      );
+
+
+    if (!rows?.length) {
+
+      container.innerHTML =
+        "<p>Ou poko poste okenn travay.</p>";
+
+      return;
+    }
+
+
+    container.innerHTML =
+      rows.map(job => {
+
+        return `
+          <article class="job-card">
+
+            <h3>
+              ${escapeHtml(job.title)}
+            </h3>
+
+            <p>
+              <strong>Konpayi:</strong>
+              ${escapeHtml(
+                job.company_name
+              )}
+            </p>
+
+            <p>
+              <strong>Kote:</strong>
+              ${escapeHtml(
+                job.location
+              )}
+            </p>
+
             ${
-              b.price
+              job.job_type
                 ? `
-                  <p class="price-line">
-                    💰 ${esc(
-                      b.price
+                  <p>
+                    <strong>Kalite:</strong>
+                    ${escapeHtml(
+                      job.job_type
                     )}
                   </p>
                 `
                 : ""
             }
 
-            <p class="card-description">
-              ${esc(
-                b.description ||
-                ""
-              )}
-            </p>
-
-            <div
-              class="actions"
-              onclick="event.stopPropagation()"
-            >
-
-              ${
-                phone
-                  ? `
-                    <a
-                      class="btn btn-small btn-primary"
-                      href="tel:${phone}"
-                    >
-                      📞 Rele
-                    </a>
-                  `
-                  : ""
-              }
-
-              ${
-                wa
-                  ? `
-                    <a
-                      class="btn btn-small btn-secondary"
-                      target="_blank"
-                      rel="noopener"
-                      href="https://wa.me/${wa}"
-                    >
-                      💬 WhatsApp
-                    </a>
-                  `
-                  : ""
-              }
-
-            </div>
-
-            <div class="view-link">
-              Wè detay →
-            </div>
-
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
-
-}
-
-
-/* =========================================================
-   OPEN BUSINESS AD
-========================================================= */
-
-window.openBusinessAd = function(id) {
-
-  if (!id) {
-
-    console.error(
-      "Business ID missing."
-    );
-
-    return;
-
-  }
-
-  location.href =
-    `anons.html?id=${encodeURIComponent(id)}`;
-
-};
-
-
-/* =========================================================
-   BUSINESS DETAIL
-========================================================= */
-
-async function loadBusinessDetail() {
-
-  const box =
-    qs("businessDetail");
-
-  if (!box) return;
-
-  const params =
-    new URLSearchParams(
-      location.search
-    );
-
-  const id =
-    params.get("id");
-
-  if (!id) {
-
-    box.innerHTML =
-      "<p class='notice'>❌ Anons sa pa gen ID.</p>";
-
-    return;
-
-  }
-
-  try {
-
-    const rows =
-      await api(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
-      );
-
-    const b =
-      rows?.[0];
-
-    if (!b) {
-
-      box.innerHTML =
-        "<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib.</p>";
-
-      return;
-
-    }
-
-    const phone =
-      attr(
-        b.phone || ""
-      );
-
-    const wa =
-      waNumber(
-        b.whatsapp
-      );
-
-    box.innerHTML = `
-
-      ${
-        b.image_url
-
-          ? `
-
-            <img
-              class="business-detail-image"
-
-              src="${attr(
-                b.image_url
-              )}"
-
-              alt="${attr(
-                b.business_name
-              )}"
-            >
-
-          `
-
-          : `
-
-            <div class="business-detail-placeholder">
-              🏢
-            </div>
-
-          `
-      }
-
-      <h1>
-        ${esc(
-          b.business_name
-        )}
-      </h1>
-
-      <div class="meta">
-
-        <span class="badge">
-          ${esc(
-            businessTypeLabel(
-              businessType(
-                b.category
-              )
-            )
-          )}
-        </span>
-
-        <span class="badge">
-          📂 ${esc(
-            businessCategory(
-              b.category
-            )
-          )}
-        </span>
-
-        <span class="badge">
-          📍 ${esc(
-            b.location
-          )}
-        </span>
-
-      </div>
-
-      ${
-        b.price
-
-          ? `
-
-            <p>
-
-              <strong>
-                💰 Pri:
-              </strong>
-
-              ${esc(
-                b.price
-              )}
-
-            </p>
-
-          `
-
-          : ""
-      }
-
-      <p style="white-space:pre-line">
-
-        ${esc(
-          b.description
-        )}
-
-      </p>
-
-      <div class="actions">
-
-        ${
-          phone
-
-            ? `
-
-              <a href="tel:${phone}">
-
-                <button type="button">
-                  📞 Rele
-                </button>
-
-              </a>
-
-            `
-
-            : ""
-        }
-
-        ${
-          wa
-
-            ? `
-
-              <a
-                target="_blank"
-                rel="noopener"
-                href="https://wa.me/${wa}"
-              >
-
-                <button type="button">
-                  💬 WhatsApp
-                </button>
-
-              </a>
-
-            `
-
-            : ""
-        }
-
-      </div>
-
-    `;
-
-  } catch (err) {
-
-    console.error(err);
-
-    box.innerHTML =
-      "<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p>";
-
-  }
-
-}
-
-
-/* =========================================================
-   HOMEPAGE STATISTICS
-========================================================= */
-
-async function loadStats() {
-
-  const ids = [
-
-    [
-      "stat-jobs",
-      "jobs"
-    ],
-
-    [
-      "stat-business",
-      "businesses"
-    ],
-
-    [
-      "stat-users",
-      "profiles"
-    ]
-
-  ];
-
-  for (
-    const [id, table]
-    of ids
-  ) {
-
-    try {
-
-      const response =
-        await fetch(
-          `${SUPABASE_URL}/rest/v1/${table}?select=id&limit=1`,
-          {
-            headers: {
-
-              "apikey":
-                SUPABASE_KEY,
-
-              "Range":
-                "0-0",
-
-              "Prefer":
-                "count=exact"
-
+            ${
+              job.salary
+                ? `
+                  <p>
+                    <strong>Salè:</strong>
+                    ${escapeHtml(
+                      job.salary
+                    )}
+                  </p>
+                `
+                : ""
             }
-          }
-        );
-
-      const range =
-        response.headers.get(
-          "content-range"
-        );
-
-      const count =
-        range
-          ? parseInt(
-              range.split("/")[1],
-              10
-            )
-          : 0;
-
-      if (qs(id)) {
-
-        qs(id).textContent =
-          Number.isFinite(count)
-            ? count
-            : 0;
-
-      }
-
-    } catch (e) {}
-
-  }
-
-  if (qs("stat-ads")) {
-
-    qs("stat-ads").textContent =
-      qs("stat-business")
-        ?.textContent ||
-      "0";
-
-  }
-
-}
-
-
-/* =========================================================
-   CONTACT
-========================================================= */
-
-function initContact() {
-
-  const form =
-    qs("contactForm");
-
-  if (!form) return;
-
-  form.addEventListener(
-    "submit",
-    e => {
-
-      e.preventDefault();
-
-      const name =
-        qs("contactName")
-          ?.value.trim() ||
-        "";
-
-      const email =
-        qs("contactEmail")
-          ?.value.trim() ||
-        "";
-
-      const phone =
-        qs("contactPhone")
-          ?.value.trim() ||
-        "";
-
-      const message =
-        qs("contactMessage")
-          ?.value.trim() ||
-        "";
-
-      if (
-        !name ||
-        !email ||
-        !message
-      ) {
-
-        msg(
-          "contactMessageBox",
-          "⚠️ Tanpri ranpli non, imèl ak mesaj."
-        );
-
-        return;
-
-      }
-
-      const subject =
-        encodeURIComponent(
-          "Eagle-J Connect - Contact"
-        );
-
-      const body =
-        encodeURIComponent(
-
-          `Non: ${name}
-Email: ${email}
-Telefòn: ${phone}
-
-Mesaj:
-${message}`
-
-        );
-
-      location.href =
-        `mailto:eaglejconnect@gmail.com?subject=${subject}&body=${body}`;
-
-      msg(
-        "contactMessageBox",
-        "📧 Nou prepare mesaj la nan aplikasyon imèl ou.",
-        "success"
-      );
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   PUBLIC USERS DIRECTORY
-========================================================= */
-
-async function loadUsersDirectory() {
-
-  const box =
-    qs("usersDirectory");
-
-  const count =
-    qs("usersDirectoryCount");
-
-  if (!box) return;
-
-  try {
-
-    const rows =
-      await api(
-        "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
-      );
-
-    const users =
-      Array.isArray(rows)
-        ? rows
-        : [];
-
-    if (count) {
-
-      count.textContent =
-        `${users.length} itilizatè afiche`;
-
-    }
-
-    if (!users.length) {
-
-      box.innerHTML =
-        `
-          <div class="empty-state">
-
-            <div class="empty-icon">
-              👥
-            </div>
-
-            <h3>
-              Pa gen itilizatè pou afiche
-            </h3>
 
             <p>
-              Nou poko gen pwofil piblik ki disponib.
+              ${escapeHtml(
+                job.description
+              )}
             </p>
 
-          </div>
-        `;
-
-      return;
-
-    }
-
-    box.innerHTML =
-      users.map(u => {
-
-        const name =
-          esc(
-            u.full_name ||
-            "Itilizatè Eagle-J"
-          );
-
-        const type =
-          esc(
-            formatAccountType(
-              u.account_type
-            )
-          );
-
-        return `
-
-          <article class="user-card">
-
-            <div class="user-avatar">
-
-              ${esc(
-                (
-                  u.full_name ||
-                  "EJ"
-                )
-                .trim()
-                .slice(0, 1)
-                .toUpperCase()
+            <p>
+              <strong>Status:</strong>
+              ${escapeHtml(
+                job.status
               )}
-
-            </div>
-
-            <div class="user-card-body">
-
-              <h3>
-                ${name}
-              </h3>
-
-              <p>
-                ${type}
-              </p>
-
-            </div>
+            </p>
 
           </article>
-
         `;
 
       }).join("");
 
-  } catch (err) {
+
+  } catch (error) {
 
     console.error(
-      "Users directory:",
-      err
+      "LOAD MY JOBS ERROR:",
+      error
     );
 
-    if (count) {
-      count.textContent = "";
-    }
+    container.innerHTML =
+      `<p>❌ ${escapeHtml(error.message)}</p>`;
+  }
+}
 
-    box.innerHTML =
-      `
-        <div class="notice">
-          ❌ Nou pa kapab chaje lis itilizatè yo kounye a.
-        </div>
-      `;
 
+// =========================================================
+// LOAD APPROVED JOBS
+// =========================================================
+
+async function loadJobs() {
+
+  const container =
+    qs("#jobList");
+
+  if (!container) {
+    return;
   }
 
+  container.innerHTML =
+    "<p>⏳ Ap chaje travay...</p>";
+
+
+  try {
+
+    const rows =
+      await api(
+        "/rest/v1/jobs" +
+        "?status=eq.approved" +
+        "&select=*" +
+        "&order=created_at.desc"
+      );
+
+
+    if (!rows?.length) {
+
+      container.innerHTML =
+        "<p>Pa gen travay disponib pou kounye a.</p>";
+
+      return;
+    }
+
+
+    container.innerHTML =
+      rows.map(job => {
+
+        return `
+          <article class="job-card">
+
+            <h3>
+              ${escapeHtml(job.title)}
+            </h3>
+
+            <p>
+              <strong>Konpayi:</strong>
+              ${escapeHtml(
+                job.company_name
+              )}
+            </p>
+
+            <p>
+              <strong>Kote:</strong>
+              ${escapeHtml(
+                job.location
+              )}
+            </p>
+
+            ${
+              job.job_type
+                ? `
+                  <p>
+                    <strong>Kalite travay:</strong>
+                    ${escapeHtml(
+                      job.job_type
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+            ${
+              job.salary
+                ? `
+                  <p>
+                    <strong>Salè:</strong>
+                    ${escapeHtml(
+                      job.salary
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+            <p>
+              ${escapeHtml(
+                job.description
+              )}
+            </p>
+
+            ${
+              job.contact_phone
+                ? `
+                  <p>
+                    <strong>Kontak:</strong>
+                    ${escapeHtml(
+                      job.contact_phone
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+          </article>
+        `;
+
+      }).join("");
+
+
+  } catch (error) {
+
+    console.error(
+      "LOAD JOBS ERROR:",
+      error
+    );
+
+    container.innerHTML =
+      `<p>❌ ${escapeHtml(error.message)}</p>`;
+  }
 }
 
 
-function formatAccountType(type) {
+// =========================================================
+// DASHBOARD
+// =========================================================
 
-  const map = {
+async function loadDashboard() {
 
-    job_seeker:
-      "Moun k ap chèche travay",
+  const session =
+    await verifyAuthSession();
 
-    employer:
-      "Anplwayè",
+  if (!session) {
 
-    business:
-      "Biznis",
+    window.location.href =
+      "login.html";
 
-    professional:
-      "Pwofesyonèl"
+    return;
+  }
 
-  };
 
-  const label =
-    map[type] ||
-    "Manm Eagle-J Connect";
+  const nameElement =
+    qs("#userName");
 
-  return window.EJC?.t
-    ? window.EJC.t(label)
-    : label;
+  if (nameElement) {
 
+    nameElement.textContent =
+      session.user.user_metadata?.full_name ||
+      session.user.email ||
+      "Itilizatè";
+  }
+
+
+  const emailElement =
+    qs("#userEmail");
+
+  if (emailElement) {
+
+    emailElement.textContent =
+      session.user.email || "";
+  }
 }
 
 
-/* =========================================================
-   PAGE INITIALIZATION
-========================================================= */
+// =========================================================
+// PAGE INITIALIZATION
+// =========================================================
 
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  async () => {
 
-    /* MOBILE MENU */
+    console.log(
+      "Eagle-J Connect loaded."
+    );
 
-    setupMobileMenu();
 
+    // -----------------------------------------------------
+    // LOGIN FORM
+    // -----------------------------------------------------
 
-    /* REGISTRATION */
+    const loginForm =
+      qs("#loginForm");
 
-    const reg =
-      qs("registerForm");
+    if (loginForm) {
 
-    if (reg) {
-
-      reg.addEventListener(
+      loginForm.addEventListener(
         "submit",
-        registerUser
+        handleLogin
+      );
+    }
+
+
+    // -----------------------------------------------------
+    // REGISTER FORM
+    // -----------------------------------------------------
+
+    const registerForm =
+      qs("#registerForm");
+
+    if (registerForm) {
+
+      registerForm.addEventListener(
+        "submit",
+        handleRegister
+      );
+    }
+
+
+    // -----------------------------------------------------
+    // BUSINESS FORM
+    // -----------------------------------------------------
+
+    const businessForm =
+      qs("#businessForm");
+
+    if (businessForm) {
+
+      businessForm.addEventListener(
+        "submit",
+        submitBusiness
+      );
+    }
+
+
+    // -----------------------------------------------------
+    // JOB FORM
+    // -----------------------------------------------------
+
+    const jobForm =
+      qs("#jobForm");
+
+    if (jobForm) {
+
+      jobForm.addEventListener(
+        "submit",
+        postJob
+      );
+    }
+
+
+    // -----------------------------------------------------
+    // LOGOUT BUTTONS
+    // -----------------------------------------------------
+
+    const logoutButtons =
+      document.querySelectorAll(
+        "[data-logout]"
       );
 
-    }
+    logoutButtons.forEach(button => {
 
+      button.addEventListener(
+        "click",
+        async event => {
 
-    /* LOGIN */
+          event.preventDefault();
 
-    const login =
-      qs("loginForm");
-
-    if (login) {
-
-      login.addEventListener(
-        "submit",
-        loginUser
+          await logoutUser();
+        }
       );
+    });
 
+
+    // -----------------------------------------------------
+    // LOAD DATA DEPENDING ON PAGE
+    // -----------------------------------------------------
+
+    if (qs("#businessList")) {
+      await loadBusinesses();
     }
 
-
-    /* PUBLIC JOBS */
-
-    if (
-      qs("jobListings") ||
-      qs("jobsList")
-    ) {
-
-      loadJobs();
-
-      qs("searchJob")
-        ?.addEventListener(
-          "input",
-          renderJobs
-        );
-
-      qs("jobFilter")
-        ?.addEventListener(
-          "change",
-          renderJobs
-        );
-
+    if (qs("#jobList")) {
+      await loadJobs();
     }
 
-
-    /* BUSINESS LISTINGS */
-
-    if (
-      qs("businessListings")
-    ) {
-
-      loadBusinesses();
-
-      qs("marketSearch")
-        ?.addEventListener(
-          "input",
-          renderBusinesses
-        );
-
-      qs("marketLocation")
-        ?.addEventListener(
-          "input",
-          renderBusinesses
-        );
-
-      document
-        .querySelectorAll(
-          ".market-tab"
-        )
-        .forEach(tab => {
-
-          tab.addEventListener(
-            "click",
-            () => {
-
-              document
-                .querySelectorAll(
-                  ".market-tab"
-                )
-                .forEach(
-                  t =>
-                    t.classList.remove(
-                      "active"
-                    )
-                );
-
-              tab.classList.add(
-                "active"
-              );
-
-              renderBusinesses();
-
-            }
-          );
-
-        });
-
+    if (qs("#myJobs")) {
+      await loadMyJobs();
     }
 
-
-    /* BUSINESS DETAIL */
-
-    if (
-      qs("businessDetail")
-    ) {
-
-      loadBusinessDetail();
-
+    if (qs("#userName") || qs("#userEmail")) {
+      await loadDashboard();
     }
-
-
-    /* BUSINESS FORM */
-
-    if (
-      qs("businessForm")
-    ) {
-
-      qs("businessForm")
-        .addEventListener(
-          "submit",
-          submitBusiness
-        );
-
-    }
-
-
-    /* DASHBOARD */
-
-    if (
-      qs("dashboardLoading")
-    ) {
-
-      loadDashboard();
-
-    }
-
-
-    /* EMPLOYER DASHBOARD */
-
-    if (
-      qs("employerName")
-    ) {
-
-      loadEmployerDashboard();
-
-    }
-
-
-    /* JOB FORM */
-
-    if (
-      qs("jobForm")
-    ) {
-
-      qs("jobForm")
-        .addEventListener(
-          "submit",
-          postJob
-        );
-
-    }
-
-
-    /* MY JOBS */
-
-    if (
-      qs("myJobs") ||
-      qs("myJobsList")
-    ) {
-
-      const session =
-        getSession();
-
-      if (session) {
-
-        loadMyJobs(
-          session.user.id,
-          session.token
-        );
-
-      }
-
-    }
-
-
-    /* STATISTICS */
-
-    if (
-      qs("stats")
-    ) {
-
-      loadStats();
-
-    }
-
-
-    /* PUBLIC USERS DIRECTORY */
-
-    if (
-      qs("usersDirectory")
-    ) {
-
-      loadUsersDirectory();
-
-    }
-
-
-    /* CONTACT */
-
-    initContact();
 
   }
 );
