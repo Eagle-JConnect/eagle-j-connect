@@ -2,17 +2,25 @@
    EAGLE-J CONNECT — GLOBAL LANGUAGE SYSTEM
    Kreyòl (ht) • English (en) • Français (fr)
 
-   GLOBAL VERSION — FIXED
+   FINAL GLOBAL VERSION
    ========================================================= */
 
 (function () {
   "use strict";
+
+  /* =======================================================
+     CONFIGURATION
+     ======================================================= */
 
   const STORAGE_KEY = "eagleJConnectLanguage";
   const OLD_STORAGE_KEY = "selectedLanguage";
 
   const DEFAULT_LANGUAGE = "ht";
   const SUPPORTED = ["ht", "en", "fr"];
+
+  let observerTimer = null;
+  let isApplyingLanguage = false;
+
 
   /* =======================================================
      MAIN TRANSLATIONS
@@ -43,7 +51,8 @@
       "stats-users": "Itilizatè",
       "stats-ads": "Anons",
 
-      "services-title": "Sèvis Eagle-J Connect",
+      "services-title":
+        "Sèvis Eagle-J Connect",
 
       "footer-text":
         "Konekte ak moun, dekouvri opòtinite epi grandi ansanm."
@@ -63,14 +72,26 @@
       "hero-text":
         "Connect with people, discover opportunities, grow your network, and create new possibilities.",
 
-      "create-account": "Create Account",
-      "find-job": "Find Jobs",
-      "create-ad": "Create a Listing",
+      "create-account":
+        "Create Account",
 
-      "stats-jobs": "Jobs",
-      "stats-business": "Businesses",
-      "stats-users": "Users",
-      "stats-ads": "Listings",
+      "find-job":
+        "Find Jobs",
+
+      "create-ad":
+        "Create a Listing",
+
+      "stats-jobs":
+        "Jobs",
+
+      "stats-business":
+        "Businesses",
+
+      "stats-users":
+        "Users",
+
+      "stats-ads":
+        "Listings",
 
       "services-title":
         "Eagle-J Connect Services",
@@ -691,7 +712,27 @@
 
 
   /* =======================================================
-     BUILD REVERSE MAP
+     NORMALIZE TEXT
+     ======================================================= */
+
+  function normalize(value) {
+    return String(value || "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+
+  /* =======================================================
+     BUILD COMPLETE REVERSE MAP
+     =======================================================
+
+     Diferans ak ansyen vèsyon an:
+     Nou chèche tèks la nan HT, EN oswa FR.
+     Konsa:
+
+     HT → EN → FR → HT
+
+     ap toujou mache.
      ======================================================= */
 
   const reverseMap = {
@@ -700,12 +741,6 @@
     fr: {}
   };
 
-  function normalize(value) {
-    return String(value || "")
-      .replace(/\s+/g, " ")
-      .trim();
-  }
-
   Object.keys(textMap).forEach(function (source) {
 
     const row = textMap[source];
@@ -713,7 +748,11 @@
     SUPPORTED.forEach(function (lang) {
 
       if (row[lang]) {
-        reverseMap[lang][normalize(row[lang])] = row;
+
+        reverseMap[lang][
+          normalize(row[lang])
+        ] = row;
+
       }
 
     });
@@ -722,14 +761,53 @@
 
 
   /* =======================================================
-     GET LANGUAGE
+     FIND TRANSLATION ROW
+     ======================================================= */
+
+  function findTranslationRow(text) {
+
+    const normalized =
+      normalize(text);
+
+    if (!normalized) {
+      return null;
+    }
+
+    for (
+      let i = 0;
+      i < SUPPORTED.length;
+      i++
+    ) {
+
+      const lang =
+        SUPPORTED[i];
+
+      if (
+        reverseMap[lang] &&
+        reverseMap[lang][normalized]
+      ) {
+        return reverseMap[lang][normalized];
+      }
+
+    }
+
+    return null;
+  }
+
+
+  /* =======================================================
+     GET CURRENT LANGUAGE
      ======================================================= */
 
   function getLanguage() {
 
     const saved =
-      localStorage.getItem(STORAGE_KEY) ||
-      localStorage.getItem(OLD_STORAGE_KEY) ||
+      localStorage.getItem(
+        STORAGE_KEY
+      ) ||
+      localStorage.getItem(
+        OLD_STORAGE_KEY
+      ) ||
       DEFAULT_LANGUAGE;
 
     return SUPPORTED.includes(saved)
@@ -742,21 +820,124 @@
      TRANSLATE TAGGED ELEMENT
      ======================================================= */
 
-  function translateElement(element, lang) {
+  function translateElement(
+    element,
+    lang
+  ) {
+
+    if (!element) {
+      return;
+    }
 
     const dict =
       translations[lang] ||
       translations[DEFAULT_LANGUAGE];
 
+
+    /* -----------------------------------------------------
+       MAIN TEXT
+       ----------------------------------------------------- */
+
     const key =
-      element.getAttribute("data-i18n");
+      element.getAttribute(
+        "data-i18n"
+      );
 
     if (
       key &&
       dict[key] !== undefined
     ) {
-      element.textContent = dict[key];
+
+      element.textContent =
+        dict[key];
+
     }
+
+
+    /* -----------------------------------------------------
+       PLACEHOLDER
+       ----------------------------------------------------- */
+
+    const placeholderKey =
+      element.getAttribute(
+        "data-i18n-placeholder"
+      );
+
+    if (
+      placeholderKey &&
+      dict[placeholderKey] !== undefined
+    ) {
+
+      element.setAttribute(
+        "placeholder",
+        dict[placeholderKey]
+      );
+
+    }
+
+
+    /* -----------------------------------------------------
+       TITLE
+       ----------------------------------------------------- */
+
+    const titleKey =
+      element.getAttribute(
+        "data-i18n-title"
+      );
+
+    if (
+      titleKey &&
+      dict[titleKey] !== undefined
+    ) {
+
+      element.setAttribute(
+        "title",
+        dict[titleKey]
+      );
+
+    }
+
+
+    /* -----------------------------------------------------
+       ARIA LABEL
+       ----------------------------------------------------- */
+
+    const ariaKey =
+      element.getAttribute(
+        "data-i18n-aria"
+      );
+
+    if (
+      ariaKey &&
+      dict[ariaKey] !== undefined
+    ) {
+
+      element.setAttribute(
+        "aria-label",
+        dict[ariaKey]
+      );
+
+    }
+
+  }
+
+
+  /* =======================================================
+     TRANSLATE ATTRIBUTES
+     ======================================================= */
+
+  function translateAttributes(
+    element,
+    lang
+  ) {
+
+    if (!element) {
+      return;
+    }
+
+    const dict =
+      translations[lang] ||
+      translations[DEFAULT_LANGUAGE];
 
 
     const placeholderKey =
@@ -768,10 +949,12 @@
       placeholderKey &&
       dict[placeholderKey] !== undefined
     ) {
+
       element.setAttribute(
         "placeholder",
         dict[placeholderKey]
       );
+
     }
 
 
@@ -784,64 +967,57 @@
       titleKey &&
       dict[titleKey] !== undefined
     ) {
+
       element.setAttribute(
         "title",
         dict[titleKey]
       );
+
     }
 
-     }
-     /* =======================================================
-     TRANSLATE ATTRIBUTES
-     ======================================================= */
 
-  function translateAttributes(element, lang) {
-
-    const dict =
-      translations[lang] ||
-      translations[DEFAULT_LANGUAGE];
-
-    /* Placeholder */
-    const placeholderKey =
-      element.getAttribute("data-i18n-placeholder");
-
-    if (
-      placeholderKey &&
-      dict[placeholderKey] !== undefined
-    ) {
-      element.setAttribute(
-        "placeholder",
-        dict[placeholderKey]
-      );
-    }
-
-    /* Title */
-    const titleKey =
-      element.getAttribute("data-i18n-title");
-
-    if (
-      titleKey &&
-      dict[titleKey] !== undefined
-    ) {
-      element.setAttribute(
-        "title",
-        dict[titleKey]
-      );
-    }
-
-    /* aria-label */
     const ariaKey =
-      element.getAttribute("data-i18n-aria");
+      element.getAttribute(
+        "data-i18n-aria"
+      );
 
     if (
       ariaKey &&
       dict[ariaKey] !== undefined
     ) {
+
       element.setAttribute(
         "aria-label",
         dict[ariaKey]
       );
+
     }
+
+  }
+
+
+  /* =======================================================
+     SHOULD IGNORE ELEMENT?
+     ======================================================= */
+
+  function shouldIgnoreElement(element) {
+
+    if (!element) {
+      return true;
+    }
+
+    const tag =
+      element.tagName
+        ? element.tagName.toLowerCase()
+        : "";
+
+    return (
+      tag === "script" ||
+      tag === "style" ||
+      tag === "noscript" ||
+      tag === "code" ||
+      tag === "pre"
+    );
 
   }
 
@@ -850,28 +1026,23 @@
      TRANSLATE UNTAGGED TEXT
      ======================================================= */
 
-  function translateUnTaggedText(element, lang) {
+  function translateUnTaggedText(
+    root,
+    lang
+  ) {
 
-    if (!element) return;
-
-    /*
-      Nou pa modifye eleman ki gen data-i18n.
-      Sa anpeche sistèm nan tradui menm bagay la 2 fwa.
-    */
-
-    if (
-      element.nodeType === Node.ELEMENT_NODE &&
-      element.hasAttribute("data-i18n")
-    ) {
+    if (!root) {
       return;
     }
 
-    const row =
-      reverseMap[lang] || {};
+    /*
+      Pa tradui tèks andedan script,
+      style, code, pre, elatriye.
+    */
 
     const walker =
       document.createTreeWalker(
-        element,
+        root,
         NodeFilter.SHOW_TEXT,
         {
           acceptNode: function (node) {
@@ -883,41 +1054,54 @@
               return NodeFilter.FILTER_REJECT;
             }
 
-            /*
-              Pa manyen script/style/code
-            */
-            const tag =
-              parent.tagName.toLowerCase();
-
             if (
-              tag === "script" ||
-              tag === "style" ||
-              tag === "noscript" ||
-              tag === "code" ||
-              tag === "pre"
+              shouldIgnoreElement(parent)
             ) {
               return NodeFilter.FILTER_REJECT;
             }
 
             /*
-              Pa tradui espas vid
+              Si parent la gen data-i18n,
+              translateElement() ap okipe li.
             */
+            if (
+              parent.hasAttribute(
+                "data-i18n"
+              )
+            ) {
+              return NodeFilter.FILTER_REJECT;
+            }
+
             const original =
-              normalize(node.nodeValue);
+              normalize(
+                node.nodeValue
+              );
 
             if (!original) {
               return NodeFilter.FILTER_REJECT;
             }
 
             /*
-              Si tèks la egziste nan lang aktyèl la,
-              chèche liy korespondan li.
+              Chèche tèks la nan tout
+              3 lang yo.
             */
-            if (row[original]) {
-              return NodeFilter.FILTER_ACCEPT;
+            const row =
+              findTranslationRow(
+                original
+              );
+
+            if (!row) {
+              return NodeFilter.FILTER_REJECT;
             }
 
-            return NodeFilter.FILTER_REJECT;
+            if (
+              row[lang] === undefined
+            ) {
+              return NodeFilter.FILTER_REJECT;
+            }
+
+            return NodeFilter.FILTER_ACCEPT;
+
           }
         }
       );
@@ -930,30 +1114,52 @@
     while (
       (current = walker.nextNode())
     ) {
+
       nodes.push(current);
+
     }
 
 
     nodes.forEach(function (node) {
 
       const original =
-        normalize(node.nodeValue);
+        normalize(
+          node.nodeValue
+        );
 
-      const translation =
-        row[original];
+      const row =
+        findTranslationRow(
+          original
+        );
 
       if (
-        translation &&
-        translation[lang]
+        !row ||
+        row[lang] === undefined
       ) {
-
-        node.nodeValue =
-          node.nodeValue.replace(
-            original,
-            translation[lang]
-          );
-
+        return;
       }
+
+      const translated =
+        row[lang];
+
+      /*
+        Kenbe espas ki te devan/dèyè
+        tèks la pou layout paj la pa chanje.
+      */
+
+      const raw =
+        String(node.nodeValue);
+
+      const leading =
+        raw.match(/^\s*/)?.[0] || "";
+
+      const trailing =
+        raw.match(/\s*$/)?.[0] || "";
+
+      node.nodeValue =
+        leading +
+        translated +
+        trailing;
 
     });
 
@@ -966,9 +1172,6 @@
 
   function translateOptions(lang) {
 
-    const row =
-      reverseMap[lang] || {};
-
     document
       .querySelectorAll("option")
       .forEach(function (option) {
@@ -978,12 +1181,48 @@
             option.textContent
           );
 
+        const row =
+          findTranslationRow(
+            original
+          );
+
         if (
-          row[original] &&
-          row[original][lang]
+          row &&
+          row[lang] !== undefined
         ) {
+
           option.textContent =
-            row[original][lang];
+            row[lang];
+
+        }
+
+      });
+
+  }
+
+
+  /* =======================================================
+     TRANSLATE LANGUAGE SELECTORS
+     ======================================================= */
+
+  function updateLanguageSelectors(
+    lang
+  ) {
+
+    document
+      .querySelectorAll(
+        ".language-selector, #languageSelector, #language-select, select[data-language]"
+      )
+      .forEach(function (selector) {
+
+        if (
+          selector.tagName ===
+          "SELECT"
+        ) {
+
+          selector.value =
+            lang;
+
         }
 
       });
@@ -1000,130 +1239,178 @@
     if (
       !SUPPORTED.includes(lang)
     ) {
-      lang = DEFAULT_LANGUAGE;
+
+      lang =
+        DEFAULT_LANGUAGE;
+
     }
 
+
     /*
-      Mete lang sou HTML la
+      Protection kont infinite loop.
     */
-    document.documentElement
-      .setAttribute(
-        "lang",
+
+    if (isApplyingLanguage) {
+      return;
+    }
+
+    isApplyingLanguage = true;
+
+
+    try {
+
+      /* ---------------------------------------------------
+         HTML LANGUAGE
+         --------------------------------------------------- */
+
+      document.documentElement
+        .setAttribute(
+          "lang",
+          lang
+        );
+
+
+      /* ---------------------------------------------------
+         SAVE LANGUAGE
+         --------------------------------------------------- */
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        lang
+      );
+
+      localStorage.setItem(
+        OLD_STORAGE_KEY,
         lang
       );
 
 
-    /*
-      Sove lang chwazi a
-    */
-    localStorage.setItem(
-      STORAGE_KEY,
-      lang
-    );
+      /* ---------------------------------------------------
+         DATA-I18N
+         --------------------------------------------------- */
 
-    /*
-      Kenbe ansyen sistèm nan
-      konpatib tou.
-    */
-    localStorage.setItem(
-      OLD_STORAGE_KEY,
-      lang
-    );
+      document
+        .querySelectorAll(
+          "[data-i18n]"
+        )
+        .forEach(function (element) {
+
+          translateElement(
+            element,
+            lang
+          );
+
+        });
 
 
-    /*
-      1. Eleman ki gen data-i18n
-    */
-    document
-      .querySelectorAll(
-        "[data-i18n]"
-      )
-      .forEach(function (element) {
+      /* ---------------------------------------------------
+         ATTRIBUTES
+         --------------------------------------------------- */
 
-        translateElement(
-          element,
+      document
+        .querySelectorAll(
+          "[data-i18n-placeholder], [data-i18n-title], [data-i18n-aria]"
+        )
+        .forEach(function (element) {
+
+          translateAttributes(
+            element,
+            lang
+          );
+
+        });
+
+
+      /* ---------------------------------------------------
+         UNTAGGED TEXT
+         --------------------------------------------------- */
+
+      if (document.body) {
+
+        translateUnTaggedText(
+          document.body,
           lang
         );
 
-      });
+      }
 
 
-    /*
-      2. Placeholder / title / aria-label
-    */
-    document
-      .querySelectorAll(
-        "[data-i18n-placeholder], [data-i18n-title], [data-i18n-aria]"
-      )
-      .forEach(function (element) {
+      /* ---------------------------------------------------
+         OPTIONS
+         --------------------------------------------------- */
 
-        translateAttributes(
-          element,
-          lang
-        );
-
-      });
+      translateOptions(
+        lang
+      );
 
 
-    /*
-      3. Tèks ki pa gen data-i18n
-    */
-    translateUnTaggedText(
-      document.body,
-      lang
-    );
+      /* ---------------------------------------------------
+         LANGUAGE SELECTORS
+         --------------------------------------------------- */
+
+      updateLanguageSelectors(
+        lang
+      );
 
 
-    /*
-      4. Select options
-    */
-    translateOptions(lang);
+      /* ---------------------------------------------------
+         GLOBAL VARIABLES
+         --------------------------------------------------- */
+
+      window.currentLanguage =
+        lang;
+
+      window.selectedLanguage =
+        lang;
 
 
-    /*
-      5. Mete lang aktyèl la sou tout
-         dropdown language selector
-    */
-    document
-      .querySelectorAll(
-        ".language-selector, #languageSelector, #language-select, select[data-language]"
-      )
-      .forEach(function (selector) {
+    } finally {
 
-        if (
-          selector.tagName === "SELECT"
-        ) {
-          selector.value = lang;
-        }
+      isApplyingLanguage =
+        false;
 
-      });
+    }
 
 
-    /*
-      6. Evite JavaScript lòt paj yo
-         pèdi lang aktyèl la.
-    */
-    window.currentLanguage =
-      lang;
+    /* =====================================================
+       NOTIFY OTHER SCRIPTS
+       ===================================================== */
 
-    window.selectedLanguage =
-      lang;
+    try {
 
-
-    /*
-      Event pou lòt script yo
-      ka konnen lang lan chanje.
-    */
-    document.dispatchEvent(
-      new CustomEvent(
-        "languageChanged",
-        {
-          detail: {
-            language: lang
+      document.dispatchEvent(
+        new CustomEvent(
+          "languageChanged",
+          {
+            detail: {
+              language: lang
+            }
           }
-        }
-      )
-    );
+        )
+      );
+
+    } catch (error) {
+
+      /*
+        Older browser compatibility.
+      */
+
+      const event =
+        document.createEvent(
+          "Event"
+        );
+
+      event.initEvent(
+        "languageChanged",
+        true,
+        true
+      );
+
+      document.dispatchEvent(
+        event
+      );
+
+    }
 
   }
 
@@ -1137,21 +1424,25 @@
     if (
       !SUPPORTED.includes(lang)
     ) {
+
       console.warn(
-        "Unsupported language:",
+        "Eagle-J Connect: Unsupported language:",
         lang
       );
 
       return;
+
     }
 
-    applyLanguage(lang);
+    applyLanguage(
+      lang
+    );
 
   }
 
 
   /* =======================================================
-     GLOBAL FUNCTION
+     GLOBAL FUNCTIONS
      ======================================================= */
 
   window.changeLanguage =
@@ -1165,7 +1456,7 @@
 
 
   /* =======================================================
-     INITIAL LOAD
+     INITIALIZE
      ======================================================= */
 
   function initializeLanguage() {
@@ -1173,14 +1464,13 @@
     const lang =
       getLanguage();
 
-    applyLanguage(lang);
+    applyLanguage(
+      lang
+    );
 
   }
 
 
-  /*
-    Lè DOM lan pare.
-  */
   if (
     document.readyState ===
     "loading"
@@ -1188,7 +1478,10 @@
 
     document.addEventListener(
       "DOMContentLoaded",
-      initializeLanguage
+      initializeLanguage,
+      {
+        once: true
+      }
     );
 
   } else {
@@ -1202,124 +1495,171 @@
      MUTATION OBSERVER
      =======================================================
 
-     Sa pèmèt nouvo eleman ki parèt
-     apre yon fetch / Supabase / AJAX
-     resevwa lang lan tou.
+     Supabase / fetch / AJAX ka ka kreye
+     nouvo eleman apre paj la fin chaje.
 
-     IMPORTANT:
-     Nou pa rele applyLanguage()
-     andedan observer la.
+     Observer sa a pèmèt nouvo tèks yo
+     resevwa lang aktyèl la.
 
-     Sa anpeche infinite loop.
+     Li pa rele applyLanguage(),
+     konsa li pa kreye infinite loop.
      ======================================================= */
 
-  let observerTimer = null;
+  function startLanguageObserver() {
 
-  const observer =
-    new MutationObserver(
-      function (mutations) {
+    if (
+      typeof MutationObserver ===
+      "undefined"
+    ) {
+      return;
+    }
 
-        let shouldTranslate = false;
+    if (!document.body) {
+      return;
+    }
 
-        mutations.forEach(
-          function (mutation) {
 
-            /*
-              Si se sèlman yon
-              attribute ki chanje,
-              pa relanse tradiksyon an.
-            */
+    const observer =
+      new MutationObserver(
+        function (mutations) {
+
+          let hasNewNodes = false;
+
+          for (
+            let i = 0;
+            i < mutations.length;
+            i++
+          ) {
+
+            const mutation =
+              mutations[i];
+
             if (
               mutation.type ===
-              "childList" &&
+                "childList" &&
+              mutation.addedNodes &&
               mutation.addedNodes.length
             ) {
-              shouldTranslate = true;
+
+              hasNewNodes = true;
+              break;
+
             }
 
           }
-        );
 
 
-        if (!shouldTranslate) {
-          return;
-        }
+          if (!hasNewNodes) {
+            return;
+          }
 
 
-        /*
-          Pa kouri twòp fwa youn dèyè lòt.
-        */
-        clearTimeout(
-          observerTimer
-        );
-
-
-        observerTimer =
-          setTimeout(
-            function () {
-
-              const lang =
-                getLanguage();
-
-
-              /*
-                Sèlman tradui nouvo
-                tèks ki bezwen li.
-              */
-              document
-                .querySelectorAll(
-                  "[data-i18n]"
-                )
-                .forEach(
-                  function (element) {
-
-                    translateElement(
-                      element,
-                      lang
-                    );
-
-                  }
-                );
-
-
-              document
-                .querySelectorAll(
-                  "[data-i18n-placeholder], [data-i18n-title], [data-i18n-aria]"
-                )
-                .forEach(
-                  function (element) {
-
-                    translateAttributes(
-                      element,
-                      lang
-                    );
-
-                  }
-                );
-
-
-              translateUnTaggedText(
-                document.body,
-                lang
-              );
-
-
-              translateOptions(
-                lang
-              );
-
-            },
-            100
+          clearTimeout(
+            observerTimer
           );
 
-      }
-    );
+
+          observerTimer =
+            setTimeout(
+              function () {
+
+                /*
+                  Pa fè anyen si sistèm nan
+                  deja ap aplike lang lan.
+                */
+
+                if (
+                  isApplyingLanguage
+                ) {
+                  return;
+                }
 
 
-  /*
-    Kòmanse observer la
-  */
-  if (document.body) {
+                const lang =
+                  getLanguage();
+
+
+                /*
+                  Nouvo eleman ki gen
+                  data-i18n.
+                */
+
+                document
+                  .querySelectorAll(
+                    "[data-i18n]"
+                  )
+                  .forEach(
+                    function (element) {
+
+                      translateElement(
+                        element,
+                        lang
+                      );
+
+                    }
+                  );
+
+
+                /*
+                  Nouvo attributes.
+                */
+
+                document
+                  .querySelectorAll(
+                    "[data-i18n-placeholder], [data-i18n-title], [data-i18n-aria]"
+                  )
+                  .forEach(
+                    function (element) {
+
+                      translateAttributes(
+                        element,
+                        lang
+                      );
+
+                    }
+                  );
+
+
+                /*
+                  Nouvo tèks.
+                */
+
+                if (
+                  document.body
+                ) {
+
+                  translateUnTaggedText(
+                    document.body,
+                    lang
+                  );
+
+                }
+
+
+                /*
+                  Nouvo options.
+                */
+
+                translateOptions(
+                  lang
+                );
+
+
+                /*
+                  Selector language.
+                */
+
+                updateLanguageSelectors(
+                  lang
+                );
+
+              },
+              100
+            );
+
+        }
+      );
+
 
     observer.observe(
       document.body,
@@ -1329,8 +1669,63 @@
       }
     );
 
+
+    /*
+      Kenbe observer la disponib
+      pou debug si sa nesesè.
+    */
+
+    window.eagleJLanguageObserver =
+      observer;
+
   }
 
 
+  /* =======================================================
+     START OBSERVER
+     ======================================================= */
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      startLanguageObserver,
+      {
+        once: true
+      }
+    );
+
+  } else {
+
+    startLanguageObserver();
+
+  }
+
+
+  /* =======================================================
+     DEBUG / PUBLIC OBJECT
+     ======================================================= */
+
+  window.EagleJLanguage = {
+
+    supported: SUPPORTED.slice(),
+
+    defaultLanguage:
+      DEFAULT_LANGUAGE,
+
+    getLanguage:
+      getLanguage,
+
+    changeLanguage:
+      changeLanguage,
+
+    applyLanguage:
+      applyLanguage
+
+  };
+
+
 })();
-   
