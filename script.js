@@ -54,6 +54,87 @@ function getSession(){
 }
 
 
+/* =========================================================
+   NEW: VERIFY CURRENT SUPABASE USER
+   ---------------------------------------------------------
+   Sa evite RLS error lè localStorage UID la pa sync
+   ak UID ki asosye ak access token Supabase la.
+========================================================= */
+
+async function getAuthenticatedUser(){
+
+  const session=getSession();
+
+  if(!session?.token){
+
+    return null;
+
+  }
+
+  try{
+
+    const user=await api(
+      "/auth/v1/user",
+      {
+        headers:{
+          Authorization:
+            `Bearer ${session.token}`
+        }
+      }
+    );
+
+
+    if(!user?.id){
+
+      return null;
+
+    }
+
+
+    /*
+     * Mete localStorage ajou ak vrè UID
+     * Supabase asosye ak access token lan.
+     */
+
+    localStorage.setItem(
+      "supabase_user_id",
+      user.id
+    );
+
+
+    localStorage.setItem(
+      "supabase_user",
+      JSON.stringify(user)
+    );
+
+
+    localStorage.setItem(
+      "supabase_user_email",
+      user.email || ""
+    );
+
+
+    return {
+      user,
+      token:session.token
+    };
+
+
+  }catch(error){
+
+    console.error(
+      "Supabase authenticated user:",
+      error
+    );
+
+
+    return null;
+
+  }
+
+}
+
+
 function saveSession(data){
 
   if(data?.access_token){
@@ -126,7 +207,6 @@ window.logoutUser=()=>{
 
 /* =========================================================
    MOBILE MENU
-   menu.js owns the final navigation controller
 ========================================================= */
 
 function setupMobileMenu(){
@@ -155,9 +235,10 @@ window.toggleMenu=function(){
 
 function msg(id,text,type="error"){
 
-  /* Translate system messages using the currently selected language. */
   if(window.EJC?.t){
+
     text=window.EJC.t(text);
+
   }
 
   const el=qs(id);
@@ -239,7 +320,9 @@ async function api(path,options={}){
     options.headers || {}
   );
 
+
   const session=getSession();
+
 
   if(
     session?.token &&
@@ -251,6 +334,7 @@ async function api(path,options={}){
 
   }
 
+
   const r=await fetch(
     SUPABASE_URL+path,
     {
@@ -259,9 +343,11 @@ async function api(path,options={}){
     }
   );
 
+
   const text=await r.text();
 
   let data=null;
+
 
   try{
 
@@ -275,6 +361,7 @@ async function api(path,options={}){
 
   }
 
+
   if(!r.ok){
 
     throw new Error(
@@ -287,6 +374,7 @@ async function api(path,options={}){
 
   }
 
+
   return data;
 
 }
@@ -294,9 +382,7 @@ async function api(path,options={}){
 
 /* =========================================================
    ADMIN CHECK
-   ---------------------------------------------------------
-   Verifye si itilizatè konekte a nan admin_users.
-   ========================================================= */
+========================================================= */
 
 async function checkCurrentUserIsAdmin(userId){
 
@@ -306,22 +392,27 @@ async function checkCurrentUserIsAdmin(userId){
 
   }
 
+
   try{
 
     const rows=await api(
       `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
     );
 
+
     const isAdmin=
       Array.isArray(rows) &&
       rows.length>0;
+
 
     localStorage.setItem(
       "user_is_admin",
       isAdmin ? "true" : "false"
     );
 
+
     return isAdmin;
+
 
   }catch(error){
 
@@ -330,10 +421,12 @@ async function checkCurrentUserIsAdmin(userId){
       error.message
     );
 
+
     localStorage.setItem(
       "user_is_admin",
       "false"
     );
+
 
     return false;
 
@@ -350,14 +443,18 @@ async function registerUser(e){
 
   e.preventDefault();
 
+
   const firstName=
     qs("firstName")?.value.trim() || "";
+
 
   const lastName=
     qs("lastName")?.value.trim() || "";
 
+
   const legacyFullName=
     qs("fullName")?.value.trim() || "";
+
 
   const fullName=
     (
@@ -365,17 +462,22 @@ async function registerUser(e){
       `${firstName} ${lastName}`
     ).trim();
 
+
   const email=
     qs("email")?.value.trim().toLowerCase() || "";
+
 
   const phone=
     qs("phone")?.value.trim() || "";
 
+
   const accountType=
     qs("accountType")?.value || "";
 
+
   const password=
     qs("password")?.value || "";
+
 
   const confirm=
     qs("confirmPassword")?.value || "";
@@ -444,11 +546,15 @@ async function registerUser(e){
 
           data:{
             full_name:fullName,
+
             first_name:
               firstName ||
               fullName.split(" ")[0],
+
             last_name:lastName,
+
             phone,
+
             account_type:accountType
           }
 
@@ -479,9 +585,13 @@ async function registerUser(e){
 
             body:JSON.stringify({
               id:data.user.id,
+
               full_name:fullName,
+
               email,
+
               phone,
+
               account_type:accountType
             }),
 
@@ -542,7 +652,7 @@ async function registerUser(e){
 
 /* =========================================================
    LOGIN
-   ========================================================= */
+========================================================= */
 
 async function loginUser(e){
 
@@ -551,6 +661,7 @@ async function loginUser(e){
 
   const email=
     qs("loginEmail")?.value.trim() || "";
+
 
   const password=
     qs("loginPassword")?.value || "";
@@ -579,10 +690,6 @@ async function loginUser(e){
 
 
   try{
-
-    /* -----------------------------------------------------
-       1. LOGIN SUPABASE AUTH
-    ----------------------------------------------------- */
 
     const data=await api(
       "/auth/v1/token?grant_type=password",
@@ -615,16 +722,8 @@ async function loginUser(e){
     }
 
 
-    /* -----------------------------------------------------
-       2. SAVE SESSION
-    ----------------------------------------------------- */
-
     saveSession(data);
 
-
-    /* -----------------------------------------------------
-       3. GET PROFILE
-    ----------------------------------------------------- */
 
     let profiles=[];
 
@@ -660,10 +759,6 @@ async function loginUser(e){
     }
 
 
-    /* -----------------------------------------------------
-       4. ACCOUNT STATUS
-    ----------------------------------------------------- */
-
     if(
       profile.account_status &&
       profile.account_status!=="active"
@@ -678,19 +773,17 @@ async function loginUser(e){
     }
 
 
-    /* -----------------------------------------------------
-       5. SAVE PROFILE DATA
-    ----------------------------------------------------- */
-
     localStorage.setItem(
       "user_full_name",
       profile.full_name || ""
     );
 
+
     localStorage.setItem(
       "user_phone",
       profile.phone || ""
     );
+
 
     localStorage.setItem(
       "user_account_type",
@@ -721,14 +814,6 @@ async function loginUser(e){
     );
 
 
-    /* -----------------------------------------------------
-       6. CHECK ADMIN
-       -----------------------------------------------------
-       Sa se koreksyon prensipal la.
-       Si UID la nan admin_users,
-       Admin ale admin.html.
-    */
-
     const isAdmin=
       await checkCurrentUserIsAdmin(
         data.user.id
@@ -743,10 +828,6 @@ async function loginUser(e){
       "success"
     );
 
-
-    /* -----------------------------------------------------
-       7. ROUTING
-       ----------------------------------------------------- */
 
     setTimeout(
       ()=>{
@@ -797,7 +878,7 @@ async function loginUser(e){
 
 async function loadDashboard(){
 
-  const session=getSession();
+  const session=await getAuthenticatedUser();
 
 
   if(!session){
@@ -815,6 +896,7 @@ async function loadDashboard(){
 
   const card=
     qs("profileCard");
+
 
   const error=
     qs("dashboardError");
@@ -903,7 +985,7 @@ async function loadDashboard(){
 
 async function loadEmployerDashboard(){
 
-  const session=getSession();
+  const session=await getAuthenticatedUser();
 
 
   if(!session){
@@ -1002,7 +1084,7 @@ async function postJob(e){
   e.preventDefault();
 
 
-  const s=getSession();
+  const s=await getAuthenticatedUser();
 
 
   if(!s){
@@ -1083,7 +1165,10 @@ async function postJob(e){
         }),
 
         headers:{
-          Prefer:"return=representation"
+          Prefer:"return=representation",
+
+          Authorization:
+            `Bearer ${s.token}`
         }
 
       }
@@ -1611,15 +1696,21 @@ async function submitBusiness(e){
   e.preventDefault();
 
 
+  /*
+   * IMPORTANT:
+   * Nou pa sèvi sèlman ak localStorage UID la.
+   * Nou verifye user la ak access token Supabase la.
+   */
+
   const session=
-    getSession();
+    await getAuthenticatedUser();
 
 
   if(!session){
 
     msg(
       "formMessage",
-      "⚠️ Tanpri konekte anvan ou pibliye yon anons."
+      "⚠️ Sesyon ou a pa valid. Tanpri konekte ankò."
     );
 
 
@@ -1693,6 +1784,11 @@ async function submitBusiness(e){
 
     image_url:null,
 
+    /*
+     * IMPORTANT:
+     * Sa dwe egzakteman menm UID ak auth.uid()
+     */
+
     user_id:
       session.user.id,
 
@@ -1745,6 +1841,12 @@ async function submitBusiness(e){
 
   try{
 
+    /*
+     * INSERT BUSINESS
+     * Authorization header la sèvi ak access token
+     * ki te verifye anlè a.
+     */
+
     const rows=
       await api(
         "/rest/v1/businesses",
@@ -1753,7 +1855,10 @@ async function submitBusiness(e){
 
           headers:{
             Prefer:
-              "return=representation"
+              "return=representation",
+
+            Authorization:
+              `Bearer ${session.token}`
           },
 
           body:
@@ -1855,10 +1960,23 @@ async function submitBusiness(e){
         `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
 
+      /*
+       * Owner update policy a pèmèt owner modifye
+       * pwòp business li.
+       */
+
       await api(
         `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
         {
           method:"PATCH",
+
+          headers:{
+            Authorization:
+              `Bearer ${session.token}`,
+
+            Prefer:
+              "return=representation"
+          },
 
           body:
             JSON.stringify({
@@ -1883,11 +2001,18 @@ async function submitBusiness(e){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      "Submit business error:",
+      err
+    );
+
 
     msg(
       "formMessage",
-      "❌ "+err.message
+      "❌ "+(
+        err.message ||
+        "Nou pa kapab pibliye anons lan."
+      )
     );
 
   }
@@ -2093,8 +2218,6 @@ function renderBusinesses(){
 
   if(location){
 
-    // Global location search: users can enter any country, city, region,
-    // neighborhood, postal code, or remote-work term. No country is hard-coded.
     const terms=[location];
 
 
@@ -2131,15 +2254,47 @@ function renderBusinesses(){
 
   if(!rows.length){
 
-    const currentLang = (window.EagleJLanguage && window.EagleJLanguage.getLanguage) ? window.EagleJLanguage.getLanguage() : "en";
+    const currentLang =
+      (
+        window.EagleJLanguage &&
+        window.EagleJLanguage.getLanguage
+      )
+        ? window.EagleJLanguage.getLanguage()
+        : "en";
+
+
     const emptyCopy = {
-      ht: ["Pa gen rezilta", "Eseye chanje rechèch ou oswa filtre a."],
-      en: ["No results", "Try changing your search or filter."],
-      fr: ["Aucun résultat", "Essayez de modifier votre recherche ou votre filtre."]
+
+      ht:[
+        "Pa gen rezilta",
+        "Eseye chanje rechèch ou oswa filtre a."
+      ],
+
+      en:[
+        "No results",
+        "Try changing your search or filter."
+      ],
+
+      fr:[
+        "Aucun résultat",
+        "Essayez de modifier votre recherche ou votre filtre."
+      ]
+
     };
-    const ec = emptyCopy[currentLang] || emptyCopy.en;
+
+
+    const ec =
+      emptyCopy[currentLang] ||
+      emptyCopy.en;
+
+
     box.innerHTML=
-      `<div class='empty-state'><span>🔎</span><h3>${ec[0]}</h3><p>${ec[1]}</p></div>`;
+      `<div class='empty-state'>
+        <span>🔎</span>
+        <h3>${ec[0]}</h3>
+        <p>${ec[1]}</p>
+      </div>`;
+
 
     return;
 
@@ -2955,8 +3110,14 @@ function formatAccountType(type){
   };
 
 
-  const label = map[type] || "Manm Eagle-J Connect";
-  return window.EJC?.t ? window.EJC.t(label) : label;
+  const label =
+    map[type] ||
+    "Manm Eagle-J Connect";
+
+
+  return window.EJC?.t
+    ? window.EJC.t(label)
+    : label;
 
 }
 
