@@ -1059,6 +1059,24 @@
   };
 
 
+  /* Additional stable keys used by the homepage. */
+  Object.assign(translations, {
+    "worldwide-kicker": { ht: "MOND • OPÒTINITE • KONEKSYON", en: "WORLDWIDE • OPPORTUNITIES • CONNECTIONS", fr: "MONDE • OPPORTUNITÉS • CONNEXIONS" },
+    "hero-title": { ht: "KONEKTE. DEKOUVRI. GRANDI.", en: "CONNECT. DISCOVER. GROW.", fr: "CONNECTEZ. DÉCOUVREZ. GRANDISSEZ." },
+    "business-offer-title": { ht: "Èske ou gen yon biznis, sèvis oswa òf pwofesyonèl?", en: "Have a business, service, or professional offering?", fr: "Vous avez une entreprise, un service ou une offre professionnelle ?" },
+    "business-offer-text": { ht: "Mete sa ou ofri devan moun k ap chèche pwodwi, sèvis, pwofesyonèl ak opòtinite.", en: "Put what you offer in front of people looking for products, services, professionals, and opportunities.", fr: "Présentez ce que vous proposez aux personnes qui recherchent des produits, des services, des professionnels et des opportunités." },
+    "explore-title": { ht: "Eksplore sa ki disponib", en: "Explore what is available", fr: "Découvrez ce qui est disponible" },
+    "explore-description": { ht: "Gade travay, biznis, manm ak anons ki soti nan diferan kote.", en: "Browse jobs, businesses, members, and listings from different locations.", fr: "Parcourez les emplois, entreprises, membres et annonces de différents endroits." },
+    "jobs-label": { ht: "💼 Travay", en: "💼 Jobs", fr: "💼 Emplois" },
+    "view-jobs": { ht: "Gade travay →", en: "View jobs →", fr: "Voir les emplois →" },
+    "businesses-label": { ht: "🛍️ Biznis", en: "🛍️ Businesses", fr: "🛍️ Entreprises" },
+    "explore-businesses": { ht: "Eksplore biznis →", en: "Explore businesses →", fr: "Découvrir les entreprises →" },
+    "members-label": { ht: "👥 Manm", en: "👥 Members", fr: "👥 Membres" },
+    "view-members": { ht: "Gade manm →", en: "View members →", fr: "Voir les membres →" },
+    "listings-label": { ht: "📢 Anons", en: "📢 Listings", fr: "📢 Annonces" },
+    "view-listings": { ht: "Gade anons →", en: "View listings →", fr: "Voir les annonces →" }
+  });
+
   /* =========================================================
      REVERSE MAP
      ========================================================= */
