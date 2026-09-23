@@ -1258,15 +1258,28 @@
   /* Rebuild the reverse map after ALL translation entries are loaded.
      This is important for pages that switch more than once (HT -> EN -> FR)
      and for translations added by the extended project-wide map above. */
+  /*
+     Build a lookup that recognizes EVERY language variant as an input.
+     The previous version only indexed the currently requested target
+     language. That meant English text could not be found when switching
+     to Kreyòl (and vice versa), so large parts of the page stayed unchanged.
+  */
   SUPPORTED.forEach(function (targetLang) {
     reverseMap[targetLang] = {};
   });
   Object.keys(textMap).forEach(function (source) {
     const row = textMap[source];
-    SUPPORTED.forEach(function (targetLang) {
-      if (row && row[targetLang]) {
-        reverseMap[targetLang][normalize(row[targetLang])] = row;
-      }
+    if (!row) return;
+    SUPPORTED.forEach(function (inputLang) {
+      const inputText = row[inputLang];
+      if (!inputText) return;
+      const normalizedInput = normalize(inputText);
+      if (!normalizedInput) return;
+      SUPPORTED.forEach(function (targetLang) {
+        if (row[targetLang]) {
+          reverseMap[targetLang][normalizedInput] = row;
+        }
+      });
     });
   });
 

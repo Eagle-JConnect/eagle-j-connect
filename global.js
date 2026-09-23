@@ -1363,11 +1363,9 @@
 
   function init(){
     injectOnlineUI();
-    translateTextNodes();
-    document.addEventListener("ejc-language-changed",()=>setTimeout(translateTextNodes,20));
-    document.addEventListener("languageChanged",()=>setTimeout(translateTextNodes,20));
-    const selector=document.getElementById("languageSelect");
-    selector?.addEventListener("change",()=>setTimeout(translateTextNodes,30));
+    /* language.js is the single DOM translation engine. Do not call it
+       again from global.js, otherwise languageChanged can recursively
+       trigger another applyLanguage() cycle. */
     addGoogleButton();
     finishGoogleLogin();
     startPresence();

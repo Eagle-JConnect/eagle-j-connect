@@ -1,39 +1,36 @@
-<!DOCTYPE html>
-<!DOCTYPE html>
-
-<html lang="ht"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1.0" name="viewport"/><title data-i18n="Contact | Eagle-J Connect">Contact | Eagle-J Connect</title><link href="style.css?v=language-final-6" rel="stylesheet"/></head><body>
+<!DOCTYPE html><html lang="ht"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Contact | Eagle-J Connect</title><link rel="stylesheet" href="style.css?v=language-final-6"></head><body>
 <header class="header">
-<div class="container nav-container">
-<a class="logo-area" href="index.html">
-<img alt="Eagle-J Connect logo" src="Logo.jpg"/>
-<div><h2>Eagle-J Connect</h2><span data-i18n="Connect • Discover • Grow">Connect • Discover • Grow</span></div>
-</a>
-<button aria-controls="menu" aria-expanded="false" aria-label="Ouvri meni" class="menu-toggle" id="menuToggle" type="button">☰</button>
-<nav aria-label="Navigasyon prensipal" id="menu">
-<a data-i18n="nav-home" href="index.html">Akèy</a>
-<a data-i18n="nav-jobs" href="travay.html">Travay</a>
-<a data-i18n="nav-business" href="biznis.html">Biznis</a>
-<a data-i18n="nav-ads" href="anons-list.html">Anons</a>
-<a data-i18n="nav-contact" href="kontak.html">Kontak</a>
-<a data-auth="guest" data-i18n="nav-register" href="enskri.html">Enskri</a>
-<a data-auth="guest" data-i18n="nav-login" href="login.html">Konekte</a>
-<a data-auth="user" data-i18n="nav-account" href="profil.html">Kont Mwen</a>
-<a data-auth="user" data-i18n="nav-logout" href="#" id="logoutBtn">Dekonekte</a>
-<div class="language">
-<select aria-label="Chwazi lang" id="languageSelect">
-<option value="en">🌐 English</option><option value="fr">🇫🇷 Français</option><option value="ht">🗣️ Kreyòl</option>
-</select>
-</div>
-</nav>
-</div>
+  <div class="container nav-container">
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect logo">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false" aria-controls="menu">☰</button>
+    <nav id="menu" aria-label="Navigasyon prensipal">
+      <a href="index.html" data-i18n="nav-home">Akèy</a>
+      <a href="travay.html" data-i18n="nav-jobs">Travay</a>
+      <a href="biznis.html" data-i18n="nav-business">Biznis</a>
+      <a href="anons-list.html" data-i18n="nav-ads">Anons</a>
+      <a href="kontak.html" data-i18n="nav-contact">Kontak</a>
+      <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a>
+      <a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a>
+      <a href="profil.html" data-i18n="nav-account" data-auth="user">Kont Mwen</a>
+      <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
+      <div class="language">
+        <select id="languageSelect" aria-label="Chwazi lang">
+          <option value="en">🌐 English</option><option value="fr">🇫🇷 Français</option><option value="ht">🗣️ Kreyòl</option>
+        </select>
+      </div>
+    </nav>
+  </div>
 </header>
-<section class="services"><div class="form-wrap"><h1 data-i18n="📩 Kontakte Nou">📩 Kontakte Nou</h1><p data-i18n="Voye yon mesaj; n ap prepare li nan aplikasyon imèl ou.">Voye yon mesaj; n ap prepare li nan aplikasyon imèl ou.</p><form class="business-form" id="contactForm"><label data-i18n="Non ou">Non ou</label><input id="contactName" required=""/><label data-i18n="Imèl">Imèl</label><input id="contactEmail" required="" type="email"/><label data-i18n="Telefòn / WhatsApp">Telefòn / WhatsApp</label><input id="contactPhone"/><label data-i18n="Mesaj">Mesaj</label><textarea id="contactMessage" required=""></textarea><button data-i18n="📧 Voye Mesaj" type="submit">📧 Voye Mesaj</button></form><div class="form-message" id="contactMessageBox"></div></div></section><footer>
-<div class="container">
-<div class="footer-grid">
-<div><h3>Eagle-J Connect</h3><p data-i18n="Connect people, discover opportunities, and grow anywhere in the world.">Connect people, discover opportunities, and grow anywhere in the world.</p></div>
-<div class="footer-links"><a data-i18n="Akèy" href="index.html">Akèy</a><a data-i18n="Travay" href="travay.html">Travay</a><a data-i18n="Biznis" href="biznis.html">Biznis</a><a data-i18n="Kontak" href="kontak.html">Kontak</a><a data-i18n="Enskri" href="enskri.html">Enskri</a></div>
-</div>
-<p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
-</div>
+<section class="services"><div class="form-wrap"><h1>📩 Kontakte Nou</h1><p>Voye yon mesaj; n ap prepare li nan aplikasyon imèl ou.</p><form id="contactForm" class="business-form"><label>Non ou</label><input id="contactName" required><label>Imèl</label><input id="contactEmail" type="email" required><label>Telefòn / WhatsApp</label><input id="contactPhone"><label>Mesaj</label><textarea id="contactMessage" required></textarea><button type="submit">📧 Voye Mesaj</button></form><div id="contactMessageBox" class="form-message"></div></div></section><footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>Eagle-J Connect</h3><p>Connect people, discover opportunities, and grow anywhere in the world.</p></div>
+      <div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a><a href="enskri.html">Enskri</a></div>
+    </div>
+    <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
+  </div>
 </footer><script src="language.js?v=language-final-6"></script><script src="script.js?v=language-final-6"></script><script src="menu.js?v=language-final-6"></script><script src="global.js?v=language-final-6"></script>
 </body></html>
