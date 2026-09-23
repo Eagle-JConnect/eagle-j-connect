@@ -1,16 +1,11 @@
 /* =========================================================
-   EAGLE-J CONNECT — GLOBAL LANGUAGE SYSTEM
+   EAGLE-J CONNECT
+   GLOBAL LANGUAGE SYSTEM
    Kreyòl (ht) • English (en) • Français (fr)
-
-   FINAL GLOBAL VERSION
    ========================================================= */
 
 (function () {
   "use strict";
-
-  /* =======================================================
-     CONFIGURATION
-     ======================================================= */
 
   const STORAGE_KEY = "eagleJConnectLanguage";
   const OLD_STORAGE_KEY = "selectedLanguage";
@@ -18,137 +13,100 @@
   const DEFAULT_LANGUAGE = "ht";
   const SUPPORTED = ["ht", "en", "fr"];
 
+  let applying = false;
   let observerTimer = null;
-  let isApplyingLanguage = false;
 
-
-  /* =======================================================
-     MAIN TRANSLATIONS
-     ======================================================= */
+  /* =========================================================
+     TRANSLATIONS BY DATA-I18N KEY
+     ========================================================= */
 
   const translations = {
 
-    ht: {
-      "nav-home": "Akèy",
-      "nav-jobs": "Travay",
-      "nav-business": "Biznis",
-      "nav-ads": "Anons",
-      "nav-contact": "Kontak",
-      "nav-register": "Enskri",
-      "nav-login": "Konekte",
-      "nav-account": "Kont Mwen",
-      "nav-logout": "Dekonekte",
+    /* ---------------- NAVIGATION ---------------- */
 
-      "hero-text":
-        "Konekte ak moun, dekouvri opòtinite, devlope rezo ou, epi kreye nouvo posiblite.",
-
-      "create-account": "Kreye Kont",
-      "find-job": "Chèche Travay",
-      "create-ad": "Kreye yon Anons",
-
-      "stats-jobs": "Travay",
-      "stats-business": "Biznis",
-      "stats-users": "Itilizatè",
-      "stats-ads": "Anons",
-
-      "services-title":
-        "Sèvis Eagle-J Connect",
-
-      "footer-text":
-        "Konekte ak moun, dekouvri opòtinite epi grandi ansanm."
+    "nav-home": {
+      ht: "Akèy",
+      en: "Home",
+      fr: "Accueil"
     },
 
-    en: {
-      "nav-home": "Home",
-      "nav-jobs": "Jobs",
-      "nav-business": "Business",
-      "nav-ads": "Listings",
-      "nav-contact": "Contact",
-      "nav-register": "Register",
-      "nav-login": "Login",
-      "nav-account": "My Account",
-      "nav-logout": "Logout",
-
-      "hero-text":
-        "Connect with people, discover opportunities, grow your network, and create new possibilities.",
-
-      "create-account":
-        "Create Account",
-
-      "find-job":
-        "Find Jobs",
-
-      "create-ad":
-        "Create a Listing",
-
-      "stats-jobs":
-        "Jobs",
-
-      "stats-business":
-        "Businesses",
-
-      "stats-users":
-        "Users",
-
-      "stats-ads":
-        "Listings",
-
-      "services-title":
-        "Eagle-J Connect Services",
-
-      "footer-text":
-        "Connect with people, discover opportunities, and grow together."
+    "nav-jobs": {
+      ht: "Travay",
+      en: "Jobs",
+      fr: "Emplois"
     },
 
-    fr: {
-      "nav-home": "Accueil",
-      "nav-jobs": "Emplois",
-      "nav-business": "Entreprises",
-      "nav-ads": "Annonces",
-      "nav-contact": "Contact",
-      "nav-register": "S'inscrire",
-      "nav-login": "Connexion",
-      "nav-account": "Mon compte",
-      "nav-logout": "Déconnexion",
+    "nav-business": {
+      ht: "Biznis",
+      en: "Business",
+      fr: "Entreprises"
+    },
 
-      "hero-text":
-        "Connectez-vous avec les gens, découvrez des opportunités, développez votre réseau et créez de nouvelles possibilités.",
+    "nav-ads": {
+      ht: "Anons",
+      en: "Listings",
+      fr: "Annonces"
+    },
 
-      "create-account":
-        "Créer un compte",
+    "nav-contact": {
+      ht: "Kontak",
+      en: "Contact",
+      fr: "Contact"
+    },
 
-      "find-job":
-        "Chercher un emploi",
+    "nav-register": {
+      ht: "Enskri",
+      en: "Register",
+      fr: "S'inscrire"
+    },
 
-      "create-ad":
-        "Créer une annonce",
+    "nav-login": {
+      ht: "Konekte",
+      en: "Login",
+      fr: "Connexion"
+    },
 
-      "stats-jobs":
-        "Emplois",
+    "nav-account": {
+      ht: "Kont Mwen",
+      en: "My Account",
+      fr: "Mon compte"
+    },
 
-      "stats-business":
-        "Entreprises",
+    "nav-logout": {
+      ht: "Dekonekte",
+      en: "Logout",
+      fr: "Déconnexion"
+    },
 
-      "stats-users":
-        "Utilisateurs",
+    /* ---------------- HERO ---------------- */
 
-      "stats-ads":
-        "Annonces",
+    "hero-text": {
+      ht: "Konekte ak moun, dekouvri travay ak sèvis, fè biznis ou konnen, epi jwenn opòtinite nenpòt kote nan mond lan.",
+      en: "Connect with people, discover jobs and services, promote your business, and find opportunities anywhere in the world.",
+      fr: "Connectez-vous avec des personnes, découvrez des emplois et des services, faites connaître votre entreprise et trouvez des opportunités partout dans le monde."
+    },
 
-      "services-title":
-        "Services Eagle-J Connect",
+    "create-account": {
+      ht: "Kreye Kont",
+      en: "Create Account",
+      fr: "Créer un compte"
+    },
 
-      "footer-text":
-        "Connectez-vous avec les gens, découvrez des opportunités et grandissez ensemble."
-    }
-  };
+    "find-job": {
+      ht: "Chèche Travay",
+      en: "Find Jobs",
+      fr: "Chercher un emploi"
+    },
 
+    "create-ad": {
+      ht: "📢 Kreye yon Anons",
+      en: "📢 Create a Listing",
+      fr: "📢 Créer une annonce"
+    },
 
-  /* =======================================================
-     EXACT TEXT MAP
-     ======================================================= */
-
-  const textMap = {
+    /* =====================================================
+       EXACT TEXT MAP
+       ===================================================== */
 
     "Connect • Discover • Grow": {
       ht: "Konekte • Dekouvri • Grandi",
@@ -156,521 +114,241 @@
       fr: "Connecter • Découvrir • Grandir"
     },
 
-    "🌐 English": {
-      ht: "🌐 English",
-      en: "🌐 English",
-      fr: "🌐 Anglais"
+    "WORLDWIDE • OPPORTUNITIES • CONNECTIONS": {
+      ht: "TOUT MOND • OPÒTINITE • KONEKSYON",
+      en: "WORLDWIDE • OPPORTUNITIES • CONNECTIONS",
+      fr: "MONDE ENTIER • OPPORTUNITÉS • CONNEXIONS"
     },
 
-    "🇫🇷 Français": {
-      ht: "🇫🇷 Français",
-      en: "🇫🇷 French",
-      fr: "🇫🇷 Français"
+    "CONNECT. DISCOVER. GROW.": {
+      ht: "KONEKTE. DEKOUVRI. GRANDI.",
+      en: "CONNECT. DISCOVER. GROW.",
+      fr: "CONNECTEZ. DÉCOUVREZ. GRANDISSEZ."
     },
 
-    "🗣️ Kreyòl": {
-      ht: "🗣️ Kreyòl",
-      en: "🗣️ Haitian Creole",
-      fr: "🗣️ Créole haïtien"
+    "Have a business, service, or professional offering?": {
+      ht: "Èske ou gen yon biznis, sèvis oswa yon òf pwofesyonèl?",
+      en: "Have a business, service, or professional offering?",
+      fr: "Vous avez une entreprise, un service ou une offre professionnelle ?"
     },
 
-    "🔐 Konekte": {
-      ht: "🔐 Konekte",
-      en: "🔐 Login",
-      fr: "🔐 Connexion"
+    "Put what you offer in front of people looking for products, services, professionals, and opportunities.": {
+      ht: "Mete sa ou ofri devan moun k ap chèche pwodwi, sèvis, pwofesyonèl ak opòtinite.",
+      en: "Put what you offer in front of people looking for products, services, professionals, and opportunities.",
+      fr: "Présentez ce que vous proposez aux personnes qui recherchent des produits, des services, des professionnels et des opportunités."
     },
 
-    "Antre imèl ak modpas ou pou kontinye.": {
-      ht: "Antre imèl ak modpas ou pou kontinye.",
-      en: "Enter your email and password to continue.",
-      fr: "Entrez votre e-mail et votre mot de passe pour continuer."
+    "Explore what is available": {
+      ht: "Eksplore sa ki disponib",
+      en: "Explore what is available",
+      fr: "Découvrez ce qui est disponible"
     },
 
-    "Imèl": {
-      ht: "Imèl",
-      en: "Email",
-      fr: "E-mail"
+    "Browse jobs, businesses, members, and listings from different locations.": {
+      ht: "Gade travay, biznis, manm ak anons ki soti nan diferan lokalizasyon.",
+      en: "Browse jobs, businesses, members, and listings from different locations.",
+      fr: "Parcourez les emplois, entreprises, membres et annonces provenant de différents endroits."
     },
 
-    "Modpas": {
-      ht: "Modpas",
-      en: "Password",
-      fr: "Mot de passe"
+    "💼 Jobs": {
+      ht: "💼 Travay",
+      en: "💼 Jobs",
+      fr: "💼 Emplois"
     },
 
-    "Ou poko gen kont?": {
-      ht: "Ou poko gen kont?",
-      en: "Don't have an account yet?",
-      fr: "Vous n'avez pas encore de compte ?"
+    "🛍️ Businesses": {
+      ht: "🛍️ Biznis",
+      en: "🛍️ Businesses",
+      fr: "🛍️ Entreprises"
     },
 
-    "Kreye yon kont": {
-      ht: "Kreye yon kont",
-      en: "Create an account",
+    "👥 Members": {
+      ht: "👥 Manm",
+      en: "👥 Members",
+      fr: "👥 Membres"
+    },
+
+    "📢 Listings": {
+      ht: "📢 Anons",
+      en: "📢 Listings",
+      fr: "📢 Annonces"
+    },
+
+    "View jobs →": {
+      ht: "Gade travay →",
+      en: "View jobs →",
+      fr: "Voir les emplois →"
+    },
+
+    "Explore businesses →": {
+      ht: "Eksplore biznis →",
+      en: "Explore businesses →",
+      fr: "Découvrir les entreprises →"
+    },
+
+    "View members →": {
+      ht: "Gade manm yo →",
+      en: "View members →",
+      fr: "Voir les membres →"
+    },
+
+    "View listings →": {
+      ht: "Gade anons yo →",
+      en: "View listings →",
+      fr: "Voir les annonces →"
+    },
+
+    /* ---------------- SERVICES ---------------- */
+
+    "One platform. Many possibilities.": {
+      ht: "Yon platfòm. Anpil posiblite.",
+      en: "One platform. Many possibilities.",
+      fr: "Une plateforme. De nombreuses possibilités."
+    },
+
+    "Find opportunities, showcase what you offer, and connect directly with people and organizations around the world.": {
+      ht: "Jwenn opòtinite, montre sa ou ofri, epi konekte dirèkteman ak moun ak òganizasyon atravè mond lan.",
+      en: "Find opportunities, showcase what you offer, and connect directly with people and organizations around the world.",
+      fr: "Trouvez des opportunités, présentez ce que vous proposez et connectez-vous directement avec des personnes et des organisations partout dans le monde."
+    },
+
+    "01 • JOBS": {
+      ht: "01 • TRAVAY",
+      en: "01 • JOBS",
+      fr: "01 • EMPLOIS"
+    },
+
+    "💼 Find a Job": {
+      ht: "💼 Jwenn yon Travay",
+      en: "💼 Find a Job",
+      fr: "💼 Trouver un emploi"
+    },
+
+    "Search for opportunities by title, company, location, and job type.": {
+      ht: "Chèche opòtinite selon tit travay la, konpayi an, lokalizasyon ak kalite travay.",
+      en: "Search for opportunities by title, company, location, and job type.",
+      fr: "Recherchez des opportunités par titre, entreprise, localisation et type d'emploi."
+    },
+
+    "Browse Jobs →": {
+      ht: "Gade Travay →",
+      en: "Browse Jobs →",
+      fr: "Parcourir les emplois →"
+    },
+
+    "02 • BUSINESS": {
+      ht: "02 • BIZNIS",
+      en: "02 • BUSINESS",
+      fr: "02 • ENTREPRISE"
+    },
+
+    "🛍️ Discover Businesses": {
+      ht: "🛍️ Dekouvri Biznis",
+      en: "🛍️ Discover Businesses",
+      fr: "🛍️ Découvrir les entreprises"
+    },
+
+    "Find businesses, professionals, employers, services, and local offerings.": {
+      ht: "Jwenn biznis, pwofesyonèl, anplwayè, sèvis ak òf lokal.",
+      en: "Find businesses, professionals, employers, services, and local offerings.",
+      fr: "Trouvez des entreprises, des professionnels, des employeurs, des services et des offres locales."
+    },
+
+    "Explore Businesses →": {
+      ht: "Eksplore Biznis →",
+      en: "Explore Businesses →",
+      fr: "Découvrir les entreprises →"
+    },
+
+    "03 • LISTINGS": {
+      ht: "03 • ANONS",
+      en: "03 • LISTINGS",
+      fr: "03 • ANNONCES"
+    },
+
+    "📢 Publish What You Offer": {
+      ht: "📢 Pibliye Sa Ou Ofri",
+      en: "📢 Publish What You Offer",
+      fr: "📢 Publiez ce que vous proposez"
+    },
+
+    "Promote your business, service, professional skills, products, or property.": {
+      ht: "Fè pwomosyon pou biznis ou, sèvis ou, konpetans pwofesyonèl ou, pwodwi ou oswa byen ou.",
+      en: "Promote your business, service, professional skills, products, or property.",
+      fr: "Faites la promotion de votre entreprise, service, compétences professionnelles, produits ou biens."
+    },
+
+    "Create a Listing →": {
+      ht: "Kreye yon Anons →",
+      en: "Create a Listing →",
+      fr: "Créer une annonce →"
+    },
+
+    /* ---------------- HOW IT WORKS ---------------- */
+
+    "How it works": {
+      ht: "Kijan sa mache",
+      en: "How it works",
+      fr: "Comment ça marche"
+    },
+
+    "Create an Account": {
+      ht: "Kreye yon Kont",
+      en: "Create an Account",
       fr: "Créer un compte"
     },
 
-    "MARKETPLACE": {
-      ht: "MARKETPLACE",
-      en: "MARKETPLACE",
-      fr: "MARCHÉ"
+    "Build your profile and unlock access to opportunities.": {
+      ht: "Konplete pwofil ou epi jwenn aksè ak opòtinite yo.",
+      en: "Build your profile and unlock access to opportunities.",
+      fr: "Créez votre profil et accédez aux opportunités."
     },
 
-    "Tout Anons": {
-      ht: "Tout Anons",
-      en: "All Listings",
-      fr: "Toutes les annonces"
+    "Search or Publish": {
+      ht: "Chèche oswa Pibliye",
+      en: "Search or Publish",
+      fr: "Rechercher ou publier"
     },
 
-    "Gade sa moun ak biznis ap ofri sou Eagle-J Connect.": {
-      ht: "Gade sa moun ak biznis ap ofri sou Eagle-J Connect.",
-      en: "See what people and businesses are offering on Eagle-J Connect.",
-      fr: "Découvrez ce que les particuliers et les entreprises proposent sur Eagle-J Connect."
+    "Find a job, discover a service, or publish your own offering.": {
+      ht: "Jwenn yon travay, dekouvri yon sèvis oswa pibliye sa ou menm ou ofri.",
+      en: "Find a job, discover a service, or publish your own offering.",
+      fr: "Trouvez un emploi, découvrez un service ou publiez votre propre offre."
     },
 
-    "📢 Kreye yon Anons": {
-      ht: "📢 Kreye yon Anons",
-      en: "📢 Create a Listing",
-      fr: "📢 Créer une annonce"
+    "Connect Directly": {
+      ht: "Konekte Dirèkteman",
+      en: "Connect Directly",
+      fr: "Connectez-vous directement"
     },
 
-    "← Biznis & Sèvis": {
-      ht: "← Biznis & Sèvis",
-      en: "← Business & Services",
-      fr: "← Entreprises & Services"
+    "Reach people, businesses, and employers connected to your goals.": {
+      ht: "Konekte ak moun, biznis ak anplwayè ki gen rapò ak objektif ou.",
+      en: "Reach people, businesses, and employers connected to your goals.",
+      fr: "Entrez en contact avec des personnes, entreprises et employeurs liés à vos objectifs."
     },
 
-    "🌎 Tout": {
-      ht: "🌎 Tout",
-      en: "🌎 All",
-      fr: "🌎 Tous"
-    },
-
-    "👷 Anplwaye": {
-      ht: "👷 Anplwaye",
-      en: "👷 Employee",
-      fr: "👷 Employé"
-    },
-
-    "🏢 Anplwayè": {
-      ht: "🏢 Anplwayè",
-      en: "🏢 Employer",
-      fr: "🏢 Employeur"
-    },
-
-    "🧑🏾‍🔧 Pwofesyonèl": {
-      ht: "🧑🏾‍🔧 Pwofesyonèl",
-      en: "🧑🏾‍🔧 Professional",
-      fr: "🧑🏾‍🔧 Professionnel"
-    },
-
-    "🛠️ Sèvis": {
-      ht: "🛠️ Sèvis",
-      en: "🛠️ Services",
-      fr: "🛠️ Services"
-    },
-
-    "🛍️ Biznis": {
-      ht: "🛍️ Biznis",
-      en: "🛍️ Business",
-      fr: "🛍️ Entreprise"
-    },
-
-    "🏠 Byen": {
-      ht: "🏠 Byen",
-      en: "🏠 Property",
-      fr: "🏠 Bien immobilier"
-    },
-
-    "📍 Tout lokalizasyon": {
-      ht: "📍 Tout lokalizasyon",
-      en: "📍 All locations",
-      fr: "📍 Toutes les localisations"
-    },
-
-    "Anons yo ap chaje...": {
-      ht: "Anons yo ap chaje...",
-      en: "Listings are loading...",
-      fr: "Chargement des annonces..."
-    },
-
-    "📩 Kontakte Nou": {
-      ht: "📩 Kontakte Nou",
-      en: "📩 Contact Us",
-      fr: "📩 Contactez-nous"
-    },
-
-    "Non ou": {
-      ht: "Non ou",
-      en: "Your Name",
-      fr: "Votre nom"
-    },
-
-    "Telefòn / WhatsApp": {
-      ht: "Telefòn / WhatsApp",
-      en: "Phone / WhatsApp",
-      fr: "Téléphone / WhatsApp"
-    },
-
-    "Mesaj": {
-      ht: "Mesaj",
-      en: "Message",
-      fr: "Message"
-    },
-
-    "📧 Voye Mesaj": {
-      ht: "📧 Voye Mesaj",
-      en: "📧 Send Message",
-      fr: "📧 Envoyer le message"
-    },
-
-    "👷 Moun k ap chèche travay": {
-      ht: "👷 Moun k ap chèche travay",
-      en: "👷 Job Seekers",
-      fr: "👷 Chercheurs d'emploi"
-    },
-
-    "Chèche opòtinite ki disponib sou platfòm lan.": {
-      ht: "Chèche opòtinite ki disponib sou platfòm lan.",
-      en: "Find opportunities available on the platform.",
-      fr: "Trouvez les opportunités disponibles sur la plateforme."
-    },
-
-    "🔎 Chèche Travay": {
-      ht: "🔎 Chèche Travay",
-      en: "🔎 Find Jobs",
-      fr: "🔎 Chercher un emploi"
-    },
-
-    "← Retounen nan Biznis": {
-      ht: "← Retounen nan Biznis",
-      en: "← Back to Business",
-      fr: "← Retour aux entreprises"
-    },
-
-    "Anons lan ap chaje...": {
-      ht: "Anons lan ap chaje...",
-      en: "Listing is loading...",
-      fr: "Chargement de l'annonce..."
-    },
-
-    "Pwofil": {
-      ht: "Pwofil",
-      en: "Profile",
-      fr: "Profil"
-    },
-
-    "Pwofil mwen": {
-      ht: "Pwofil mwen",
-      en: "My Profile",
-      fr: "Mon profil"
-    },
-
-    "🏢 Zòn Anplwayè": {
-      ht: "🏢 Zòn Anplwayè",
-      en: "🏢 Employer Area",
-      fr: "🏢 Espace employeur"
-    },
-
-    "Ap chaje...": {
-      ht: "Ap chaje...",
-      en: "Loading...",
-      fr: "Chargement..."
-    },
-
-    "Pwofil Anplwayè": {
-      ht: "Pwofil Anplwayè",
-      en: "Employer Profile",
-      fr: "Profil employeur"
-    },
-
-    "Non:": {
-      ht: "Non:",
-      en: "Name:",
-      fr: "Nom :"
-    },
-
-    "Imèl:": {
-      ht: "Imèl:",
-      en: "Email:",
-      fr: "E-mail :"
-    },
-
-    "Telefòn:": {
-      ht: "Telefòn:",
-      en: "Phone:",
-      fr: "Téléphone :"
-    },
-
-    "📢 Pibliye yon travay": {
-      ht: "📢 Pibliye yon travay",
-      en: "📢 Post a Job",
-      fr: "📢 Publier un emploi"
-    },
-
-    "Tit travay la": {
-      ht: "Tit travay la",
-      en: "Job Title",
-      fr: "Titre du poste"
-    },
-
-    "Non konpayi an": {
-      ht: "Non konpayi an",
-      en: "Company Name",
-      fr: "Nom de l'entreprise"
-    },
-
-    "Lokalizasyon": {
-      ht: "Lokalizasyon",
-      en: "Location",
-      fr: "Localisation"
-    },
-
-    "Kalite travay": {
-      ht: "Kalite travay",
-      en: "Job Type",
-      fr: "Type d'emploi"
-    },
-
-    "Chwazi": {
-      ht: "Chwazi",
-      en: "Select",
-      fr: "Sélectionner"
-    },
-
-    "Full-time": {
-      ht: "Full-time",
-      en: "Full-time",
-      fr: "Temps plein"
-    },
-
-    "Part-time": {
-      ht: "Part-time",
-      en: "Part-time",
-      fr: "Temps partiel"
-    },
-
-    "Contract": {
-      ht: "Contract",
-      en: "Contract",
-      fr: "Contrat"
-    },
-
-    "Temporary": {
-      ht: "Temporary",
-      en: "Temporary",
-      fr: "Temporaire"
-    },
-
-    "Salè / Tarif (opsyonèl)": {
-      ht: "Salè / Tarif (opsyonèl)",
-      en: "Salary / Rate (optional)",
-      fr: "Salaire / Tarif (facultatif)"
-    },
-
-    "Deskripsyon": {
-      ht: "Deskripsyon",
-      en: "Description",
-      fr: "Description"
-    },
-
-    "Telefòn kontak": {
-      ht: "Telefòn kontak",
-      en: "Contact Phone",
-      fr: "Téléphone de contact"
-    },
-
-    "📢 Pibliye Travay": {
-      ht: "📢 Pibliye Travay",
-      en: "📢 Post Job",
-      fr: "📢 Publier l'emploi"
-    },
-
-    "💼 Travay mwen yo": {
-      ht: "💼 Travay mwen yo",
-      en: "💼 My Jobs",
-      fr: "💼 Mes emplois"
-    },
-
-    "🚪 Dekonekte": {
-      ht: "🚪 Dekonekte",
-      en: "🚪 Logout",
-      fr: "🚪 Déconnexion"
-    },
-
-    "EAGLE-J COMMUNITY": {
-      ht: "EAGLE-J COMMUNITY",
-      en: "EAGLE-J COMMUNITY",
-      fr: "COMMUNAUTÉ EAGLE-J"
-    },
-
-    "Itilizatè": {
-      ht: "Itilizatè",
-      en: "Users",
-      fr: "Utilisateurs"
-    },
-
-    "Manm kominote a": {
-      ht: "Manm kominote a",
-      en: "Community Members",
-      fr: "Membres de la communauté"
-    },
-
-    "⏳ Ap chaje...": {
-      ht: "⏳ Ap chaje...",
-      en: "⏳ Loading...",
-      fr: "⏳ Chargement..."
-    },
-
-    "Itilizatè yo ap chaje...": {
-      ht: "Itilizatè yo ap chaje...",
-      en: "Users are loading...",
-      fr: "Chargement des utilisateurs..."
-    },
-
-    "👋 Pwofil mwen": {
-      ht: "👋 Pwofil mwen",
-      en: "👋 My Profile",
-      fr: "👋 Mon profil"
-    },
-
-    "👤 Enfòmasyon mwen": {
-      ht: "👤 Enfòmasyon mwen",
-      en: "👤 My Information",
-      fr: "👤 Mes informations"
-    },
-
-    "Kalite kont:": {
-      ht: "Kalite kont:",
-      en: "Account Type:",
-      fr: "Type de compte :"
-    },
-
-    "➕ Poste yon Travay": {
-      ht: "➕ Poste yon Travay",
-      en: "➕ Post a Job",
-      fr: "➕ Publier un emploi"
-    },
-
-    "Kreye kont ou pou chèche travay oswa poste travay.": {
-      ht: "Kreye kont ou pou chèche travay oswa poste travay.",
-      en: "Create your account to find jobs or post jobs.",
-      fr: "Créez votre compte pour chercher ou publier des emplois."
-    },
-
-    "NON": {
-      ht: "NON",
-      en: "FIRST NAME",
-      fr: "PRÉNOM"
-    },
-
-    "Non": {
-      ht: "Non",
-      en: "First Name",
-      fr: "Prénom"
-    },
-
-    "SIYATI": {
-      ht: "SIYATI",
-      en: "LAST NAME",
-      fr: "NOM"
-    },
-
-    "Siyati": {
-      ht: "Siyati",
-      en: "Last Name",
-      fr: "Nom"
-    },
-
-    "EMAIL": {
-      ht: "EMAIL",
-      en: "EMAIL",
-      fr: "E-MAIL"
-    },
-
-    "TELEFON": {
-      ht: "TELEFON",
-      en: "PHONE",
-      fr: "TÉLÉPHONE"
-    },
-
-    "KALITE KONT": {
-      ht: "KALITE KONT",
-      en: "ACCOUNT TYPE",
-      fr: "TYPE DE COMPTE"
-    },
+    /* ---------------- CTA ---------------- */
 
-    "Kalite kont": {
-      ht: "Kalite kont",
-      en: "Account Type",
-      fr: "Type de compte"
+    "Your next opportunity can start with one connection.": {
+      ht: "Pwochen opòtinite ou ka kòmanse ak yon sèl koneksyon.",
+      en: "Your next opportunity can start with one connection.",
+      fr: "Votre prochaine opportunité peut commencer par une seule connexion."
     },
 
-    "Chwazi...": {
-      ht: "Chwazi...",
-      en: "Choose...",
-      fr: "Choisissez..."
+    "Create your account and start discovering what is available around you and around the world.": {
+      ht: "Kreye kont ou epi kòmanse dekouvri sa ki disponib bò kote ou ak atravè mond lan.",
+      en: "Create your account and start discovering what is available around you and around the world.",
+      fr: "Créez votre compte et commencez à découvrir ce qui est disponible autour de vous et partout dans le monde."
     },
 
-    "MODPAS": {
-      ht: "MODPAS",
-      en: "PASSWORD",
-      fr: "MOT DE PASSE"
+    "Contact Us": {
+      ht: "Kontakte Nou",
+      en: "Contact Us",
+      fr: "Contactez-nous"
     },
 
-    "KONFIME MODPAS": {
-      ht: "KONFIME MODPAS",
-      en: "CONFIRM PASSWORD",
-      fr: "CONFIRMER LE MOT DE PASSE"
-    },
-
-    "Konfime modpas": {
-      ht: "Konfime modpas",
-      en: "Confirm Password",
-      fr: "Confirmer le mot de passe"
-    },
-
-    "✅ Kreye Kont": {
-      ht: "✅ Kreye Kont",
-      en: "✅ Create Account",
-      fr: "✅ Créer un compte"
-    },
-
-    "Ou deja gen kont?": {
-      ht: "Ou deja gen kont?",
-      en: "Already have an account?",
-      fr: "Vous avez déjà un compte ?"
-    },
-
-    "Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.": {
-      ht: "Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.",
-      en: "Connect people, jobs, businesses, and services between Haiti and The Bahamas.",
-      fr: "Connectez les personnes, les emplois, les entreprises et les services entre Haïti et les Bahamas."
-    },
-
-    "WORLDWIDE • OPPORTUNITIES • CONNECTIONS": {
-      ht: "MOND • OPÒTINITE • KONEKSYON",
-      en: "WORLDWIDE • OPPORTUNITIES • CONNECTIONS",
-      fr: "MONDE • OPPORTUNITÉS • CONNEXIONS"
-    },
-
-    "CONNECT.": {
-      ht: "KONEKTE.",
-      en: "CONNECT.",
-      fr: "CONNECTEZ."
-    },
-
-    "DISCOVER.": {
-      ht: "DEKOUVRI.",
-      en: "DISCOVER.",
-      fr: "DÉCOUVREZ."
-    },
-
-    "GROW.": {
-      ht: "GRANDI.",
-      en: "GROW.",
-      fr: "GRANDISSEZ."
-    },
+    /* ---------------- FOOTER ---------------- */
 
     "Home": {
       ht: "Akèy",
@@ -706,339 +384,491 @@
       ht: "Enskri",
       en: "Register",
       fr: "S'inscrire"
+    },
+
+    "Connect people, discover opportunities, and grow anywhere in the world.": {
+      ht: "Konekte moun, dekouvri opòtinite epi grandi nenpòt kote nan mond lan.",
+      en: "Connect people, discover opportunities, and grow anywhere in the world.",
+      fr: "Connectez les personnes, découvrez des opportunités et développez-vous partout dans le monde."
+    },
+
+    /* =====================================================
+       EXISTING COMMON SYSTEM TEXT
+       ===================================================== */
+
+    "Konekte": {
+      ht: "Konekte",
+      en: "Login",
+      fr: "Connexion"
+    },
+
+    "Dekonekte": {
+      ht: "Dekonekte",
+      en: "Logout",
+      fr: "Déconnexion"
+    },
+
+    "Enskri": {
+      ht: "Enskri",
+      en: "Register",
+      fr: "S'inscrire"
+    },
+
+    "Akèy": {
+      ht: "Akèy",
+      en: "Home",
+      fr: "Accueil"
+    },
+
+    "Travay": {
+      ht: "Travay",
+      en: "Jobs",
+      fr: "Emplois"
+    },
+
+    "Biznis": {
+      ht: "Biznis",
+      en: "Business",
+      fr: "Entreprises"
+    },
+
+    "Anons": {
+      ht: "Anons",
+      en: "Listings",
+      fr: "Annonces"
+    },
+
+    "Kontak": {
+      ht: "Kontak",
+      en: "Contact",
+      fr: "Contact"
+    },
+
+    "Kreye yon kont": {
+      ht: "Kreye yon kont",
+      en: "Create an account",
+      fr: "Créer un compte"
+    },
+
+    "Kreye Kont": {
+      ht: "Kreye Kont",
+      en: "Create Account",
+      fr: "Créer un compte"
+    },
+
+    "Chèche Travay": {
+      ht: "Chèche Travay",
+      en: "Find Jobs",
+      fr: "Chercher un emploi"
+    },
+
+    "Kreye yon Anons": {
+      ht: "Kreye yon Anons",
+      en: "Create a Listing",
+      fr: "Créer une annonce"
+    },
+
+    "Tout Anons": {
+      ht: "Tout Anons",
+      en: "All Listings",
+      fr: "Toutes les annonces"
+    },
+
+    "Gade sa moun ak biznis ap ofri sou Eagle-J Connect.": {
+      ht: "Gade sa moun ak biznis ap ofri sou Eagle-J Connect.",
+      en: "See what people and businesses are offering on Eagle-J Connect.",
+      fr: "Découvrez ce que les particuliers et les entreprises proposent sur Eagle-J Connect."
+    },
+
+    "Ap chaje...": {
+      ht: "Ap chaje...",
+      en: "Loading...",
+      fr: "Chargement..."
+    },
+
+    "Anons yo ap chaje...": {
+      ht: "Anons yo ap chaje...",
+      en: "Listings are loading...",
+      fr: "Chargement des annonces..."
+    },
+
+    "Anons lan ap chaje...": {
+      ht: "Anons lan ap chaje...",
+      en: "Listing is loading...",
+      fr: "Chargement de l'annonce..."
+    },
+
+    "Itilizatè": {
+      ht: "Itilizatè",
+      en: "User",
+      fr: "Utilisateur"
+    },
+
+    "Itilizatè yo ap chaje...": {
+      ht: "Itilizatè yo ap chaje...",
+      en: "Users are loading...",
+      fr: "Chargement des utilisateurs..."
+    },
+
+    "Pwofil": {
+      ht: "Pwofil",
+      en: "Profile",
+      fr: "Profil"
+    },
+
+    "Pwofil mwen": {
+      ht: "Pwofil mwen",
+      en: "My Profile",
+      fr: "Mon profil"
+    },
+
+    "Deskripsyon": {
+      ht: "Deskripsyon",
+      en: "Description",
+      fr: "Description"
+    },
+
+    "Lokalizasyon": {
+      ht: "Lokalizasyon",
+      en: "Location",
+      fr: "Localisation"
+    },
+
+    "Non": {
+      ht: "Non",
+      en: "Name",
+      fr: "Nom"
+    },
+
+    "Siyati": {
+      ht: "Siyati",
+      en: "Last Name",
+      fr: "Nom de famille"
+    },
+
+    "Imèl": {
+      ht: "Imèl",
+      en: "Email",
+      fr: "E-mail"
+    },
+
+    "Modpas": {
+      ht: "Modpas",
+      en: "Password",
+      fr: "Mot de passe"
+    },
+
+    "Mesaj": {
+      ht: "Mesaj",
+      en: "Message",
+      fr: "Message"
+    },
+
+    "Telefòn / WhatsApp": {
+      ht: "Telefòn / WhatsApp",
+      en: "Phone / WhatsApp",
+      fr: "Téléphone / WhatsApp"
+    },
+
+    "Telefòn": {
+      ht: "Telefòn",
+      en: "Phone",
+      fr: "Téléphone"
+    },
+
+    "Chwazi": {
+      ht: "Chwazi",
+      en: "Select",
+      fr: "Sélectionner"
+    },
+
+    "Full-time": {
+      ht: "Full-time",
+      en: "Full-time",
+      fr: "Temps plein"
+    },
+
+    "Part-time": {
+      ht: "Part-time",
+      en: "Part-time",
+      fr: "Temps partiel"
+    },
+
+    "Contract": {
+      ht: "Contract",
+      en: "Contract",
+      fr: "Contrat"
+    },
+
+    "Temporary": {
+      ht: "Temporary",
+      en: "Temporary",
+      fr: "Temporaire"
+    },
+
+    "MARKETPLACE": {
+      ht: "MARKETPLACE",
+      en: "MARKETPLACE",
+      fr: "MARCHÉ"
+    },
+
+    "EAGLE-J COMMUNITY": {
+      ht: "EAGLE-J COMMUNITY",
+      en: "EAGLE-J COMMUNITY",
+      fr: "COMMUNAUTÉ EAGLE-J"
     }
 
   };
 
 
-  /* =======================================================
+  /* =========================================================
+     BUILD REVERSE MAP
+     ========================================================= */
+
+  const reverseMap = {};
+
+  Object.keys(textMap()).forEach(function (source) {
+    const row = textMap()[source];
+
+    Object.keys(row).forEach(function (lang) {
+
+      const value = normalize(row[lang]);
+
+      if (!value) return;
+
+      if (!reverseMap[value]) {
+        reverseMap[value] = row;
+      }
+    });
+  });
+
+
+  function textMap() {
+    return TEXT_MAP;
+  }
+
+  const TEXT_MAP = {
+    ...translations
+  };
+
+
+  /* =========================================================
      NORMALIZE TEXT
-     ======================================================= */
+     ========================================================= */
 
   function normalize(value) {
     return String(value || "")
+      .replace(/\u00A0/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
 
 
-  /* =======================================================
-     BUILD COMPLETE REVERSE MAP
-     =======================================================
+  /* =========================================================
+     FIND TRANSLATION
+     ========================================================= */
 
-     Diferans ak ansyen vèsyon an:
-     Nou chèche tèks la nan HT, EN oswa FR.
-     Konsa:
+  function findTranslation(source) {
 
-     HT → EN → FR → HT
-
-     ap toujou mache.
-     ======================================================= */
-
-  const reverseMap = {
-    ht: {},
-    en: {},
-    fr: {}
-  };
-
-  Object.keys(textMap).forEach(function (source) {
-
-    const row = textMap[source];
-
-    SUPPORTED.forEach(function (lang) {
-
-      if (row[lang]) {
-
-        reverseMap[lang][
-          normalize(row[lang])
-        ] = row;
-
-      }
-
-    });
-
-  });
-
-
-  /* =======================================================
-     FIND TRANSLATION ROW
-     ======================================================= */
-
-  function findTranslationRow(text) {
-
-    const normalized =
-      normalize(text);
+    const normalized = normalize(source);
 
     if (!normalized) {
       return null;
     }
 
-    for (
-      let i = 0;
-      i < SUPPORTED.length;
-      i++
-    ) {
+    if (TEXT_MAP[normalized]) {
+      return TEXT_MAP[normalized];
+    }
 
-      const lang =
-        SUPPORTED[i];
-
-      if (
-        reverseMap[lang] &&
-        reverseMap[lang][normalized]
-      ) {
-        return reverseMap[lang][normalized];
-      }
-
+    if (reverseMap[normalized]) {
+      return reverseMap[normalized];
     }
 
     return null;
   }
 
 
-  /* =======================================================
-     GET CURRENT LANGUAGE
-     ======================================================= */
+  /* =========================================================
+     GET LANGUAGE
+     ========================================================= */
 
   function getLanguage() {
 
-    const saved =
-      localStorage.getItem(
-        STORAGE_KEY
-      ) ||
-      localStorage.getItem(
-        OLD_STORAGE_KEY
-      ) ||
-      DEFAULT_LANGUAGE;
+    let lang = null;
 
-    return SUPPORTED.includes(saved)
-      ? saved
-      : DEFAULT_LANGUAGE;
+    try {
+      lang = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {}
+
+    if (!SUPPORTED.includes(lang)) {
+
+      try {
+        lang = localStorage.getItem(OLD_STORAGE_KEY);
+      } catch (e) {}
+    }
+
+    if (!SUPPORTED.includes(lang)) {
+      lang = DEFAULT_LANGUAGE;
+    }
+
+    return lang;
   }
 
 
-  /* =======================================================
-     TRANSLATE TAGGED ELEMENT
-     ======================================================= */
+  /* =========================================================
+     TRANSLATE DATA-I18N
+     ========================================================= */
 
-  function translateElement(
-    element,
-    lang
-  ) {
+  function translateElement(element, lang) {
 
-    if (!element) {
+    if (!element) return;
+
+    const key = element.getAttribute("data-i18n");
+
+    if (!key) return;
+
+    let translation = null;
+
+    if (
+      translations[key] &&
+      translations[key][lang] !== undefined
+    ) {
+      translation = translations[key][lang];
+    }
+
+    if (translation === null) {
+      const row = findTranslation(key);
+
+      if (row && row[lang] !== undefined) {
+        translation = row[lang];
+      }
+    }
+
+    if (translation === null || translation === undefined) {
       return;
     }
 
-    const dict =
-      translations[lang] ||
-      translations[DEFAULT_LANGUAGE];
-
-
-    /* -----------------------------------------------------
-       MAIN TEXT
-       ----------------------------------------------------- */
-
-    const key =
-      element.getAttribute(
-        "data-i18n"
-      );
-
-    if (
-      key &&
-      dict[key] !== undefined
-    ) {
-
-      element.textContent =
-        dict[key];
-
-    }
-
-
-    /* -----------------------------------------------------
-       PLACEHOLDER
-       ----------------------------------------------------- */
-
-    const placeholderKey =
-      element.getAttribute(
-        "data-i18n-placeholder"
-      );
-
-    if (
-      placeholderKey &&
-      dict[placeholderKey] !== undefined
-    ) {
-
-      element.setAttribute(
-        "placeholder",
-        dict[placeholderKey]
-      );
-
-    }
-
-
-    /* -----------------------------------------------------
-       TITLE
-       ----------------------------------------------------- */
-
-    const titleKey =
-      element.getAttribute(
-        "data-i18n-title"
-      );
-
-    if (
-      titleKey &&
-      dict[titleKey] !== undefined
-    ) {
-
-      element.setAttribute(
-        "title",
-        dict[titleKey]
-      );
-
-    }
-
-
-    /* -----------------------------------------------------
-       ARIA LABEL
-       ----------------------------------------------------- */
-
-    const ariaKey =
-      element.getAttribute(
-        "data-i18n-aria"
-      );
-
-    if (
-      ariaKey &&
-      dict[ariaKey] !== undefined
-    ) {
-
-      element.setAttribute(
-        "aria-label",
-        dict[ariaKey]
-      );
-
-    }
-
+    element.textContent = translation;
   }
 
 
-  /* =======================================================
+  /* =========================================================
      TRANSLATE ATTRIBUTES
-     ======================================================= */
+     ========================================================= */
 
-  function translateAttributes(
-    element,
-    lang
-  ) {
+  function translateAttributes(element, lang) {
 
-    if (!element) {
-      return;
-    }
+    if (!element) return;
 
-    const dict =
-      translations[lang] ||
-      translations[DEFAULT_LANGUAGE];
+    const attributes = [
+      ["data-i18n-placeholder", "placeholder"],
+      ["data-i18n-title", "title"],
+      ["data-i18n-aria", "aria-label"]
+    ];
 
+    attributes.forEach(function (pair) {
 
-    const placeholderKey =
-      element.getAttribute(
-        "data-i18n-placeholder"
-      );
+      const key = pair[0];
+      const attribute = pair[1];
 
-    if (
-      placeholderKey &&
-      dict[placeholderKey] !== undefined
-    ) {
+      const translationKey =
+        element.getAttribute(key);
 
-      element.setAttribute(
-        "placeholder",
-        dict[placeholderKey]
-      );
+      if (!translationKey) return;
 
-    }
+      let translation = null;
 
+      if (
+        translations[translationKey] &&
+        translations[translationKey][lang] !== undefined
+      ) {
+        translation =
+          translations[translationKey][lang];
+      }
 
-    const titleKey =
-      element.getAttribute(
-        "data-i18n-title"
-      );
+      if (translation === null) {
 
-    if (
-      titleKey &&
-      dict[titleKey] !== undefined
-    ) {
+        const row =
+          findTranslation(translationKey);
 
-      element.setAttribute(
-        "title",
-        dict[titleKey]
-      );
+        if (row && row[lang] !== undefined) {
+          translation = row[lang];
+        }
+      }
 
-    }
+      if (
+        translation !== null &&
+        translation !== undefined
+      ) {
+        element.setAttribute(
+          attribute,
+          translation
+        );
+      }
 
-
-    const ariaKey =
-      element.getAttribute(
-        "data-i18n-aria"
-      );
-
-    if (
-      ariaKey &&
-      dict[ariaKey] !== undefined
-    ) {
-
-      element.setAttribute(
-        "aria-label",
-        dict[ariaKey]
-      );
-
-    }
-
+    });
   }
 
 
-  /* =======================================================
-     SHOULD IGNORE ELEMENT?
-     ======================================================= */
+  /* =========================================================
+     ELEMENTS THAT MUST NOT BE AUTO-TRANSLATED
+     ========================================================= */
 
-  function shouldIgnoreElement(element) {
+  function shouldIgnore(element) {
 
-    if (!element) {
+    if (!element) return true;
+
+    const tag = element.tagName;
+
+    if (
+      tag === "SCRIPT" ||
+      tag === "STYLE" ||
+      tag === "NOSCRIPT" ||
+      tag === "INPUT" ||
+      tag === "TEXTAREA"
+    ) {
       return true;
     }
 
-    const tag =
-      element.tagName
-        ? element.tagName.toLowerCase()
-        : "";
-
-    return (
-      tag === "script" ||
-      tag === "style" ||
-      tag === "noscript" ||
-      tag === "code" ||
-      tag === "pre"
-    );
-
-  }
-
-
-  /* =======================================================
-     TRANSLATE UNTAGGED TEXT
-     ======================================================= */
-
-  function translateUnTaggedText(
-    root,
-    lang
-  ) {
-
-    if (!root) {
-      return;
+    if (
+      element.closest &&
+      element.closest(
+        "#languageSelect, .language, select"
+      )
+    ) {
+      return true;
     }
 
     /*
-      Pa tradui tèks andedan script,
-      style, code, pre, elatriye.
+      User-generated content should stay untouched.
+      This is important for:
+      - business names
+      - job descriptions
+      - member names
+      - user listings
+      - uploaded content
     */
+
+    if (
+      element.closest &&
+      element.closest(
+        "[data-user-content], .user-content, .business-content, .job-content, .listing-content"
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+
+  /* =========================================================
+     TRANSLATE EXACT UNTAGGED SYSTEM TEXT
+     ========================================================= */
+
+  function translateUnTaggedText(root, lang) {
+
+    if (!root) return;
 
     const walker =
       document.createTreeWalker(
@@ -1047,48 +877,25 @@
         {
           acceptNode: function (node) {
 
-            const parent =
-              node.parentElement;
-
-            if (!parent) {
+            if (!node.parentElement) {
               return NodeFilter.FILTER_REJECT;
             }
 
             if (
-              shouldIgnoreElement(parent)
-            ) {
-              return NodeFilter.FILTER_REJECT;
-            }
-
-            /*
-              Si parent la gen data-i18n,
-              translateElement() ap okipe li.
-            */
-            if (
-              parent.hasAttribute(
-                "data-i18n"
-              )
+              shouldIgnore(node.parentElement)
             ) {
               return NodeFilter.FILTER_REJECT;
             }
 
             const original =
-              normalize(
-                node.nodeValue
-              );
+              normalize(node.nodeValue);
 
             if (!original) {
               return NodeFilter.FILTER_REJECT;
             }
 
-            /*
-              Chèche tèks la nan tout
-              3 lang yo.
-            */
             const row =
-              findTranslationRow(
-                original
-              );
+              findTranslation(original);
 
             if (!row) {
               return NodeFilter.FILTER_REJECT;
@@ -1101,54 +908,38 @@
             }
 
             return NodeFilter.FILTER_ACCEPT;
-
           }
         }
       );
 
-
     const nodes = [];
 
-    let current;
+    let node;
 
     while (
-      (current = walker.nextNode())
+      (node = walker.nextNode())
     ) {
-
-      nodes.push(current);
-
+      nodes.push(node);
     }
 
-
-    nodes.forEach(function (node) {
+    nodes.forEach(function (textNode) {
 
       const original =
-        normalize(
-          node.nodeValue
-        );
+        normalize(textNode.nodeValue);
 
       const row =
-        findTranslationRow(
-          original
-        );
+        findTranslation(original);
+
+      if (!row) return;
 
       if (
-        !row ||
         row[lang] === undefined
       ) {
         return;
       }
 
-      const translated =
-        row[lang];
-
-      /*
-        Kenbe espas ki te devan/dèyè
-        tèks la pou layout paj la pa chanje.
-      */
-
       const raw =
-        String(node.nodeValue);
+        String(textNode.nodeValue);
 
       const leading =
         raw.match(/^\s*/)?.[0] || "";
@@ -1156,112 +947,107 @@
       const trailing =
         raw.match(/\s*$/)?.[0] || "";
 
-      node.nodeValue =
+      textNode.nodeValue =
         leading +
-        translated +
+        row[lang] +
         trailing;
 
     });
-
   }
 
 
-  /* =======================================================
-     TRANSLATE SELECT OPTIONS
-     ======================================================= */
+  /* =========================================================
+     LANGUAGE SELECT
+     ========================================================= */
 
-  function translateOptions(lang) {
+  function updateLanguageSelectors(lang) {
 
-    document
-      .querySelectorAll("option")
-      .forEach(function (option) {
+    const selectors =
+      document.querySelectorAll(
+        "#languageSelect, #languageSelector, #language-select, .language-selector, select[data-language]"
+      );
 
-        const original =
-          normalize(
-            option.textContent
-          );
+    selectors.forEach(function (select) {
 
-        const row =
-          findTranslationRow(
-            original
-          );
+      if (
+        select &&
+        select.tagName === "SELECT"
+      ) {
 
         if (
-          row &&
-          row[lang] !== undefined
+          select.value !== lang
         ) {
-
-          option.textContent =
-            row[lang];
-
+          select.value = lang;
         }
 
-      });
+      }
 
+    });
   }
 
 
-  /* =======================================================
-     TRANSLATE LANGUAGE SELECTORS
-     ======================================================= */
+  /* =========================================================
+     CONNECT LANGUAGE SELECTOR
+     ========================================================= */
 
-  function updateLanguageSelectors(
-    lang
-  ) {
+  function connectLanguageSelector() {
 
-    document
-      .querySelectorAll(
-        ".language-selector, #languageSelector, #language-select, select[data-language]"
-      )
-      .forEach(function (selector) {
+    const selectors =
+      document.querySelectorAll(
+        "#languageSelect, #languageSelector, #language-select, .language-selector, select[data-language]"
+      );
 
-        if (
-          selector.tagName ===
-          "SELECT"
-        ) {
+    selectors.forEach(function (select) {
 
-          selector.value =
-            lang;
+      if (
+        select.dataset.eagleLanguageReady === "true"
+      ) {
+        return;
+      }
+
+      select.dataset.eagleLanguageReady = "true";
+
+      select.addEventListener(
+        "change",
+        function () {
+
+          const selected =
+            select.value;
+
+          if (
+            SUPPORTED.includes(selected)
+          ) {
+
+            changeLanguage(selected);
+
+          }
 
         }
+      );
 
-      });
-
+    });
   }
 
 
-  /* =======================================================
+  /* =========================================================
      APPLY LANGUAGE
-     ======================================================= */
+     ========================================================= */
 
   function applyLanguage(lang) {
 
     if (
       !SUPPORTED.includes(lang)
     ) {
-
-      lang =
-        DEFAULT_LANGUAGE;
-
+      lang = DEFAULT_LANGUAGE;
     }
 
-
-    /*
-      Protection kont infinite loop.
-    */
-
-    if (isApplyingLanguage) {
+    if (applying) {
       return;
     }
 
-    isApplyingLanguage = true;
-
+    applying = true;
 
     try {
-
-      /* ---------------------------------------------------
-         HTML LANGUAGE
-         --------------------------------------------------- */
 
       document.documentElement
         .setAttribute(
@@ -1269,30 +1055,22 @@
           lang
         );
 
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          lang
+        );
 
-      /* ---------------------------------------------------
-         SAVE LANGUAGE
-         --------------------------------------------------- */
+        localStorage.setItem(
+          OLD_STORAGE_KEY,
+          lang
+        );
+      } catch (e) {}
 
-      localStorage.setItem(
-        STORAGE_KEY,
-        lang
-      );
-
-      localStorage.setItem(
-        OLD_STORAGE_KEY,
-        lang
-      );
-
-
-      /* ---------------------------------------------------
-         DATA-I18N
-         --------------------------------------------------- */
+      /* ---------------- DATA-I18N ---------------- */
 
       document
-        .querySelectorAll(
-          "[data-i18n]"
-        )
+        .querySelectorAll("[data-i18n]")
         .forEach(function (element) {
 
           translateElement(
@@ -1303,9 +1081,7 @@
         });
 
 
-      /* ---------------------------------------------------
-         ATTRIBUTES
-         --------------------------------------------------- */
+      /* ---------------- ATTRIBUTES ---------------- */
 
       document
         .querySelectorAll(
@@ -1321,9 +1097,7 @@
         });
 
 
-      /* ---------------------------------------------------
-         UNTAGGED TEXT
-         --------------------------------------------------- */
+      /* ---------------- UNTAGGED SYSTEM TEXT ---------------- */
 
       if (document.body) {
 
@@ -1335,27 +1109,14 @@
       }
 
 
-      /* ---------------------------------------------------
-         OPTIONS
-         --------------------------------------------------- */
-
-      translateOptions(
-        lang
-      );
-
-
-      /* ---------------------------------------------------
-         LANGUAGE SELECTORS
-         --------------------------------------------------- */
+      /* ---------------- SELECTORS ---------------- */
 
       updateLanguageSelectors(
         lang
       );
 
+      connectLanguageSelector();
 
-      /* ---------------------------------------------------
-         GLOBAL VARIABLES
-         --------------------------------------------------- */
 
       window.currentLanguage =
         lang;
@@ -1363,18 +1124,14 @@
       window.selectedLanguage =
         lang;
 
-
     } finally {
 
-      isApplyingLanguage =
-        false;
+      applying = false;
 
     }
 
 
-    /* =====================================================
-       NOTIFY OTHER SCRIPTS
-       ===================================================== */
+    /* ---------------- NOTIFY OTHER SCRIPTS ---------------- */
 
     try {
 
@@ -1389,35 +1146,14 @@
         )
       );
 
-    } catch (error) {
-
-      /*
-        Older browser compatibility.
-      */
-
-      const event =
-        document.createEvent(
-          "Event"
-        );
-
-      event.initEvent(
-        "languageChanged",
-        true,
-        true
-      );
-
-      document.dispatchEvent(
-        event
-      );
-
-    }
+    } catch (e) {}
 
   }
 
 
-  /* =======================================================
+  /* =========================================================
      CHANGE LANGUAGE
-     ======================================================= */
+     ========================================================= */
 
   function changeLanguage(lang) {
 
@@ -1431,19 +1167,15 @@
       );
 
       return;
-
     }
 
-    applyLanguage(
-      lang
-    );
-
+    applyLanguage(lang);
   }
 
 
-  /* =======================================================
+  /* =========================================================
      GLOBAL FUNCTIONS
-     ======================================================= */
+     ========================================================= */
 
   window.changeLanguage =
     changeLanguage;
@@ -1455,25 +1187,39 @@
     getLanguage;
 
 
-  /* =======================================================
-     INITIALIZE
-     ======================================================= */
+  /* =========================================================
+     INITIALIZATION
+     ========================================================= */
 
   function initializeLanguage() {
+
+    connectLanguageSelector();
 
     const lang =
       getLanguage();
 
-    applyLanguage(
-      lang
-    );
+    applyLanguage(lang);
+
+    /*
+      Reconnect after other scripts
+      finish loading.
+    */
+
+    setTimeout(function () {
+
+      connectLanguageSelector();
+
+      updateLanguageSelectors(
+        getLanguage()
+      );
+
+    }, 300);
 
   }
 
 
   if (
-    document.readyState ===
-    "loading"
+    document.readyState === "loading"
   ) {
 
     document.addEventListener(
@@ -1491,25 +1237,14 @@
   }
 
 
-  /* =======================================================
+  /* =========================================================
      MUTATION OBSERVER
-     =======================================================
+     ========================================================= */
 
-     Supabase / fetch / AJAX ka ka kreye
-     nouvo eleman apre paj la fin chaje.
-
-     Observer sa a pèmèt nouvo tèks yo
-     resevwa lang aktyèl la.
-
-     Li pa rele applyLanguage(),
-     konsa li pa kreye infinite loop.
-     ======================================================= */
-
-  function startLanguageObserver() {
+  function startObserver() {
 
     if (
-      typeof MutationObserver ===
-      "undefined"
+      typeof MutationObserver === "undefined"
     ) {
       return;
     }
@@ -1518,71 +1253,46 @@
       return;
     }
 
-
     const observer =
       new MutationObserver(
         function (mutations) {
 
-          let hasNewNodes = false;
+          let added = false;
 
-          for (
-            let i = 0;
-            i < mutations.length;
-            i++
-          ) {
+          mutations.forEach(
+            function (mutation) {
 
-            const mutation =
-              mutations[i];
+              if (
+                mutation.type === "childList" &&
+                mutation.addedNodes &&
+                mutation.addedNodes.length
+              ) {
 
-            if (
-              mutation.type ===
-                "childList" &&
-              mutation.addedNodes &&
-              mutation.addedNodes.length
-            ) {
+                added = true;
 
-              hasNewNodes = true;
-              break;
+              }
 
             }
+          );
 
-          }
-
-
-          if (!hasNewNodes) {
+          if (!added) {
             return;
           }
-
 
           clearTimeout(
             observerTimer
           );
 
-
           observerTimer =
             setTimeout(
               function () {
 
-                /*
-                  Pa fè anyen si sistèm nan
-                  deja ap aplike lang lan.
-                */
-
-                if (
-                  isApplyingLanguage
-                ) {
+                if (applying) {
                   return;
                 }
 
-
                 const lang =
                   getLanguage();
-
-
-                /*
-                  Nouvo eleman ki gen
-                  data-i18n.
-                */
 
                 document
                   .querySelectorAll(
@@ -1599,11 +1309,6 @@
                     }
                   );
 
-
-                /*
-                  Nouvo attributes.
-                */
-
                 document
                   .querySelectorAll(
                     "[data-i18n-placeholder], [data-i18n-title], [data-i18n-aria]"
@@ -1619,14 +1324,7 @@
                     }
                   );
 
-
-                /*
-                  Nouvo tèks.
-                */
-
-                if (
-                  document.body
-                ) {
+                if (document.body) {
 
                   translateUnTaggedText(
                     document.body,
@@ -1635,31 +1333,18 @@
 
                 }
 
-
-                /*
-                  Nouvo options.
-                */
-
-                translateOptions(
-                  lang
-                );
-
-
-                /*
-                  Selector language.
-                */
+                connectLanguageSelector();
 
                 updateLanguageSelectors(
                   lang
                 );
 
               },
-              100
+              150
             );
 
         }
       );
-
 
     observer.observe(
       document.body,
@@ -1669,30 +1354,18 @@
       }
     );
 
-
-    /*
-      Kenbe observer la disponib
-      pou debug si sa nesesè.
-    */
-
     window.eagleJLanguageObserver =
       observer;
-
   }
 
 
-  /* =======================================================
-     START OBSERVER
-     ======================================================= */
-
   if (
-    document.readyState ===
-    "loading"
+    document.readyState === "loading"
   ) {
 
     document.addEventListener(
       "DOMContentLoaded",
-      startLanguageObserver,
+      startObserver,
       {
         once: true
       }
@@ -1700,18 +1373,19 @@
 
   } else {
 
-    startLanguageObserver();
+    startObserver();
 
   }
 
 
-  /* =======================================================
-     DEBUG / PUBLIC OBJECT
-     ======================================================= */
+  /* =========================================================
+     PUBLIC DEBUG OBJECT
+     ========================================================= */
 
   window.EagleJLanguage = {
 
-    supported: SUPPORTED.slice(),
+    supported:
+      SUPPORTED.slice(),
 
     defaultLanguage:
       DEFAULT_LANGUAGE,
@@ -1727,5 +1401,4 @@
 
   };
 
-
-})();
+})(); 
