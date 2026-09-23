@@ -1,23 +1,15 @@
-/* =========================================================
-   Eagle-J Connect - Supabase application
-   CORRECTED VERSION
-========================================================= */
+/* Eagle-J Connect - Supabase application */
 
-const SUPABASE_URL =
-  "https://glwyqrvufmjscjbbszzz.supabase.co";
-
-const SUPABASE_KEY =
-  "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
-
-const IMAGE_BUCKET =
-  "business-images";
+const SUPABASE_URL = "https://glwyqrvufmjscjbbszzz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
+const IMAGE_BUCKET = "business-images";
 
 
 /* =========================================================
    BASIC FUNCTIONS
 ========================================================= */
 
-function qs(id){
+function qs(id) {
   return document.getElementById(id);
 }
 
@@ -26,30 +18,18 @@ function qs(id){
    SESSION
 ========================================================= */
 
-function getSession(){
+function getSession() {
 
-  const token =
-    localStorage.getItem(
-      "supabase_access_token"
-    );
+  const token = localStorage.getItem("supabase_access_token");
+  const userText = localStorage.getItem("supabase_user");
 
-  const userText =
-    localStorage.getItem(
-      "supabase_user"
-    );
+  if (token && userText) {
 
-  if(!token){
-    return null;
-  }
+    try {
 
-  try{
+      const user = JSON.parse(userText);
 
-    if(userText){
-
-      const user =
-        JSON.parse(userText);
-
-      if(user?.id){
+      if (user?.id) {
 
         return {
           token,
@@ -58,34 +38,18 @@ function getSession(){
 
       }
 
-    }
-
-  }catch(error){
-
-    console.warn(
-      "Invalid local session:",
-      error
-    );
+    } catch (e) {}
 
   }
 
+  const id = localStorage.getItem("supabase_user_id");
+  const email = localStorage.getItem("supabase_user_email");
 
-  const id =
-    localStorage.getItem(
-      "supabase_user_id"
-    );
-
-  const email =
-    localStorage.getItem(
-      "supabase_user_email"
-    );
-
-
-  if(id){
+  if (token && id) {
 
     return {
       token,
-      user:{
+      user: {
         id,
         email
       }
@@ -93,124 +57,14 @@ function getSession(){
 
   }
 
-
   return null;
 
 }
 
 
-/* =========================================================
-   REFRESH SESSION
-   ========================================================= */
+function saveSession(data) {
 
-async function refreshSession(){
-
-  const refreshToken =
-    localStorage.getItem(
-      "supabase_refresh_token"
-    );
-
-
-  if(!refreshToken){
-
-    return null;
-
-  }
-
-
-  try{
-
-    const response =
-      await fetch(
-        `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
-        {
-          method:"POST",
-
-          headers:{
-            apikey:SUPABASE_KEY,
-            Authorization:
-              `Bearer ${SUPABASE_KEY}`,
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify({
-              refresh_token:
-                refreshToken
-            })
-
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      !response.ok ||
-      !data?.access_token ||
-      !data?.user
-    ){
-
-      return null;
-
-    }
-
-
-    saveSession(data);
-
-    return getSession();
-
-
-  }catch(error){
-
-    console.warn(
-      "Session refresh failed:",
-      error
-    );
-
-    return null;
-
-  }
-
-}
-
-
-/* =========================================================
-   ENSURE AUTHENTICATED SESSION
-========================================================= */
-
-async function ensureSession(){
-
-  let session =
-    getSession();
-
-
-  if(session){
-
-    return session;
-
-  }
-
-
-  session =
-    await refreshSession();
-
-
-  return session;
-
-}
-
-
-/* =========================================================
-   SAVE SESSION
-========================================================= */
-
-function saveSession(data){
-
-  if(data?.access_token){
+  if (data?.access_token) {
 
     localStorage.setItem(
       "supabase_access_token",
@@ -219,8 +73,7 @@ function saveSession(data){
 
   }
 
-
-  if(data?.refresh_token){
+  if (data?.refresh_token) {
 
     localStorage.setItem(
       "supabase_refresh_token",
@@ -229,22 +82,17 @@ function saveSession(data){
 
   }
 
-
-  if(data?.user){
+  if (data?.user) {
 
     localStorage.setItem(
       "supabase_user",
-      JSON.stringify(
-        data.user
-      )
+      JSON.stringify(data.user)
     );
-
 
     localStorage.setItem(
       "supabase_user_id",
       data.user.id
     );
-
 
     localStorage.setItem(
       "supabase_user_email",
@@ -256,11 +104,7 @@ function saveSession(data){
 }
 
 
-/* =========================================================
-   CLEAR SESSION
-========================================================= */
-
-function clearSession(){
+function clearSession() {
 
   [
     "supabase_access_token",
@@ -273,23 +117,17 @@ function clearSession(){
     "user_account_type",
     "user_is_admin"
   ].forEach(
-    key =>
-      localStorage.removeItem(key)
+    key => localStorage.removeItem(key)
   );
 
 }
 
 
-/* =========================================================
-   LOGOUT
-========================================================= */
-
 window.logoutUser = () => {
 
   clearSession();
 
-  location.href =
-    "login.html";
+  location.href = "login.html";
 
 };
 
@@ -298,24 +136,17 @@ window.logoutUser = () => {
    MOBILE MENU
 ========================================================= */
 
-function setupMobileMenu(){
-  /* menu.js owns the final navigation controller */
+function setupMobileMenu() {
+  /* menu.js controls the mobile menu */
 }
 
 
-/* Compatibility */
+window.toggleMenu = function () {
 
-window.toggleMenu = function(){
+  const button = document.getElementById("menuToggle");
 
-  const button =
-    document.getElementById(
-      "menuToggle"
-    );
-
-  if(button){
-
+  if (button) {
     button.click();
-
   }
 
 };
@@ -325,39 +156,17 @@ window.toggleMenu = function(){
    MESSAGES
 ========================================================= */
 
-function msg(
-  id,
-  text,
-  type="error"
-){
+function msg(id, text, type = "error") {
 
-  if(window.EJC?.t){
-
-    text =
-      window.EJC.t(text);
-
+  if (window.EJC?.t) {
+    text = window.EJC.t(text);
   }
 
+  const el = qs(id);
 
-  const el =
-    qs(id);
+  if (!el) return;
 
-
-  if(!el){
-
-    console.warn(
-      "Message element not found:",
-      id
-    );
-
-    return;
-
-  }
-
-
-  el.textContent =
-    text;
-
+  el.textContent = text;
 
   el.style.color =
     type === "success"
@@ -373,67 +182,43 @@ function msg(
    SECURITY / TEXT HELPERS
 ========================================================= */
 
-function esc(v){
+function esc(value) {
 
-  const d =
-    document.createElement(
-      "div"
-    );
+  const d = document.createElement("div");
 
-  d.textContent =
-    v ?? "";
+  d.textContent = value ?? "";
 
   return d.innerHTML;
 
 }
 
 
-function attr(v){
+function attr(value) {
 
-  return String(
-    v ?? ""
-  )
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    );
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 
 }
 
 
-function waNumber(v){
+function waNumber(value) {
 
-  return String(
-    v || ""
-  ).replace(
-    /\D/g,
-    ""
-  );
+  return String(value || "")
+    .replace(/\D/g, "");
 
 }
 
 
-function fmtDate(v){
+function fmtDate(value) {
 
-  try{
+  try {
 
-    return new Date(
-      v
-    ).toLocaleDateString();
+    return new Date(value).toLocaleDateString();
 
-  }catch(e){
+  } catch (e) {
 
     return "";
 
@@ -446,94 +231,64 @@ function fmtDate(v){
    SUPABASE API
 ========================================================= */
 
-async function api(
-  path,
-  options={}
-){
+async function api(path, options = {}) {
 
-  const headers =
-    Object.assign(
-      {
-        apikey:
-          SUPABASE_KEY,
+  const headers = Object.assign(
+    {
+      "apikey": SUPABASE_KEY,
+      "Content-Type": "application/json"
+    },
+    options.headers || {}
+  );
 
-        "Content-Type":
-          "application/json"
-      },
+  const session = getSession();
 
-      options.headers || {}
-    );
-
-
-  const session =
-    getSession();
-
-
-  /*
-   * IMPORTANT:
-   * Always send the logged-in user's JWT
-   * when one exists.
-   */
-
-  if(
+  if (
     session?.token &&
     !headers.Authorization
-  ){
+  ) {
 
     headers.Authorization =
       `Bearer ${session.token}`;
 
   }
 
+  const response = await fetch(
+    SUPABASE_URL + path,
+    {
+      ...options,
+      headers
+    }
+  );
 
-  const response =
-    await fetch(
-      SUPABASE_URL + path,
-      {
-        ...options,
-        headers
-      }
-    );
-
-
-  const text =
-    await response.text();
-
+  const text = await response.text();
 
   let data = null;
 
+  try {
 
-  try{
+    data = text
+      ? JSON.parse(text)
+      : null;
 
-    data =
-      text
-        ? JSON.parse(text)
-        : null;
-
-  }catch(error){
+  } catch (e) {
 
     data = text;
 
   }
 
+  if (!response.ok) {
 
-  if(!response.ok){
-
-    const message =
+    throw new Error(
       data?.message ||
       data?.msg ||
       data?.error_description ||
       data?.details ||
       data?.hint ||
-      "Request failed";
-
-
-    throw new Error(
-      message
+      "Request failed"
     );
 
   }
-
 
   return data;
 
@@ -544,54 +299,40 @@ async function api(
    ADMIN CHECK
 ========================================================= */
 
-async function checkCurrentUserIsAdmin(
-  userId
-){
+async function checkCurrentUserIsAdmin(userId) {
 
-  if(!userId){
-
+  if (!userId) {
     return false;
-
   }
 
+  try {
 
-  try{
-
-    const rows =
-      await api(
-        `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
-      );
-
+    const rows = await api(
+      `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
+    );
 
     const isAdmin =
       Array.isArray(rows) &&
       rows.length > 0;
 
-
     localStorage.setItem(
       "user_is_admin",
-      isAdmin
-        ? "true"
-        : "false"
+      isAdmin ? "true" : "false"
     );
-
 
     return isAdmin;
 
-
-  }catch(error){
+  } catch (error) {
 
     console.warn(
       "Admin verification:",
       error.message
     );
 
-
     localStorage.setItem(
       "user_is_admin",
       "false"
     );
-
 
     return false;
 
@@ -604,25 +345,18 @@ async function checkCurrentUserIsAdmin(
    REGISTRATION
 ========================================================= */
 
-async function registerUser(e){
+async function registerUser(e) {
 
   e.preventDefault();
 
-
   const firstName =
-    qs("firstName")
-      ?.value.trim() || "";
-
+    qs("firstName")?.value.trim() || "";
 
   const lastName =
-    qs("lastName")
-      ?.value.trim() || "";
-
+    qs("lastName")?.value.trim() || "";
 
   const legacyFullName =
-    qs("fullName")
-      ?.value.trim() || "";
-
+    qs("fullName")?.value.trim() || "";
 
   const fullName =
     (
@@ -630,41 +364,29 @@ async function registerUser(e){
       `${firstName} ${lastName}`
     ).trim();
 
-
   const email =
-    qs("email")
-      ?.value.trim()
-      .toLowerCase() || "";
-
+    qs("email")?.value.trim().toLowerCase() || "";
 
   const phone =
-    qs("phone")
-      ?.value.trim() || "";
-
+    qs("phone")?.value.trim() || "";
 
   const accountType =
-    qs("accountType")
-      ?.value || "";
-
+    qs("accountType")?.value || "";
 
   const password =
-    qs("password")
-      ?.value || "";
-
+    qs("password")?.value || "";
 
   const confirm =
-    qs("confirmPassword")
-      ?.value || "";
+    qs("confirmPassword")?.value || "";
 
-
-  if(
+  if (
     !fullName ||
     !email ||
     !phone ||
     !accountType ||
     !password ||
     !confirm
-  ){
+  ) {
 
     msg(
       "registerMessage",
@@ -675,8 +397,7 @@ async function registerUser(e){
 
   }
 
-
-  if(password.length < 6){
+  if (password.length < 6) {
 
     msg(
       "registerMessage",
@@ -687,8 +408,7 @@ async function registerUser(e){
 
   }
 
-
-  if(password !== confirm){
+  if (password !== confirm) {
 
     msg(
       "registerMessage",
@@ -699,120 +419,93 @@ async function registerUser(e){
 
   }
 
-
   msg(
     "registerMessage",
     "⏳ Nap kreye kont ou...",
     "warning"
   );
 
+  try {
 
-  try{
+    const data = await api(
+      "/auth/v1/signup",
+      {
+        method: "POST",
 
-    const data =
-      await api(
-        "/auth/v1/signup",
-        {
-          method:"POST",
+        body: JSON.stringify({
 
-          headers:{
-            Authorization:
-              `Bearer ${SUPABASE_KEY}`
-          },
+          email,
 
-          body:
-            JSON.stringify({
+          password,
 
-              email,
+          data: {
+            full_name: fullName,
 
-              password,
+            first_name:
+              firstName ||
+              fullName.split(" ")[0],
 
-              data:{
-                full_name:
-                  fullName,
+            last_name: lastName,
 
-                first_name:
-                  firstName ||
-                  fullName.split(" ")[0],
+            phone,
 
-                last_name:
-                  lastName,
+            account_type: accountType
+          }
 
-                phone,
+        })
 
-                account_type:
-                  accountType
-              }
+      }
+    );
 
-            })
-
-        }
-      );
-
-
-    if(data?.access_token){
-
-      saveSession(
-        data
-      );
-
+    if (data?.access_token) {
+      saveSession(data);
     }
 
-
-    if(
+    if (
       data?.user?.id &&
       data?.access_token
-    ){
+    ) {
 
-      try{
+      try {
 
         await api(
           "/rest/v1/profiles",
           {
-            method:"POST",
+            method: "POST",
 
-            headers:{
-              Prefer:
-                "return=representation"
-            },
+            body: JSON.stringify({
 
-            body:
-              JSON.stringify({
+              id: data.user.id,
 
-                id:
-                  data.user.id,
+              full_name: fullName,
 
-                full_name:
-                  fullName,
+              email,
 
-                email,
+              phone,
 
-                phone,
+              account_type: accountType
 
-                account_type:
-                  accountType
+            }),
 
-              })
+            headers: {
+              Prefer: "return=representation"
+            }
 
           }
         );
 
-      }catch(profileErr){
+      } catch (profileError) {
 
         console.warn(
           "Profile insert:",
-          profileErr
+          profileError
         );
 
       }
 
     }
 
-
-    qs(
-      "registerForm"
-    )?.reset();
-
+    qs("registerForm")?.reset();
 
     msg(
       "registerMessage",
@@ -824,32 +517,20 @@ async function registerUser(e){
       "success"
     );
 
-
     setTimeout(
       () => {
-
-        location.href =
-          "login.html";
-
+        location.href = "login.html";
       },
       1400
     );
 
+  } catch (err) {
 
-  }catch(err){
-
-    console.error(
-      err
-    );
-
+    console.error(err);
 
     msg(
       "registerMessage",
-      "❌ " +
-      (
-        err.message ||
-        "Nou pa kapab kreye kont lan."
-      )
+      "❌ " + err.message
     );
 
   }
@@ -861,29 +542,19 @@ async function registerUser(e){
    LOGIN
 ========================================================= */
 
-async function loginUser(e){
+async function loginUser(e) {
 
   e.preventDefault();
 
-
   const email =
-    qs("loginEmail")
-      ?.value.trim() || "";
-
+    qs("loginEmail")?.value.trim() || "";
 
   const password =
-    qs("loginPassword")
-      ?.value || "";
+    qs("loginPassword")?.value || "";
 
+  const message = "loginMessage";
 
-  const message =
-    "loginMessage";
-
-
-  if(
-    !email ||
-    !password
-  ){
+  if (!email || !password) {
 
     msg(
       message,
@@ -894,42 +565,36 @@ async function loginUser(e){
 
   }
 
-
   msg(
     message,
     "⏳ Nap konekte...",
     "warning"
   );
 
+  try {
 
-  try{
+    const data = await api(
+      "/auth/v1/token?grant_type=password",
+      {
+        method: "POST",
 
-    const data =
-      await api(
-        "/auth/v1/token?grant_type=password",
-        {
-          method:"POST",
+        headers: {
+          Authorization:
+            "Bearer " + SUPABASE_KEY
+        },
 
-          headers:{
-            Authorization:
-              "Bearer " +
-              SUPABASE_KEY
-          },
+        body: JSON.stringify({
+          email,
+          password
+        })
 
-          body:
-            JSON.stringify({
-              email,
-              password
-            })
+      }
+    );
 
-        }
-      );
-
-
-    if(
+    if (
       !data?.access_token ||
       !data?.user?.id
-    ){
+    ) {
 
       throw new Error(
         "Supabase pa retounen yon sesyon valab."
@@ -937,23 +602,17 @@ async function loginUser(e){
 
     }
 
-
-    saveSession(
-      data
-    );
-
+    saveSession(data);
 
     let profiles = [];
 
+    try {
 
-    try{
+      profiles = await api(
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
+      );
 
-      profiles =
-        await api(
-          `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
-        );
-
-    }catch(err){
+    } catch (err) {
 
       console.warn(
         "Profile request:",
@@ -962,12 +621,9 @@ async function loginUser(e){
 
     }
 
+    const profile = profiles?.[0];
 
-    const profile =
-      profiles?.[0];
-
-
-    if(!profile){
+    if (!profile) {
 
       clearSession();
 
@@ -977,11 +633,10 @@ async function loginUser(e){
 
     }
 
-
-    if(
+    if (
       profile.account_status &&
       profile.account_status !== "active"
-    ){
+    ) {
 
       clearSession();
 
@@ -991,53 +646,45 @@ async function loginUser(e){
 
     }
 
-
     localStorage.setItem(
       "user_full_name",
       profile.full_name || ""
     );
-
 
     localStorage.setItem(
       "user_phone",
       profile.phone || ""
     );
 
-
     localStorage.setItem(
       "user_account_type",
       profile.account_type || ""
     );
 
+    const user = Object.assign(
+      {},
+      data.user,
+      {
+        full_name:
+          profile.full_name,
 
-    const user =
-      Object.assign(
-        {},
-        data.user,
-        {
-          full_name:
-            profile.full_name,
+        phone:
+          profile.phone,
 
-          phone:
-            profile.phone,
-
-          account_type:
-            profile.account_type
-        }
-      );
-
+        account_type:
+          profile.account_type
+      }
+    );
 
     localStorage.setItem(
       "supabase_user",
       JSON.stringify(user)
     );
 
-
     const isAdmin =
       await checkCurrentUserIsAdmin(
         data.user.id
       );
-
 
     msg(
       message,
@@ -1049,32 +696,26 @@ async function loginUser(e){
       "success"
     );
 
-
     setTimeout(
       () => {
 
-        if(isAdmin){
+        if (isAdmin) {
 
-          location.href =
-            "admin.html";
+          location.href = "admin.html";
 
           return;
 
         }
 
+        if (
+          profile.account_type === "employer"
+        ) {
 
-        if(
-          profile.account_type ===
-          "employer"
-        ){
+          location.href = "employer.html";
 
-          location.href =
-            "employer.html";
+        } else {
 
-        }else{
-
-          location.href =
-            "dashboard.html";
+          location.href = "dashboard.html";
 
         }
 
@@ -1082,21 +723,13 @@ async function loginUser(e){
       500
     );
 
+  } catch (err) {
 
-  }catch(err){
-
-    console.error(
-      err
-    );
-
+    console.error(err);
 
     msg(
       message,
-      "❌ " +
-      (
-        err.message ||
-        "Login echwe."
-      )
+      "❌ " + err.message
     );
 
   }
@@ -1108,50 +741,33 @@ async function loginUser(e){
    DASHBOARD
 ========================================================= */
 
-async function loadDashboard(){
+async function loadDashboard() {
 
-  const session =
-    await ensureSession();
+  const session = getSession();
 
+  if (!session) {
 
-  if(!session){
-
-    location.href =
-      "login.html";
+    location.href = "login.html";
 
     return;
 
   }
 
+  qs("dashboardLoading")
+    ?.classList.add("hidden");
 
-  qs(
-    "dashboardLoading"
-  )?.classList.add(
-    "hidden"
-  );
+  const card = qs("profileCard");
+  const error = qs("dashboardError");
 
+  try {
 
-  const card =
-    qs("profileCard");
+    const rows = await api(
+      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
+    );
 
+    const p = rows?.[0];
 
-  const error =
-    qs("dashboardError");
-
-
-  try{
-
-    const rows =
-      await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
-      );
-
-
-    const p =
-      rows?.[0];
-
-
-    if(!p){
+    if (!p) {
 
       throw new Error(
         "Pwofil ou pa jwenn."
@@ -1159,32 +775,28 @@ async function loadDashboard(){
 
     }
 
-
-    if(qs("profileName")){
+    if (qs("profileName")) {
 
       qs("profileName").textContent =
         p.full_name || "—";
 
     }
 
-
-    if(qs("profileEmail")){
+    if (qs("profileEmail")) {
 
       qs("profileEmail").textContent =
         session.user.email || "—";
 
     }
 
-
-    if(qs("profilePhone")){
+    if (qs("profilePhone")) {
 
       qs("profilePhone").textContent =
         p.phone || "—";
 
     }
 
-
-    if(qs("profileType")){
+    if (qs("profileType")) {
 
       qs("profileType").textContent =
         p.account_type === "employer"
@@ -1193,44 +805,30 @@ async function loadDashboard(){
 
     }
 
+    if (
+      p.account_type === "employer"
+    ) {
 
-    if(
-      p.account_type ===
-      "employer"
-    ){
+      qs("employerActions")
+        ?.classList.remove("hidden");
 
-      qs(
-        "employerActions"
-      )?.classList.remove(
-        "hidden"
-      );
+    } else {
 
-    }else{
-
-      qs(
-        "jobSeekerActions"
-      )?.classList.remove(
-        "hidden"
-      );
+      qs("jobSeekerActions")
+        ?.classList.remove("hidden");
 
     }
 
-
-    if(card){
-
-      card.style.display =
-        "block";
-
+    if (card) {
+      card.style.display = "block";
     }
 
+  } catch (err) {
 
-  }catch(err){
-
-    if(error){
+    if (error) {
 
       error.textContent =
-        "❌ " +
-        err.message;
+        "❌ " + err.message;
 
       error.style.display =
         "block";
@@ -1246,104 +844,78 @@ async function loadDashboard(){
    EMPLOYER DASHBOARD
 ========================================================= */
 
-async function loadEmployerDashboard(){
+async function loadEmployerDashboard() {
 
-  const session =
-    await ensureSession();
+  const session = getSession();
 
+  if (!session) {
 
-  if(!session){
-
-    location.href =
-      "login.html";
+    location.href = "login.html";
 
     return;
 
   }
 
+  try {
 
-  try{
+    const rows = await api(
+      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
+    );
 
-    const rows =
-      await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
-      );
+    const p = rows?.[0];
 
-
-    const p =
-      rows?.[0];
-
-
-    if(
+    if (
       !p ||
-      p.account_type !==
-      "employer"
-    ){
+      p.account_type !== "employer"
+    ) {
 
-      location.href =
-        "dashboard.html";
+      location.href = "dashboard.html";
 
       return;
 
     }
 
-
-    if(qs("employerName")){
+    if (qs("employerName")) {
 
       qs("employerName").textContent =
-        p.full_name ||
-        "Anplwayè";
+        p.full_name || "Anplwayè";
 
     }
 
-
-    if(qs("profileName")){
+    if (qs("profileName")) {
 
       qs("profileName").textContent =
-        p.full_name ||
-        "—";
+        p.full_name || "—";
 
     }
 
-
-    if(qs("profileEmail")){
+    if (qs("profileEmail")) {
 
       qs("profileEmail").textContent =
-        session.user.email ||
-        "—";
+        session.user.email || "—";
 
     }
 
-
-    if(qs("profilePhone")){
+    if (qs("profilePhone")) {
 
       qs("profilePhone").textContent =
-        p.phone ||
-        "—";
+        p.phone || "—";
 
     }
-
 
     await loadMyJobs(
       session.user.id,
       session.token
     );
 
+  } catch (err) {
 
-  }catch(err){
+    console.error(err);
 
-    console.error(
-      err
-    );
+    if (qs("employerMessage")) {
 
-
-    if(qs("employerMessage")){
-
-      qs(
-        "employerMessage"
-      ).textContent =
-        "❌ " +
-        err.message;
+      qs("employerMessage").textContent =
+        "❌ " + err.message;
 
     }
 
@@ -1354,69 +926,74 @@ async function loadEmployerDashboard(){
 
 /* =========================================================
    POST JOB
+   ---------------------------------------------------------
+   IMPORTANT:
+   jobs table columns are:
+
+   id
+   employer_id
+   title
+   company_name
+   location
+   job_type
+   salary
+   description
+   contact_phone
+   created_at
+   status
+
+   Nou pa itilize:
+   company
+   contact
 ========================================================= */
 
-async function postJob(e){
+async function postJob(e) {
 
   e.preventDefault();
 
+  const session = getSession();
 
-  const s =
-    await ensureSession();
+  if (!session) {
 
-
-  if(!s){
-
-    location.href =
-      "login.html";
+    location.href = "login.html";
 
     return;
 
   }
 
-
-  const vals = {
+  const values = {
 
     title:
-      qs("jobTitle")
-        ?.value.trim() || "",
+      qs("jobTitle")?.value.trim() || "",
 
-    company:
-      qs("jobCompany")
-        ?.value.trim() || "",
+    company_name:
+      qs("jobCompany")?.value.trim() || "",
 
     location:
-      qs("jobLocation")
-        ?.value.trim() || "",
+      qs("jobLocation")?.value.trim() || "",
 
     job_type:
-      qs("jobType")
-        ?.value || "",
+      qs("jobType")?.value || "",
 
     salary:
-      qs("jobSalary")
-        ?.value.trim() ||
-      null,
+      qs("jobSalary")?.value.trim() || null,
 
     description:
-      qs("jobDescription")
-        ?.value.trim() || "",
+      qs("jobDescription")?.value.trim() || "",
 
-    contact:
-      qs("jobContact")
-        ?.value.trim() || ""
+    contact_phone:
+      qs("jobContact")?.value.trim() || ""
 
   };
 
-
-  if(
-    !vals.title ||
-    !vals.company ||
-    !vals.location ||
-    !vals.job_type ||
-    !vals.description ||
-    !vals.contact
-  ){
+  if (
+    !values.title ||
+    !values.company_name ||
+    !values.location ||
+    !values.job_type ||
+    !values.description ||
+    !values.contact_phone
+  ) {
 
     msg(
       "jobMessage",
@@ -1427,50 +1004,67 @@ async function postJob(e){
 
   }
 
-
   msg(
     "jobMessage",
     "⏳ Travay la ap voye bay Admin pou validasyon...",
     "warning"
   );
 
+  try {
 
-  try{
+    /*
+      Nou mete sèlman kolòn ki egziste nan jobs.
+      Sa anpeche erè "column does not exist".
+    */
+
+    const jobData = {
+
+      employer_id:
+        session.user.id,
+
+      title:
+        values.title,
+
+      company_name:
+        values.company_name,
+
+      location:
+        values.location,
+
+      job_type:
+        values.job_type,
+
+      salary:
+        values.salary,
+
+      description:
+        values.description,
+
+      contact_phone:
+        values.contact_phone,
+
+      status:
+        "pending"
+
+    };
 
     await api(
       "/rest/v1/jobs",
       {
-        method:"POST",
+        method: "POST",
 
-        headers:{
-          Authorization:
-            `Bearer ${s.token}`,
-
+        headers: {
           Prefer:
             "return=representation"
         },
 
         body:
-          JSON.stringify({
-
-            ...vals,
-
-            employer_id:
-              s.user.id,
-
-            status:
-              "pending"
-
-          })
+          JSON.stringify(jobData)
 
       }
     );
 
-
-    qs(
-      "jobForm"
-    )?.reset();
-
+    qs("jobForm")?.reset();
 
     msg(
       "jobMessage",
@@ -1478,25 +1072,21 @@ async function postJob(e){
       "success"
     );
 
-
     await loadMyJobs(
-      s.user.id,
-      s.token
+      session.user.id,
+      session.token
     );
 
-
-  }catch(err){
+  } catch (err) {
 
     console.error(
       "POST JOB ERROR:",
       err
     );
 
-
     msg(
       "jobMessage",
-      "❌ " +
-      err.message
+      "❌ " + err.message
     );
 
   }
@@ -1511,7 +1101,7 @@ async function postJob(e){
 let publicJobs = [];
 
 
-function jobTypeLabel(type){
+function jobTypeLabel(type) {
 
   const map = {
 
@@ -1535,19 +1125,14 @@ function jobTypeLabel(type){
 
   };
 
-
   return map[
-    String(type || "")
-      .toLowerCase()
+    String(type || "").toLowerCase()
   ]
 
   ||
 
   String(type || "")
-    .replace(
-      /_/g,
-      " "
-    )
+    .replace(/_/g, " ")
 
   ||
 
@@ -1556,47 +1141,39 @@ function jobTypeLabel(type){
 }
 
 
-async function loadJobs(){
+async function loadJobs() {
 
   const box =
     qs("jobsList") ||
     qs("jobListings");
 
-
-  if(!box)return;
-
+  if (!box) return;
 
   box.innerHTML =
     '<div class="loading-state"><span>⏳</span><p>Travay yo ap chaje...</p></div>';
 
-
-  try{
+  try {
 
     const rows =
       await api(
         "/rest/v1/jobs?status=eq.approved&select=*&order=created_at.desc"
       );
 
-
     publicJobs =
       Array.isArray(rows)
         ? rows
         : [];
 
-
     renderJobs();
 
-
-  }catch(err){
+  } catch (err) {
 
     console.error(
       "Public jobs:",
       err
     );
 
-
     publicJobs = [];
-
 
     box.innerHTML =
       `<div class="notice">
@@ -1615,81 +1192,63 @@ async function loadJobs(){
 }
 
 
-function renderJobs(){
+function renderJobs() {
 
   const box =
     qs("jobsList") ||
     qs("jobListings");
 
-
-  if(!box)return;
-
+  if (!box) return;
 
   const search =
     (
-      qs("searchJob")
-        ?.value ||
+      qs("searchJob")?.value ||
       ""
     )
-      .trim()
-      .toLowerCase();
-
+    .trim()
+    .toLowerCase();
 
   const filter =
-    qs("jobFilter")
-      ?.value || "";
-
+    qs("jobFilter")?.value ||
+    "";
 
   const jobs =
-    publicJobs.filter(
-      job => {
+    publicJobs.filter(job => {
 
-        const haystack = [
+      const haystack = [
 
-          job.title,
+        job.title,
 
-          job.company,
+        job.company_name,
 
-          job.company_name,
+        job.location,
 
-          job.location,
+        job.description,
 
-          job.description,
+        job.job_type,
 
-          job.job_type,
+        job.salary
 
-          job.type,
+      ]
 
-          job.employment_type
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
+      const type =
+        job.job_type || "";
 
+      return (
+        (!search ||
+          haystack.includes(search)) &&
 
-        const type =
-          job.job_type ||
-          job.employment_type ||
-          job.type ||
-          "";
+        (!filter ||
+          type === filter)
+      );
 
+    });
 
-        return (
-          (!search ||
-            haystack.includes(
-              search
-            )) &&
-
-          (!filter ||
-            type === filter)
-        );
-
-      }
-    );
-
-
-  if(!jobs.length){
+  if (!jobs.length) {
 
     box.innerHTML =
       `<div class="empty-state">
@@ -1720,130 +1279,114 @@ function renderJobs(){
 
   }
 
-
   box.innerHTML =
-    jobs.map(
-      job => {
+    jobs.map(job => {
 
-        const title =
-          job.title ||
-          "Travay";
+      const title =
+        job.title ||
+        "Travay";
 
+      const company =
+        job.company_name ||
+        "Konpayi";
 
-        const company =
-          job.company ||
-          job.company_name ||
-          "Konpayi";
+      const location =
+        job.location ||
+        "Lokalizasyon pa presize";
 
+      const type =
+        job.job_type ||
+        "";
 
-        const location =
-          job.location ||
-          "Lokalizasyon pa presize";
+      const salary =
+        job.salary ||
+        "";
 
+      const contact =
+        job.contact_phone ||
+        "";
 
-        const type =
-          job.job_type ||
-          job.employment_type ||
-          job.type ||
-          "";
+      return `
+        <article class="job-card card">
 
+          <div class="card-kicker">
+            OPÒTINITE TRAVAY
+          </div>
 
-        const salary =
-          job.salary ||
-          job.pay ||
-          job.rate ||
-          "";
+          <h3>
+            ${esc(title)}
+          </h3>
 
+          <p>
+            <strong>
+              ${esc(company)}
+            </strong>
+          </p>
 
-        const contact =
-          job.contact ||
-          job.phone ||
-          job.whatsapp ||
-          "";
+          <div class="meta">
 
-
-        return `
-          <article class="job-card card">
-
-            <div class="card-kicker">
-              OPÒTINITE TRAVAY
-            </div>
-
-            <h3>
-              ${esc(title)}
-            </h3>
-
-            <p>
-              <strong>
-                ${esc(company)}
-              </strong>
-            </p>
-
-            <div class="meta">
-
-              <span class="badge">
-                📍 ${esc(location)}
-              </span>
-
-              ${
-                type
-                  ? `
-                    <span class="badge">
-                      💼 ${esc(
-                        jobTypeLabel(type)
-                      )}
-                    </span>
-                  `
-                  : ""
-              }
-
-              ${
-                salary
-                  ? `
-                    <span class="badge">
-                      💰 ${esc(salary)}
-                    </span>
-                  `
-                  : ""
-              }
-
-            </div>
+            <span class="badge">
+              📍 ${esc(location)}
+            </span>
 
             ${
-              job.description
+              type
                 ? `
-                  <p>
-                    ${esc(
-                      job.description
+                  <span class="badge">
+                    💼 ${esc(
+                      jobTypeLabel(type)
                     )}
-                  </p>
+                  </span>
                 `
                 : ""
             }
 
             ${
-              contact
+              salary
                 ? `
-                  <p class="job-contact">
-                    <strong>
-                      Kontak:
-                    </strong>
-                    ${esc(contact)}
-                  </p>
+                  <span class="badge">
+                    💰 ${esc(salary)}
+                  </span>
                 `
                 : ""
             }
 
-          </article>
-        `;
+          </div>
 
-      }
-    ).join("");
+          ${
+            job.description
+              ? `
+                <p>
+                  ${esc(
+                    job.description
+                  )}
+                </p>
+              `
+              : ""
+          }
+
+          ${
+            contact
+              ? `
+                <p class="job-contact">
+                  <strong>
+                    Kontak:
+                  </strong>
+                  ${esc(contact)}
+                </p>
+              `
+              : ""
+          }
+
+        </article>
+      `;
+
+    }).join("");
 
 }
 
 
-function jobStatusLabel(status){
+function jobStatusLabel(status) {
 
   return ({
 
@@ -1864,10 +1407,7 @@ function jobStatusLabel(status){
   ||
 
   "📌 " +
-  (
-    status ||
-    "—"
-  );
+  (status || "—");
 
 }
 
@@ -1879,35 +1419,31 @@ function jobStatusLabel(status){
 async function loadMyJobs(
   userId,
   token
-){
+) {
 
   const box =
     qs("myJobs") ||
     qs("myJobsList");
 
-
-  if(!box)return;
-
+  if (!box) return;
 
   box.innerHTML =
     "<p>⏳ Travay yo ap chaje...</p>";
 
-
-  try{
+  try {
 
     const jobs =
       await api(
         `/rest/v1/jobs?employer_id=eq.${encodeURIComponent(userId)}&select=*&order=created_at.desc`,
         {
-          headers:{
+          headers: {
             Authorization:
               `Bearer ${token}`
           }
         }
       );
 
-
-    if(!jobs?.length){
+    if (!jobs?.length) {
 
       box.innerHTML =
         "<p>Ou poko poste okenn travay.</p>";
@@ -1916,10 +1452,8 @@ async function loadMyJobs(
 
     }
 
-
     box.innerHTML =
-      jobs.map(
-        job => `
+      jobs.map(job => `
 
         <article class="job-card card">
 
@@ -1945,7 +1479,6 @@ async function loadMyJobs(
           <p>
             <strong>
               ${esc(
-                job.company ||
                 job.company_name ||
                 ""
               )}
@@ -1963,8 +1496,9 @@ async function loadMyJobs(
 
             <span class="badge">
               💼 ${esc(
-                job.job_type ||
-                "—"
+                jobTypeLabel(
+                  job.job_type
+                )
               )}
             </span>
 
@@ -1989,18 +1523,28 @@ async function loadMyJobs(
             )}
           </p>
 
+          ${
+            job.contact_phone
+              ? `
+                <p>
+                  <strong>
+                    📞 Kontak:
+                  </strong>
+                  ${esc(
+                    job.contact_phone
+                  )}
+                </p>
+              `
+              : ""
+          }
+
         </article>
 
-      `
-      ).join("");
+      `).join("");
 
+  } catch (err) {
 
-  }catch(err){
-
-    console.error(
-      err
-    );
-
+    console.error(err);
 
     box.innerHTML =
       "<p>❌ Nou pa kapab chaje travay ou yo.</p>";
@@ -2014,95 +1558,46 @@ async function loadMyJobs(
    BUSINESS ADS - CREATE
 ========================================================= */
 
-async function submitBusiness(e){
+async function submitBusiness(e) {
 
   e.preventDefault();
 
-
-  /*
-   * IMPORTANT:
-   * Get a real authenticated Supabase session.
-   */
-
   const session =
-    await ensureSession();
+    getSession();
 
-
-  if(!session){
+  if (!session) {
 
     msg(
       "formMessage",
       "⚠️ Tanpri konekte anvan ou pibliye yon anons."
     );
 
-
     setTimeout(
-      () =>
-        location.href =
-          "login.html",
-      900
-    );
-
-
-    return;
-
-  }
-
-
-  /*
-   * Make sure we have both JWT and user ID.
-   */
-
-  if(
-    !session.token ||
-    !session.user?.id
-  ){
-
-    msg(
-      "formMessage",
-      "❌ Sesyon ou pa valab. Tanpri konekte ankò."
-    );
-
-    clearSession();
-
-    setTimeout(
-      () =>
-        location.href =
-          "login.html",
+      () => location.href = "login.html",
       900
     );
 
     return;
 
   }
-
 
   const file =
     qs("businessImage")
       ?.files?.[0] ||
     null;
 
-
   const listingType =
     qs("listingType")
       ?.value ||
     "business";
-
 
   const category =
     qs("category")
       ?.value ||
     "";
 
-
   const encodedCategory =
     `${listingType}:${category}`;
-
-
-  /*
-   * IMPORTANT:
-   * user_id MUST be exactly auth.uid().
-   */
 
   const values = {
 
@@ -2139,8 +1634,7 @@ async function submitBusiness(e){
         ?.value.trim() ||
       "",
 
-    image_url:
-      null,
+    image_url: null,
 
     user_id:
       session.user.id,
@@ -2150,17 +1644,12 @@ async function submitBusiness(e){
 
   };
 
-
-  /*
-   * Validate required fields.
-   */
-
-  if(
+  if (
     !values.business_name ||
     !category ||
     !values.location ||
     !values.description
-  ){
+  ) {
 
     msg(
       "formMessage",
@@ -2171,21 +1660,13 @@ async function submitBusiness(e){
 
   }
 
-
-  /*
-   * Validate image.
-   */
-
-  if(
+  if (
     file &&
     (
-      !file.type.startsWith(
-        "image/"
-      ) ||
-      file.size >
-        5 * 1024 * 1024
+      !file.type.startsWith("image/") ||
+      file.size > 5 * 1024 * 1024
     )
-  ){
+  ) {
 
     msg(
       "formMessage",
@@ -2196,74 +1677,36 @@ async function submitBusiness(e){
 
   }
 
-
   msg(
     "formMessage",
     "⏳ Anons lan ap voye bay Admin pou validasyon...",
     "warning"
   );
 
-
-  try{
-
-    console.log(
-      "Creating business:",
-      {
-        user_id:
-          values.user_id,
-
-        status:
-          values.status,
-
-        hasToken:
-          Boolean(
-            session.token
-          )
-      }
-    );
-
-
-    /*
-     * CREATE BUSINESS
-     *
-     * Authorization contains the user's JWT.
-     *
-     * RLS should verify:
-     * auth.uid() = user_id
-     */
+  try {
 
     const rows =
       await api(
         "/rest/v1/businesses",
         {
-          method:"POST",
+          method: "POST",
 
-          headers:{
-
-            Authorization:
-              `Bearer ${session.token}`,
-
+          headers: {
             Prefer:
               "return=representation"
-
           },
 
           body:
-            JSON.stringify(
-              values
-            )
-
+            JSON.stringify(values)
         }
       );
 
-
-    const business =
+    const b =
       Array.isArray(rows)
         ? rows[0]
         : rows;
 
-
-    if(!business?.id){
+    if (!b?.id) {
 
       throw new Error(
         "Anons lan pa retounen yon ID."
@@ -2271,12 +1714,9 @@ async function submitBusiness(e){
 
     }
 
+    /* UPLOAD IMAGE */
 
-    /*
-     * UPLOAD IMAGE
-     */
-
-    if(file){
+    if (file) {
 
       const ext =
         (
@@ -2286,18 +1726,16 @@ async function submitBusiness(e){
           "jpg"
         ).toLowerCase();
 
-
       const fileName =
-        `${business.id}-${Date.now()}.${ext}`;
+        `${b.id}-${Date.now()}.${ext}`;
 
-
-      const uploadResponse =
+      const upload =
         await fetch(
           `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
           {
-            method:"POST",
+            method: "POST",
 
-            headers:{
+            headers: {
 
               apikey:
                 SUPABASE_KEY,
@@ -2313,80 +1751,54 @@ async function submitBusiness(e){
 
             },
 
-            body:
-              file
+            body: file
 
           }
         );
 
+      if (!upload.ok) {
 
-      if(!uploadResponse.ok){
-
-        let uploadMessage =
+        let uploadError =
           "Foto a pa t kapab monte.";
 
-
-        try{
+        try {
 
           const uploadBody =
-            await uploadResponse.json();
+            await upload.json();
 
-
-          uploadMessage =
+          uploadError =
             uploadBody?.message ||
             uploadBody?.error ||
-            uploadMessage;
+            uploadError;
 
-        }catch(_){}
-
+        } catch (_) {}
 
         throw new Error(
-          uploadMessage
+          uploadError
         );
 
       }
 
-
       const imageURL =
         `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
-
-      /*
-       * Update the business image.
-       */
-
       await api(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(business.id)}`,
+        `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
         {
-          method:"PATCH",
-
-          headers:{
-
-            Authorization:
-              `Bearer ${session.token}`
-
-          },
+          method: "PATCH",
 
           body:
             JSON.stringify({
               image_url:
                 imageURL
             })
-
         }
       );
 
     }
 
-
-    /*
-     * Success
-     */
-
-    qs(
-      "businessForm"
-    )?.reset();
-
+    qs("businessForm")
+      ?.reset();
 
     msg(
       "formMessage",
@@ -2394,42 +1806,13 @@ async function submitBusiness(e){
       "success"
     );
 
+  } catch (err) {
 
-  }catch(err){
-
-    console.error(
-      "BUSINESS INSERT ERROR:",
-      err
-    );
-
-
-    let errorMessage =
-      err?.message ||
-      "Nou pa kapab voye anons lan.";
-
-
-    /*
-     * Give a clearer message for RLS.
-     */
-
-    if(
-      errorMessage
-        .toLowerCase()
-        .includes(
-          "row-level security"
-        )
-    ){
-
-      errorMessage =
-        "Supabase bloke anons lan ak RLS. Verifye policy businesses_users_can_insert la epi asire user_id egal ak auth.uid().";
-
-    }
-
+    console.error(err);
 
     msg(
       "formMessage",
-      "❌ " +
-      errorMessage
+      "❌ " + err.message
     );
 
   }
@@ -2441,44 +1824,33 @@ async function submitBusiness(e){
    BUSINESS LISTINGS
 ========================================================= */
 
-async function loadBusinesses(){
+async function loadBusinesses() {
 
   const box =
-    qs(
-      "businessListings"
-    );
+    qs("businessListings");
 
-
-  if(!box)return;
-
+  if (!box) return;
 
   box.innerHTML =
     "<div class='loading-state'><span>⏳</span><p>Anons yo ap chaje...</p></div>";
 
-
-  try{
+  try {
 
     const rows =
       await api(
         "/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc"
       );
 
-
     window.__businessRows =
       Array.isArray(rows)
         ? rows
         : [];
 
-
     renderBusinesses();
 
+  } catch (err) {
 
-  }catch(err){
-
-    console.error(
-      err
-    );
-
+    console.error(err);
 
     box.innerHTML =
       "<div class='empty-state'><span>⚠️</span><p>Nou pa kapab chaje anons yo.</p></div>";
@@ -2488,19 +1860,13 @@ async function loadBusinesses(){
 }
 
 
-function businessType(
-  category
-){
+function businessType(category) {
 
   const raw =
-    String(
-      category || ""
-    );
-
+    String(category || "");
 
   const parts =
     raw.split(":");
-
 
   return parts.length > 1
     ? parts[0]
@@ -2509,32 +1875,22 @@ function businessType(
 }
 
 
-function businessCategory(
-  category
-){
+function businessCategory(category) {
 
   const raw =
-    String(
-      category || ""
-    );
-
+    String(category || "");
 
   const parts =
     raw.split(":");
 
-
   return parts.length > 1
-    ? parts
-        .slice(1)
-        .join(":")
+    ? parts.slice(1).join(":")
     : raw;
 
 }
 
 
-function businessTypeLabel(
-  type
-){
+function businessTypeLabel(type) {
 
   return ({
 
@@ -2565,16 +1921,12 @@ function businessTypeLabel(
 }
 
 
-function renderBusinesses(){
+function renderBusinesses() {
 
   const box =
-    qs(
-      "businessListings"
-    );
+    qs("businessListings");
 
-
-  if(!box)return;
-
+  if (!box) return;
 
   let rows =
     Array.isArray(
@@ -2585,7 +1937,6 @@ function renderBusinesses(){
         ]
       : [];
 
-
   const active =
     document
       .querySelector(
@@ -2594,16 +1945,14 @@ function renderBusinesses(){
       ?.dataset.filter ||
     "all";
 
-
   const search =
     (
       qs("marketSearch")
         ?.value ||
       ""
     )
-      .trim()
-      .toLowerCase();
-
+    .trim()
+    .toLowerCase();
 
   const location =
     (
@@ -2611,14 +1960,13 @@ function renderBusinesses(){
         ?.value ||
       ""
     )
-      .trim()
-      .toLowerCase();
+    .trim()
+    .toLowerCase();
 
-
-  if(
+  if (
     active &&
     active !== "all"
-  ){
+  ) {
 
     rows =
       rows.filter(
@@ -2630,8 +1978,7 @@ function renderBusinesses(){
 
   }
 
-
-  if(search){
+  if (search) {
 
     rows =
       rows.filter(
@@ -2643,54 +1990,39 @@ function renderBusinesses(){
             b.description,
             b.price
           ]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase()
-            .includes(
-              search
-            )
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(search)
       );
 
   }
 
-
-  if(location){
+  if (location) {
 
     rows =
       rows.filter(
-        b => {
-
-          const value =
-            String(
-              b.location || ""
-            ).toLowerCase();
-
-
-          return value.includes(
-            location
-          );
-
-        }
+        b =>
+          String(
+            b.location || ""
+          )
+          .toLowerCase()
+          .includes(location)
       );
 
   }
 
-
   const count =
-    qs(
-      "marketResultCount"
-    );
+    qs("marketResultCount");
 
-
-  if(count){
+  if (count) {
 
     count.textContent =
       `${rows.length} anons disponib`;
 
   }
 
-
-  if(!rows.length){
+  if (!rows.length) {
 
     const currentLang =
       (
@@ -2700,31 +2032,28 @@ function renderBusinesses(){
         ? window.EagleJLanguage.getLanguage()
         : "en";
 
-
     const emptyCopy = {
 
-      ht:[
+      ht: [
         "Pa gen rezilta",
         "Eseye chanje rechèch ou oswa filtre a."
       ],
 
-      en:[
+      en: [
         "No results",
         "Try changing your search or filter."
       ],
 
-      fr:[
+      fr: [
         "Aucun résultat",
         "Essayez de modifier votre recherche ou votre filtre."
       ]
 
     };
 
-
     const ec =
       emptyCopy[currentLang] ||
       emptyCopy.en;
-
 
     box.innerHTML =
       `<div class='empty-state'>
@@ -2733,225 +2062,190 @@ function renderBusinesses(){
         <p>${ec[1]}</p>
       </div>`;
 
-
     return;
 
   }
 
-
   box.innerHTML =
-    rows.map(
-      b => {
+    rows.map(b => {
 
-        const wa =
-          waNumber(
-            b.whatsapp
-          );
+      const wa =
+        waNumber(
+          b.whatsapp
+        );
 
+      const phone =
+        attr(
+          b.phone
+        );
 
-        const phone =
-          attr(
-            b.phone
-          );
+      const type =
+        businessType(
+          b.category
+        );
 
+      const cat =
+        businessCategory(
+          b.category
+        );
 
-        const type =
-          businessType(
-            b.category
-          );
+      return `
 
+        <article
+          class="business-card card"
 
-        const cat =
-          businessCategory(
-            b.category
-          );
+          onclick="openBusinessAd('${attr(b.id)}')"
 
+          role="button"
 
-        return `
+          tabindex="0"
 
-          <article
-            class="business-card card"
-
-            onclick="openBusinessAd('${attr(b.id)}')"
-
-            role="button"
-
-            tabindex="0"
-
-            onkeydown="
-              if(event.key==='Enter'||event.key===' '){
-                event.preventDefault();
-                openBusinessAd('${attr(b.id)}')
-              }
-            "
-          >
-
-            ${
-              b.image_url
-
-                ? `
-
-                  <img
-                    src="${attr(
-                      b.image_url
-                    )}"
-
-                    alt="${attr(
-                      b.business_name
-                    )}"
-
-                    loading="lazy"
-
-                    onerror="
-                      this.style.display='none';
-                      this.nextElementSibling?.classList.remove('hidden')
-                    "
-                  >
-
-                `
-
-                : `
-
-                  <div class="business-card-placeholder">
-                    🏢
-                  </div>
-
-                `
+          onkeydown="
+            if(event.key==='Enter'||event.key===' '){
+              event.preventDefault();
+              openBusinessAd('${attr(b.id)}')
             }
+          "
+        >
 
+          ${
+            b.image_url
 
-            <div class="business-card-body">
+              ? `
 
-              <div class="card-kicker">
+                <img
+                  src="${attr(
+                    b.image_url
+                  )}"
 
-                ${esc(
-                  businessTypeLabel(
-                    type
-                  )
-                )}
+                  alt="${attr(
+                    b.business_name
+                  )}"
 
-              </div>
+                  loading="lazy"
 
+                  onerror="
+                    this.style.display='none';
+                    this.nextElementSibling?.classList.remove('hidden')
+                  "
+                >
 
-              <h3>
-                ${esc(
-                  b.business_name ||
-                  "Anons"
-                )}
-              </h3>
+              `
 
+              : `
 
-              <div class="meta">
+                <div class="business-card-placeholder">
+                  🏢
+                </div>
 
-                <span class="badge">
-                  📍 ${esc(
-                    b.location ||
-                    "—"
-                  )}
-                </span>
+              `
+          }
 
+          <div class="business-card-body">
 
-                ${
-                  cat
+            <div class="card-kicker">
 
-                    ? `
-
-                      <span class="badge">
-                        ${esc(cat)}
-                      </span>
-
-                    `
-
-                    : ""
-                }
-
-              </div>
-
-
-              ${
-                b.price
-
-                  ? `
-
-                    <p class="price-line">
-                      💰 ${esc(
-                        b.price
-                      )}
-                    </p>
-
-                  `
-
-                  : ""
-              }
-
-
-              <p class="card-description">
-
-                ${esc(
-                  b.description ||
-                  ""
-                )}
-
-              </p>
-
-
-              <div
-                class="actions"
-                onclick="event.stopPropagation()"
-              >
-
-                ${
-                  phone
-
-                    ? `
-
-                      <a
-                        class="btn btn-small btn-primary"
-                        href="tel:${phone}"
-                      >
-                        📞 Rele
-                      </a>
-
-                    `
-
-                    : ""
-                }
-
-
-                ${
-                  wa
-
-                    ? `
-
-                      <a
-                        class="btn btn-small btn-secondary"
-                        target="_blank"
-                        rel="noopener"
-                        href="https://wa.me/${wa}"
-                      >
-                        💬 WhatsApp
-                      </a>
-
-                    `
-
-                    : ""
-                }
-
-              </div>
-
-
-              <div class="view-link">
-                Wè detay →
-              </div>
+              ${esc(
+                businessTypeLabel(
+                  type
+                )
+              )}
 
             </div>
 
-          </article>
+            <h3>
+              ${esc(
+                b.business_name ||
+                "Anons"
+              )}
+            </h3>
 
-        `;
+            <div class="meta">
 
-      }
-    ).join("");
+              <span class="badge">
+                📍 ${esc(
+                  b.location ||
+                  "—"
+                )}
+              </span>
+
+              ${
+                cat
+                  ? `
+                    <span class="badge">
+                      ${esc(cat)}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
+
+            ${
+              b.price
+                ? `
+                  <p class="price-line">
+                    💰 ${esc(
+                      b.price
+                    )}
+                  </p>
+                `
+                : ""
+            }
+
+            <p class="card-description">
+              ${esc(
+                b.description ||
+                ""
+              )}
+            </p>
+
+            <div
+              class="actions"
+              onclick="event.stopPropagation()"
+            >
+
+              ${
+                phone
+                  ? `
+                    <a
+                      class="btn btn-small btn-primary"
+                      href="tel:${phone}"
+                    >
+                      📞 Rele
+                    </a>
+                  `
+                  : ""
+              }
+
+              ${
+                wa
+                  ? `
+                    <a
+                      class="btn btn-small btn-secondary"
+                      target="_blank"
+                      rel="noopener"
+                      href="https://wa.me/${wa}"
+                    >
+                      💬 WhatsApp
+                    </a>
+                  `
+                  : ""
+              }
+
+            </div>
+
+            <div class="view-link">
+              Wè detay →
+            </div>
+
+          </div>
+
+        </article>
+
+      `;
+
+    }).join("");
 
 }
 
@@ -2960,54 +2254,44 @@ function renderBusinesses(){
    OPEN BUSINESS AD
 ========================================================= */
 
-window.openBusinessAd =
-  function(id){
+window.openBusinessAd = function(id) {
 
-    if(!id){
+  if (!id) {
 
-      console.error(
-        "Business ID missing."
-      );
+    console.error(
+      "Business ID missing."
+    );
 
-      return;
+    return;
 
-    }
+  }
 
+  location.href =
+    `anons.html?id=${encodeURIComponent(id)}`;
 
-    location.href =
-      `anons.html?id=${encodeURIComponent(id)}`;
-
-  };
+};
 
 
 /* =========================================================
    BUSINESS DETAIL
 ========================================================= */
 
-async function loadBusinessDetail(){
+async function loadBusinessDetail() {
 
   const box =
-    qs(
-      "businessDetail"
-    );
+    qs("businessDetail");
 
-
-  if(!box)return;
-
+  if (!box) return;
 
   const params =
     new URLSearchParams(
       location.search
     );
 
-
   const id =
-    params.get(
-      "id"
-    );
+    params.get("id");
 
-
-  if(!id){
+  if (!id) {
 
     box.innerHTML =
       "<p class='notice'>❌ Anons sa pa gen ID.</p>";
@@ -3016,20 +2300,17 @@ async function loadBusinessDetail(){
 
   }
 
-
-  try{
+  try {
 
     const rows =
       await api(
         `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
       );
 
-
     const b =
       rows?.[0];
 
-
-    if(!b){
+    if (!b) {
 
       box.innerHTML =
         "<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib.</p>";
@@ -3038,18 +2319,15 @@ async function loadBusinessDetail(){
 
     }
 
-
     const phone =
       attr(
         b.phone || ""
       );
 
-
     const wa =
       waNumber(
         b.whatsapp
       );
-
 
     box.innerHTML = `
 
@@ -3081,18 +2359,15 @@ async function loadBusinessDetail(){
           `
       }
 
-
       <h1>
         ${esc(
           b.business_name
         )}
       </h1>
 
-
       <div class="meta">
 
         <span class="badge">
-
           ${esc(
             businessTypeLabel(
               businessType(
@@ -3100,31 +2375,23 @@ async function loadBusinessDetail(){
               )
             )
           )}
-
         </span>
 
-
         <span class="badge">
-
           📂 ${esc(
             businessCategory(
               b.category
             )
           )}
-
         </span>
 
-
         <span class="badge">
-
           📍 ${esc(
             b.location
           )}
-
         </span>
 
       </div>
-
 
       ${
         b.price
@@ -3148,7 +2415,6 @@ async function loadBusinessDetail(){
           : ""
       }
 
-
       <p style="white-space:pre-line">
 
         ${esc(
@@ -3156,7 +2422,6 @@ async function loadBusinessDetail(){
         )}
 
       </p>
-
 
       <div class="actions">
 
@@ -3177,7 +2442,6 @@ async function loadBusinessDetail(){
 
             : ""
         }
-
 
         ${
           wa
@@ -3205,13 +2469,9 @@ async function loadBusinessDetail(){
 
     `;
 
+  } catch (err) {
 
-  }catch(err){
-
-    console.error(
-      err
-    );
-
+    console.error(err);
 
     box.innerHTML =
       "<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p>";
@@ -3225,7 +2485,7 @@ async function loadBusinessDetail(){
    HOMEPAGE STATISTICS
 ========================================================= */
 
-async function loadStats(){
+async function loadStats() {
 
   const ids = [
 
@@ -3246,42 +2506,36 @@ async function loadStats(){
 
   ];
 
-
-  for(
-    const [
-      id,
-      table
-    ]
+  for (
+    const [id, table]
     of ids
-  ){
+  ) {
 
-    try{
+    try {
 
-      const r =
+      const response =
         await fetch(
           `${SUPABASE_URL}/rest/v1/${table}?select=id&limit=1`,
           {
-            headers:{
+            headers: {
 
-              apikey:
+              "apikey":
                 SUPABASE_KEY,
 
-              Range:
+              "Range":
                 "0-0",
 
-              Prefer:
+              "Prefer":
                 "count=exact"
 
             }
           }
         );
 
-
       const range =
-        r.headers.get(
+        response.headers.get(
           "content-range"
         );
-
 
       const count =
         range
@@ -3291,8 +2545,7 @@ async function loadStats(){
             )
           : 0;
 
-
-      if(qs(id)){
+      if (qs(id)) {
 
         qs(id).textContent =
           Number.isFinite(count)
@@ -3301,20 +2554,15 @@ async function loadStats(){
 
       }
 
-
-    }catch(e){}
+    } catch (e) {}
 
   }
 
+  if (qs("stat-ads")) {
 
-  if(qs("stat-ads")){
-
-    qs(
-      "stat-ads"
-    ).textContent =
-      qs(
-        "stat-business"
-      )?.textContent ||
+    qs("stat-ads").textContent =
+      qs("stat-business")
+        ?.textContent ||
       "0";
 
   }
@@ -3326,16 +2574,12 @@ async function loadStats(){
    CONTACT
 ========================================================= */
 
-function initContact(){
+function initContact() {
 
   const form =
-    qs(
-      "contactForm"
-    );
+    qs("contactForm");
 
-
-  if(!form)return;
-
+  if (!form) return;
 
   form.addEventListener(
     "submit",
@@ -3343,36 +2587,31 @@ function initContact(){
 
       e.preventDefault();
 
-
       const name =
         qs("contactName")
           ?.value.trim() ||
         "";
-
 
       const email =
         qs("contactEmail")
           ?.value.trim() ||
         "";
 
-
       const phone =
         qs("contactPhone")
           ?.value.trim() ||
         "";
-
 
       const message =
         qs("contactMessage")
           ?.value.trim() ||
         "";
 
-
-      if(
+      if (
         !name ||
         !email ||
         !message
-      ){
+      ) {
 
         msg(
           "contactMessageBox",
@@ -3383,12 +2622,10 @@ function initContact(){
 
       }
 
-
       const subject =
         encodeURIComponent(
           "Eagle-J Connect - Contact"
         );
-
 
       const body =
         encodeURIComponent(
@@ -3402,10 +2639,8 @@ ${message}`
 
         );
 
-
       location.href =
         `mailto:eaglejconnect@gmail.com?subject=${subject}&body=${body}`;
-
 
       msg(
         "contactMessageBox",
@@ -3423,158 +2658,136 @@ ${message}`
    PUBLIC USERS DIRECTORY
 ========================================================= */
 
-async function loadUsersDirectory(){
+async function loadUsersDirectory() {
 
   const box =
-    qs(
-      "usersDirectory"
-    );
-
+    qs("usersDirectory");
 
   const count =
-    qs(
-      "usersDirectoryCount"
-    );
+    qs("usersDirectoryCount");
 
+  if (!box) return;
 
-  if(!box)return;
-
-
-  try{
+  try {
 
     const rows =
       await api(
         "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
       );
 
-
     const users =
       Array.isArray(rows)
         ? rows
         : [];
 
-
-    if(count){
+    if (count) {
 
       count.textContent =
         `${users.length} itilizatè afiche`;
 
     }
 
+    if (!users.length) {
 
-    if(!users.length){
+      box.innerHTML =
+        `
+          <div class="empty-state">
 
-      box.innerHTML = `
-        <div class="empty-state">
+            <div class="empty-icon">
+              👥
+            </div>
 
-          <div class="empty-icon">
-            👥
+            <h3>
+              Pa gen itilizatè pou afiche
+            </h3>
+
+            <p>
+              Nou poko gen pwofil piblik ki disponib.
+            </p>
+
           </div>
-
-          <h3>
-            Pa gen itilizatè pou afiche
-          </h3>
-
-          <p>
-            Nou poko gen pwofil piblik ki disponib.
-          </p>
-
-        </div>
-      `;
+        `;
 
       return;
 
     }
 
-
     box.innerHTML =
-      users.map(
-        u => {
+      users.map(u => {
 
-          const name =
-            esc(
-              u.full_name ||
-              "Itilizatè Eagle-J"
-            );
+        const name =
+          esc(
+            u.full_name ||
+            "Itilizatè Eagle-J"
+          );
 
+        const type =
+          esc(
+            formatAccountType(
+              u.account_type
+            )
+          );
 
-          const type =
-            esc(
-              formatAccountType(
-                u.account_type
-              )
-            );
+        return `
 
+          <article class="user-card">
 
-          return `
+            <div class="user-avatar">
 
-            <article class="user-card">
+              ${esc(
+                (
+                  u.full_name ||
+                  "EJ"
+                )
+                .trim()
+                .slice(0, 1)
+                .toUpperCase()
+              )}
 
-              <div class="user-avatar">
+            </div>
 
-                ${esc(
-                  (
-                    u.full_name ||
-                    "EJ"
-                  )
-                    .trim()
-                    .slice(0,1)
-                    .toUpperCase()
-                )}
+            <div class="user-card-body">
 
-              </div>
+              <h3>
+                ${name}
+              </h3>
 
+              <p>
+                ${type}
+              </p>
 
-              <div class="user-card-body">
+            </div>
 
-                <h3>
-                  ${name}
-                </h3>
+          </article>
 
-                <p>
-                  ${type}
-                </p>
+        `;
 
-              </div>
+      }).join("");
 
-            </article>
-
-          `;
-
-        }
-      ).join("");
-
-
-  }catch(err){
+  } catch (err) {
 
     console.error(
       "Users directory:",
       err
     );
 
-
-    if(count){
-
-      count.textContent =
-        "";
-
+    if (count) {
+      count.textContent = "";
     }
 
-
-    box.innerHTML = `
-      <div class="notice">
-        ❌ Nou pa kapab chaje lis itilizatè yo kounye a.
-      </div>
-    `;
+    box.innerHTML =
+      `
+        <div class="notice">
+          ❌ Nou pa kapab chaje lis itilizatè yo kounye a.
+        </div>
+      `;
 
   }
 
 }
 
 
-function formatAccountType(
-  type
-){
+function formatAccountType(type) {
 
   const map = {
 
@@ -3592,11 +2805,9 @@ function formatAccountType(
 
   };
 
-
   const label =
     map[type] ||
     "Manm Eagle-J Connect";
-
 
   return window.EJC?.t
     ? window.EJC.t(label)
@@ -3613,24 +2824,17 @@ document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    /* =====================================================
-       MOBILE MENU
-    ===================================================== */
+    /* MOBILE MENU */
 
     setupMobileMenu();
 
 
-    /* =====================================================
-       REGISTRATION
-    ===================================================== */
+    /* REGISTRATION */
 
     const reg =
-      qs(
-        "registerForm"
-      );
+      qs("registerForm");
 
-
-    if(reg){
+    if (reg) {
 
       reg.addEventListener(
         "submit",
@@ -3640,17 +2844,12 @@ document.addEventListener(
     }
 
 
-    /* =====================================================
-       LOGIN
-    ===================================================== */
+    /* LOGIN */
 
     const login =
-      qs(
-        "loginForm"
-      );
+      qs("loginForm");
 
-
-    if(login){
+    if (login) {
 
       login.addEventListener(
         "submit",
@@ -3660,24 +2859,20 @@ document.addEventListener(
     }
 
 
-    /* =====================================================
-       PUBLIC JOBS
-    ===================================================== */
+    /* PUBLIC JOBS */
 
-    if(
+    if (
       qs("jobListings") ||
       qs("jobsList")
-    ){
+    ) {
 
       loadJobs();
-
 
       qs("searchJob")
         ?.addEventListener(
           "input",
           renderJobs
         );
-
 
       qs("jobFilter")
         ?.addEventListener(
@@ -3688,18 +2883,13 @@ document.addEventListener(
     }
 
 
-    /* =====================================================
-       BUSINESS LISTINGS
-    ===================================================== */
+    /* BUSINESS LISTINGS */
 
-    if(
-      qs(
-        "businessListings"
-      )
-    ){
+    if (
+      qs("businessListings")
+    ) {
 
       loadBusinesses();
-
 
       qs("marketSearch")
         ?.addEventListener(
@@ -3707,88 +2897,65 @@ document.addEventListener(
           renderBusinesses
         );
 
-
       qs("marketLocation")
         ?.addEventListener(
           "input",
           renderBusinesses
         );
 
-
-      qs("marketLocation")
-        ?.addEventListener(
-          "change",
-          renderBusinesses
-        );
-
-
       document
         .querySelectorAll(
           ".market-tab"
         )
-        .forEach(
-          tab => {
+        .forEach(tab => {
 
-            tab.addEventListener(
-              "click",
-              () => {
+          tab.addEventListener(
+            "click",
+            () => {
 
-                document
-                  .querySelectorAll(
-                    ".market-tab"
-                  )
-                  .forEach(
-                    t =>
-                      t.classList.remove(
-                        "active"
-                      )
-                  );
-
-
-                tab.classList.add(
-                  "active"
+              document
+                .querySelectorAll(
+                  ".market-tab"
+                )
+                .forEach(
+                  t =>
+                    t.classList.remove(
+                      "active"
+                    )
                 );
 
+              tab.classList.add(
+                "active"
+              );
 
-                renderBusinesses();
+              renderBusinesses();
 
-              }
-            );
+            }
+          );
 
-          }
-        );
+        });
 
     }
 
 
-    /* =====================================================
-       BUSINESS DETAIL
-    ===================================================== */
+    /* BUSINESS DETAIL */
 
-    if(
-      qs(
-        "businessDetail"
-      )
-    ){
+    if (
+      qs("businessDetail")
+    ) {
 
       loadBusinessDetail();
 
     }
 
 
-    /* =====================================================
-       BUSINESS FORM
-    ===================================================== */
+    /* BUSINESS FORM */
 
-    if(
-      qs(
-        "businessForm"
-      )
-    ){
+    if (
+      qs("businessForm")
+    ) {
 
-      qs(
-        "businessForm"
-      )
+      qs("businessForm")
         .addEventListener(
           "submit",
           submitBusiness
@@ -3797,49 +2964,35 @@ document.addEventListener(
     }
 
 
-    /* =====================================================
-       DASHBOARD
-    ===================================================== */
+    /* DASHBOARD */
 
-    if(
-      qs(
-        "dashboardLoading"
-      )
-    ){
+    if (
+      qs("dashboardLoading")
+    ) {
 
       loadDashboard();
 
     }
 
 
-    /* =====================================================
-       EMPLOYER DASHBOARD
-    ===================================================== */
+    /* EMPLOYER DASHBOARD */
 
-    if(
-      qs(
-        "employerName"
-      )
-    ){
+    if (
+      qs("employerName")
+    ) {
 
       loadEmployerDashboard();
 
     }
 
 
-    /* =====================================================
-       JOB FORM
-    ===================================================== */
+    /* JOB FORM */
 
-    if(
-      qs(
-        "jobForm"
-      )
-    ){
+    if (
+      qs("jobForm")
+    ) {
 
-      qs(
-        "jobForm"
-      )
+      qs("jobForm")
         .addEventListener(
           "submit",
           postJob
@@ -3848,25 +3001,21 @@ document.addEventListener(
     }
 
 
-    /* =====================================================
-       MY JOBS
-    ===================================================== */
+    /* MY JOBS */
 
-    if(
-      qs(
-        "myJobs"
-      )
-    ){
+    if (
+      qs("myJobs") ||
+      qs("myJobsList")
+    ) {
 
-      const s =
+      const session =
         getSession();
 
-
-      if(s){
+      if (session) {
 
         loadMyJobs(
-          s.user.id,
-          s.token
+          session.user.id,
+          session.token
         );
 
       }
@@ -3874,39 +3023,29 @@ document.addEventListener(
     }
 
 
-    /* =====================================================
-       STATISTICS
-    ===================================================== */
+    /* STATISTICS */
 
-    if(
-      qs(
-        "stats"
-      )
-    ){
+    if (
+      qs("stats")
+    ) {
 
       loadStats();
 
     }
 
 
-    /* =====================================================
-       PUBLIC USERS DIRECTORY
-    ===================================================== */
+    /* PUBLIC USERS DIRECTORY */
 
-    if(
-      qs(
-        "usersDirectory"
-      )
-    ){
+    if (
+      qs("usersDirectory")
+    ) {
 
       loadUsersDirectory();
 
     }
 
 
-    /* =====================================================
-       CONTACT
-    ===================================================== */
+    /* CONTACT */
 
     initContact();
 
