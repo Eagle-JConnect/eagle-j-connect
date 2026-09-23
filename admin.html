@@ -1,540 +1,323 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
+
 <html lang="ht">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>Admin Dashboard | Eagle-J Connect</title>
-
-<link rel="stylesheet" href="style.css?v=language-final-5">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1.0" name="viewport"/>
+<title data-i18n="Admin Dashboard | Eagle-J Connect">Admin Dashboard | Eagle-J Connect</title>
+<link href="style.css?v=language-final-6" rel="stylesheet"/>
 </head>
-
 <body>
-
 <header class="header">
-
-  <div class="container nav-container">
-
-    <a href="index.html" class="logo-area">
-
-      <img
-        src="Logo.jpg"
-        alt="Eagle-J Connect logo"
-      >
-
-      <div>
-        <h2>Eagle-J Connect</h2>
-        <span>Connect • Discover • Grow</span>
-      </div>
-
-    </a>
-
-    <button
-      class="menu-toggle"
-      id="menuToggle"
-      type="button"
-      aria-label="Ouvri meni"
-      aria-expanded="false"
-      aria-controls="menu"
-    >
+<div class="container nav-container">
+<a class="logo-area" href="index.html">
+<img alt="Eagle-J Connect logo" src="Logo.jpg"/>
+<div>
+<h2>Eagle-J Connect</h2>
+<span data-i18n="Connect • Discover • Grow">Connect • Discover • Grow</span>
+</div>
+</a>
+<button aria-controls="menu" aria-expanded="false" aria-label="Ouvri meni" class="menu-toggle" id="menuToggle" type="button">
       ☰
     </button>
-
-    <nav
-      id="menu"
-      aria-label="Navigasyon prensipal"
-    >
-
-      <a href="index.html">Akèy</a>
-
-      <a href="travay.html">Travay</a>
-
-      <a href="biznis.html">Biznis</a>
-
-      <a href="anons-list.html">Anons</a>
-
-      <a href="kontak.html">Kontak</a>
-
-      <a
-        href="enskri.html"
-        data-auth="guest"
-      >
+<nav aria-label="Navigasyon prensipal" id="menu">
+<a data-i18n="Akèy" href="index.html">Akèy</a>
+<a data-i18n="Travay" href="travay.html">Travay</a>
+<a data-i18n="Biznis" href="biznis.html">Biznis</a>
+<a data-i18n="Anons" href="anons-list.html">Anons</a>
+<a data-i18n="Kontak" href="kontak.html">Kontak</a>
+<a data-auth="guest" data-i18n="Enskri" href="enskri.html">
         Enskri
       </a>
-
-      <a
-        href="login.html"
-        data-auth="guest"
-      >
+<a data-auth="guest" data-i18n="Konekte" href="login.html">
         Konekte
       </a>
-
-      <a
-        href="profil.html"
-        data-auth="user"
-      >
+<a data-auth="user" data-i18n="Kont Mwen" href="profil.html">
         Kont Mwen
       </a>
-
-      <a
-        href="#"
-        id="logoutBtn"
-        data-auth="user"
-      >
+<a data-auth="user" data-i18n="Dekonekte" href="#" id="logoutBtn">
         Dekonekte
       </a>
-
-      <div class="language">
-
-        <select
-          id="languageSelect"
-          aria-label="Chwazi lang"
-        >
-
-          <option value="ht">
+<div class="language">
+<select aria-label="Chwazi lang" id="languageSelect">
+<option value="ht">
             🇭🇹 Kreyòl
           </option>
-
-          <option value="en">
+<option value="en">
             🇺🇸 English
           </option>
-
-          <option value="fr">
+<option value="fr">
             🇫🇷 Français
           </option>
-
-        </select>
-
-      </div>
-
-    </nav>
-
-  </div>
-
+</select>
+</div>
+</nav>
+</div>
 </header>
-
-
 <main class="admin-wrap">
-
-  <!-- HEADER ADMIN -->
-
-  <div class="admin-card">
-
-    <h1>
+<!-- HEADER ADMIN -->
+<div class="admin-card">
+<h1 data-i18n="🛡️ Dashboard Administratè">
       🛡️ Dashboard Administratè
     </h1>
-
-    <p>
+<p data-i18n="Se Admin ki valide sa ki vin piblik sou Eagle-J Connect.">
       Se Admin ki valide sa ki vin piblik
       sou Eagle-J Connect.
     </p>
-
-    <div
-      id="adminMessage"
-      class="notice-admin hidden"
-    ></div>
-
-  </div>
-
-
-  <!-- ADMIN APPLICATION -->
-
-  <div
-    id="adminApp"
-    class="hidden"
-  >
-
-    <!-- STATISTICS -->
-
-    <div class="admin-grid admin-grid-6">
-
-      <div class="admin-stat">
-        <strong id="adminPendingJobCount">
+<div class="notice-admin hidden" id="adminMessage"></div>
+</div>
+<!-- ADMIN APPLICATION -->
+<div class="hidden" id="adminApp">
+<!-- STATISTICS -->
+<div class="admin-grid admin-grid-6">
+<div class="admin-stat">
+<strong id="adminPendingJobCount">
           0
         </strong>
-        <span>
+<span data-i18n="Travay pou valide">
           Travay pou valide
         </span>
-      </div>
-
-      <div class="admin-stat">
-        <strong id="adminPendingBusinessCount">
+</div>
+<div class="admin-stat">
+<strong id="adminPendingBusinessCount">
           0
         </strong>
-        <span>
+<span data-i18n="Anons pou valide">
           Anons pou valide
         </span>
-      </div>
-
-      <div class="admin-stat">
-        <strong id="adminActiveJobCount">
+</div>
+<div class="admin-stat">
+<strong id="adminActiveJobCount">
           0
         </strong>
-        <span>
+<span data-i18n="Travay piblik">
           Travay piblik
         </span>
-      </div>
-
-      <div class="admin-stat">
-        <strong id="adminActiveBusinessCount">
+</div>
+<div class="admin-stat">
+<strong id="adminActiveBusinessCount">
           0
         </strong>
-        <span>
+<span data-i18n="Anons piblik">
           Anons piblik
         </span>
-      </div>
-
-      <div class="admin-stat">
-        <strong id="adminUserCount">
+</div>
+<div class="admin-stat">
+<strong id="adminUserCount">
           0
         </strong>
-        <span>
+<span data-i18n="Itilizatè">
           Itilizatè
         </span>
-      </div>
-
-      <div class="admin-stat">
-        <strong id="adminDisabledUserCount">
+</div>
+<div class="admin-stat">
+<strong id="adminDisabledUserCount">
           0
         </strong>
-        <span>
+<span data-i18n="Kont dezaktive">
           Kont dezaktive
         </span>
-      </div>
-
-    </div>
-
-
-    <!-- JOBS -->
-
-    <section class="admin-card">
-
-      <h2>
+</div>
+</div>
+<!-- JOBS -->
+<section class="admin-card">
+<h2 data-i18n="⏳ Travay ki bezwen validasyon">
         ⏳ Travay ki bezwen validasyon
       </h2>
-
-      <div class="admin-actions">
-
-        <select id="adminJobStatusFilter">
-
-          <option value="pending">
+<div class="admin-actions">
+<select id="adminJobStatusFilter">
+<option value="pending">
             ⏳ Pending
           </option>
-
-          <option value="approved">
+<option value="approved">
             ✅ Piblik
           </option>
-
-          <option value="rejected">
+<option value="rejected">
             ❌ Refize
           </option>
-
-          <option value="unavailable">
+<option value="unavailable">
             🚫 Pa disponib
           </option>
-
-          <option value="">
+<option value="">
             Tout
           </option>
-
-        </select>
-
-        <input
-          id="adminJobSearch"
-          type="search"
-          placeholder="🔎 Tit, konpayi oswa lokalizasyon..."
-        >
-
-        <button
-          type="button"
-          onclick="loadAdminJobs()"
-        >
+</select>
+<input id="adminJobSearch" placeholder="🔎 Tit, konpayi oswa lokalizasyon..." type="search"/>
+<button data-i18n="🔄 Rafrechi" onclick="loadAdminJobs()" type="button">
           🔄 Rafrechi
         </button>
-
-      </div>
-
-
-      <div class="admin-table-wrap">
-
-        <table class="admin-table">
-
-          <thead>
-
-            <tr>
-              <th>Travay</th>
-              <th>Konpayi</th>
-              <th>Lokalizasyon</th>
-              <th>Status</th>
-              <th>Dat</th>
-              <th>Aksyon</th>
-            </tr>
-
-          </thead>
-
-          <tbody id="adminJobsBody">
-
-            <tr>
-              <td colspan="6">
+</div>
+<div class="admin-table-wrap">
+<table class="admin-table">
+<thead>
+<tr>
+<th data-i18n="Travay">Travay</th>
+<th>Konpayi</th>
+<th data-i18n="Lokalizasyon">Lokalizasyon</th>
+<th data-i18n="Status">Status</th>
+<th data-i18n="Dat">Dat</th>
+<th data-i18n="Aksyon">Aksyon</th>
+</tr>
+</thead>
+<tbody id="adminJobsBody">
+<tr>
+<td colspan="6" data-i18n="⏳ Nap chaje...">
                 ⏳ Nap chaje...
               </td>
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-
-    <!-- BUSINESS ADS -->
-
-    <section class="admin-card">
-
-      <h2>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- BUSINESS ADS -->
+<section class="admin-card">
+<h2 data-i18n="📢 Anons biznis/sèvis ki bezwen validasyon">
         📢 Anons biznis/sèvis ki bezwen validasyon
       </h2>
-
-      <div class="admin-actions">
-
-        <select id="adminBusinessStatusFilter">
-
-          <option value="pending">
+<div class="admin-actions">
+<select id="adminBusinessStatusFilter">
+<option value="pending">
             ⏳ Pending
           </option>
-
-          <option value="approved">
+<option value="approved">
             ✅ Piblik
           </option>
-
-          <option value="rejected">
+<option value="rejected">
             ❌ Refize
           </option>
-
-          <option value="unavailable">
+<option value="unavailable">
             🚫 Pa disponib
           </option>
-
-          <option value="">
+<option value="">
             Tout
           </option>
-
-        </select>
-
-        <input
-          id="adminBusinessSearch"
-          type="search"
-          placeholder="🔎 Non biznis, kategori oswa lokalizasyon..."
-        >
-
-        <button
-          type="button"
-          onclick="loadAdminBusinesses()"
-        >
+</select>
+<input id="adminBusinessSearch" placeholder="🔎 Non biznis, kategori oswa lokalizasyon..." type="search"/>
+<button data-i18n="🔄 Rafrechi" onclick="loadAdminBusinesses()" type="button">
           🔄 Rafrechi
         </button>
-
-      </div>
-
-
-      <div class="admin-table-wrap">
-
-        <table class="admin-table">
-
-          <thead>
-
-            <tr>
-              <th>Biznis/Anons</th>
-              <th>Kategori</th>
-              <th>Lokalizasyon</th>
-              <th>Status</th>
-              <th>Dat</th>
-              <th>Aksyon</th>
-            </tr>
-
-          </thead>
-
-          <tbody id="adminBusinessesBody">
-
-            <tr>
-              <td colspan="6">
+</div>
+<div class="admin-table-wrap">
+<table class="admin-table">
+<thead>
+<tr>
+<th>Biznis/Anons</th>
+<th data-i18n="Kategori">Kategori</th>
+<th data-i18n="Lokalizasyon">Lokalizasyon</th>
+<th data-i18n="Status">Status</th>
+<th data-i18n="Dat">Dat</th>
+<th data-i18n="Aksyon">Aksyon</th>
+</tr>
+</thead>
+<tbody id="adminBusinessesBody">
+<tr>
+<td colspan="6" data-i18n="⏳ Nap chaje...">
                 ⏳ Nap chaje...
               </td>
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-
-    <!-- USERS -->
-
-    <section class="admin-card">
-
-      <h2>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- USERS -->
+<section class="admin-card">
+<h2 data-i18n="👥 Jere itilizatè yo">
         👥 Jere itilizatè yo
       </h2>
-
-      <div class="admin-actions">
-
-        <input
-          id="adminUserSearch"
-          type="search"
-          placeholder="🔎 Non, telefòn oswa ID..."
-        >
-
-        <select id="adminTypeFilter">
-
-          <option value="">
+<div class="admin-actions">
+<input id="adminUserSearch" placeholder="🔎 Non, telefòn oswa ID..." type="search"/>
+<select id="adminTypeFilter">
+<option value="">
             Tout kalite kont
           </option>
-
-          <option value="job_seeker">
+<option value="job_seeker">
             👷 Job Seeker
           </option>
-
-          <option value="employer">
+<option value="employer">
             🏢 Anplwayè
           </option>
-
-          <option value="admin">
+<option value="admin">
             🛡️ Administratè
           </option>
-
-        </select>
-
-
-        <select id="adminAccountStatusFilter">
-
-          <option value="">
+</select>
+<select id="adminAccountStatusFilter">
+<option value="">
             Tout status
           </option>
-
-          <option value="active">
+<option value="active">
             ✅ Aktif
           </option>
-
-          <option value="disabled">
+<option value="disabled">
             🚫 Dezaktive
           </option>
-
-        </select>
-
-
-        <button
-          type="button"
-          onclick="loadAdminUsers()"
-        >
+</select>
+<button data-i18n="🔄 Rafrechi" onclick="loadAdminUsers()" type="button">
           🔄 Rafrechi
         </button>
-
-      </div>
-
-
-      <div class="admin-table-wrap">
-
-        <table class="admin-table">
-
-          <thead>
-
-            <tr>
-              <th>Non</th>
-              <th>Imèl</th>
-              <th>Telefòn</th>
-              <th>Kalite</th>
-              <th>Status</th>
-              <th>Aksyon</th>
-            </tr>
-
-          </thead>
-
-          <tbody id="adminUsersBody">
-
-            <tr>
-              <td colspan="6">
+</div>
+<div class="admin-table-wrap">
+<table class="admin-table">
+<thead>
+<tr>
+<th data-i18n="Non">Non</th>
+<th data-i18n="Imèl">Imèl</th>
+<th data-i18n="Telefòn">Telefòn</th>
+<th data-i18n="Kalite">Kalite</th>
+<th data-i18n="Status">Status</th>
+<th data-i18n="Aksyon">Aksyon</th>
+</tr>
+</thead>
+<tbody id="adminUsersBody">
+<tr>
+<td colspan="6" data-i18n="⏳ Nap chaje...">
                 ⏳ Nap chaje...
               </td>
-            </tr>
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-    </section>
-
-  </div>
-
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
 </main>
-
-
 <footer>
-
-  <div class="container">
-
-    <div class="footer-grid">
-
-      <div>
-
-        <h3>
+<div class="container">
+<div class="footer-grid">
+<div>
+<h3>
           Eagle-J Connect
         </h3>
-
-        <p>
+<p>
           Konekte moun, travay,
           biznis ak sèvis ant
           moun atravè mond lan.
         </p>
-
-      </div>
-
-      <div class="footer-links">
-
-        <a href="index.html">
+</div>
+<div class="footer-links">
+<a data-i18n="Akèy" href="index.html">
           Akèy
         </a>
-
-        <a href="travay.html">
+<a data-i18n="Travay" href="travay.html">
           Travay
         </a>
-
-        <a href="biznis.html">
+<a data-i18n="Biznis" href="biznis.html">
           Biznis
         </a>
-
-        <a href="kontak.html">
+<a data-i18n="Kontak" href="kontak.html">
           Kontak
         </a>
-
-      </div>
-
-    </div>
-
-    <p class="copyright">
+</div>
+</div>
+<p class="copyright">
       © 2026 Eagle-J Connect
       • Connect • Discover • Grow
     </p>
-
-  </div>
-
+</div>
 </footer>
-
-
-<script src="language.js?v=language-final-5"></script>
-
-<script src="script.js?v=language-final-5"></script>
-
-<script src="menu.js?v=language-final-5"></script>
-
-<script src="admin.js?v=language-final-5"></script>
-
-<script src="global.js?v=language-final-5"></script>
+<script src="language.js?v=language-final-6"></script>
+<script src="script.js?v=language-final-6"></script>
+<script src="menu.js?v=language-final-6"></script>
+<script src="admin.js?v=language-final-6"></script>
+<script src="global.js?v=language-final-6"></script>
 </body>
 </html>
