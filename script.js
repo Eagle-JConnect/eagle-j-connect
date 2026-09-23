@@ -126,8 +126,6 @@ window.logoutUser=()=>{
 
 /* =========================================================
    VERIFY SUPABASE AUTH SESSION
-   ---------------------------------------------------------
-   Verifye JWT aktyèl la dirèkteman ak Supabase Auth.
 ========================================================= */
 
 async function verifyAuthSession(){
@@ -178,12 +176,6 @@ async function verifyAuthSession(){
       return null;
 
     }
-
-    /*
-      Mete user ki Supabase Auth verifye a
-      nan localStorage. Sa anpeche yon ansyen
-      user_id lokal diferan ak auth.uid().
-    */
 
     const verifiedUser={
       ...session.user,
@@ -329,14 +321,6 @@ function fmtDate(v){
 ========================================================= */
 
 async function api(path,options={}){
-
-  /*
-    skipAuth=true nesesè pou:
-    - signup
-    - login
-
-    Paske anvan login pa gen JWT itilizatè.
-  */
 
   const {
     skipAuth=false,
@@ -560,10 +544,6 @@ async function registerUser(e){
 
   try{
 
-    /*
-      Signup pa dwe pran ansyen JWT lokal la.
-    */
-
     const data=await api(
       "/auth/v1/signup",
       {
@@ -723,19 +703,6 @@ async function loginUser(e){
 
   try{
 
-    /*
-      ENPÒTAN:
-
-      SUPABASE_KEY se publishable key.
-      Li pa dwe ale nan Authorization Bearer.
-
-      Login dwe itilize:
-      apikey = publishable key
-
-      Apre login, Supabase retounen:
-      access_token = JWT itilizatè a.
-    */
-
     const data=await api(
       "/auth/v1/token?grant_type=password",
       {
@@ -764,16 +731,8 @@ async function loginUser(e){
     }
 
 
-    /* SAVE AUTH SESSION */
-
     saveSession(data);
 
-
-    /*
-      Verifye JWT a dirèkteman ak Supabase.
-      Sa enpòtan pou RLS auth.uid() mache
-      ak menm UUID nou mete nan businesses.user_id.
-    */
 
     const verified=
       await verifyAuthSession();
@@ -790,10 +749,6 @@ async function loginUser(e){
 
     const authUser=verified.user;
 
-
-    /* -----------------------------------------------------
-       GET PROFILE
-    ----------------------------------------------------- */
 
     let profiles=[];
 
@@ -829,10 +784,6 @@ async function loginUser(e){
     }
 
 
-    /* -----------------------------------------------------
-       ACCOUNT STATUS
-    ----------------------------------------------------- */
-
     if(
       profile.account_status &&
       profile.account_status!=="active"
@@ -846,10 +797,6 @@ async function loginUser(e){
 
     }
 
-
-    /* -----------------------------------------------------
-       SAVE PROFILE DATA
-    ----------------------------------------------------- */
 
     localStorage.setItem(
       "user_full_name",
@@ -890,10 +837,6 @@ async function loginUser(e){
     );
 
 
-    /* -----------------------------------------------------
-       CHECK ADMIN
-    ----------------------------------------------------- */
-
     const isAdmin=
       await checkCurrentUserIsAdmin(
         authUser.id
@@ -910,10 +853,6 @@ async function loginUser(e){
       "success"
     );
 
-
-    /* -----------------------------------------------------
-       ROUTING
-    ----------------------------------------------------- */
 
     setTimeout(
       ()=>{
@@ -1175,6 +1114,21 @@ async function postJob(e){
     await verifyAuthSession();
 
 
+  /*
+    DEBUG TEST:
+    Sa montre UUID Supabase Auth frontend la ap itilize.
+  */
+
+  console.log(
+    "JOB AUTH TEST:",
+    {
+      authUserId:s?.user?.id,
+      email:s?.user?.email,
+      tokenExists:!!s?.token
+    }
+  );
+
+
   if(!s){
 
     location.href="login.html";
@@ -1188,11 +1142,6 @@ async function postJob(e){
 
     title:
       qs("jobTitle")?.value.trim() || "",
-
-    /*
-      Schema Supabase ou genyen:
-      company_name
-    */
 
     company_name:
       qs("jobCompany")?.value.trim() || "",
@@ -1208,11 +1157,6 @@ async function postJob(e){
 
     description:
       qs("jobDescription")?.value.trim() || "",
-
-    /*
-      Schema Supabase ou genyen:
-      contact_phone
-    */
 
     contact_phone:
       qs("jobContact")?.value.trim() || ""
@@ -1248,51 +1192,58 @@ async function postJob(e){
 
   try{
 
-    await api(
-      "/rest/v1/jobs",
-      {
-        method:"POST",
+    const rows=
+      await api(
+        "/rest/v1/jobs",
+        {
+          method:"POST",
 
-        headers:{
-          Authorization:
-            `Bearer ${s.token}`,
+          headers:{
+            Authorization:
+              `Bearer ${s.token}`,
 
-          Prefer:
-            "return=representation"
-        },
+            Prefer:
+              "return=representation"
+          },
 
-        body:JSON.stringify({
+          body:JSON.stringify({
 
-          title:
-            vals.title,
+            title:
+              vals.title,
 
-          company_name:
-            vals.company_name,
+            company_name:
+              vals.company_name,
 
-          location:
-            vals.location,
+            location:
+              vals.location,
 
-          job_type:
-            vals.job_type,
+            job_type:
+              vals.job_type,
 
-          salary:
-            vals.salary,
+            salary:
+              vals.salary,
 
-          description:
-            vals.description,
+            description:
+              vals.description,
 
-          contact_phone:
-            vals.contact_phone,
+            contact_phone:
+              vals.contact_phone,
 
-          employer_id:
-            s.user.id,
+            employer_id:
+              s.user.id,
 
-          status:
-            "pending"
+            status:
+              "pending"
 
-        })
+          })
 
-      }
+        }
+      );
+
+
+    console.log(
+      "JOB INSERT RESULT:",
+      rows
     );
 
 
@@ -1314,7 +1265,10 @@ async function postJob(e){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      "JOB INSERT ERROR:",
+      err
+    );
 
     msg(
       "jobMessage",
@@ -1818,12 +1772,6 @@ async function submitBusiness(e){
   e.preventDefault();
 
 
-  /*
-    Verifye JWT an premye.
-    Sa se pati ki pi enpòtan pou RLS:
-    businesses.user_id dwe egal auth.uid().
-  */
-
   const session=
     await verifyAuthSession();
 
@@ -1868,11 +1816,6 @@ async function submitBusiness(e){
   const encodedCategory=
     `${listingType}:${category}`;
 
-
-  /*
-    Sa dwe sèvi ak ID Supabase Auth verifye a.
-    Se menm ID RLS auth.uid() ap wè.
-  */
 
   const values={
 
@@ -1963,14 +1906,6 @@ async function submitBusiness(e){
 
   try{
 
-    /*
-      Explicit Authorization:
-      Bearer <USER JWT>
-
-      Sa fè request la pase kòm itilizatè
-      ki konekte a, pa sèlman kòm anon.
-    */
-
     const rows=
       await api(
         "/rest/v1/businesses",
@@ -2005,10 +1940,6 @@ async function submitBusiness(e){
 
     }
 
-
-    /* -----------------------------------------------------
-       UPLOAD ONE IMAGE
-    ----------------------------------------------------- */
 
     if(file){
 
