@@ -1,13 +1,13 @@
 /* =========================================================
    EAGLE-J CONNECT
    MULTILINGUAL LANGUAGE SYSTEM
-   Haitian Creole / English / French
+   Creole / English / French
    ========================================================= */
 
 const translations = {
 
   /* =======================================================
-     HAITIAN CREOLE
+     CREOLE
      ======================================================= */
 
   ht: {
@@ -374,7 +374,7 @@ const translations = {
 function applyLanguage(lang) {
 
   if (!translations[lang]) {
-    lang = "ht";
+    lang = "en";
   }
 
   const dict = translations[lang];
@@ -433,7 +433,7 @@ function changeLanguage(lang) {
     if (selector) {
       lang = selector.value;
     } else {
-      lang = "ht";
+      lang = "en";
     }
 
   }
@@ -458,7 +458,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /* Load saved language */
   const savedLanguage =
-    localStorage.getItem("selectedLanguage") || "ht";
+    localStorage.getItem("selectedLanguage") || "en";
 
 
   /* Apply saved language */

@@ -2088,26 +2088,9 @@ function renderBusinesses(){
 
   if(location){
 
-    const aliases={
-
-      ayiti:[
-        "ayiti",
-        "haiti",
-        "haïti"
-      ],
-
-      bahamas:[
-        "bahamas",
-        "nassau",
-        "new providence"
-      ]
-
-    };
-
-
-    const terms=
-      aliases[location] ||
-      [location];
+    // Global location search: users can enter any country, city, region,
+    // neighborhood, postal code, or remote-work term. No country is hard-coded.
+    const terms=[location];
 
 
     rows=

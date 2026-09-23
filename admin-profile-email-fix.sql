@@ -58,7 +58,6 @@ SET
 FROM auth.users u
 WHERE p.id = u.id;
 
--- Verify the current admin UUID was registered.
-INSERT INTO public.admin_users (user_id)
-VALUES ('9b134154-a1b6-4d1a-a91a-dcd8f139d7ff')
-ON CONFLICT (user_id) DO NOTHING;
+-- Do not hard-code an administrator UUID in this migration.
+-- Add your own Auth user UUID manually after reviewing the account:
+-- INSERT INTO public.admin_users (user_id) VALUES ('YOUR-USER-UUID-HERE') ON CONFLICT (user_id) DO NOTHING;

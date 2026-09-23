@@ -1,0 +1,26 @@
+EAGLE-J CONNECT — GLOBAL DEPLOYMENT CHECKLIST
+
+1. Open the Supabase SQL Editor.
+2. Review/run the required SQL migrations for your current database.
+3. Add YOUR Auth user UUID to public.admin_users manually. Do not use a hard-coded UUID from this project.
+4. Upload the contents of this project to the GitHub Pages repository.
+5. Log in with the admin account.
+6. Open admin.html.
+
+POST-DEPLOYMENT TESTS
+- Homepage loads on mobile and desktop.
+- Mobile menu opens/closes correctly.
+- English is the default language; French and Creole remain selectable.
+- Jobs load, search, and filter correctly.
+- Marketplace listings load and can be searched by any location.
+- A new job starts as pending and is not public until approved.
+- A new listing starts as pending and is not public until approved.
+- Approved content becomes public.
+- Disabled users and their public content are handled by the moderation/RLS rules.
+- Listing image upload works for authenticated owners.
+- Login/logout and protected pages work.
+
+SECURITY
+- Never place a Supabase service-role/secret key in browser code.
+- The frontend uses the Supabase publishable key only.
+- Keep RLS enabled and verify policies in Supabase before production use.
