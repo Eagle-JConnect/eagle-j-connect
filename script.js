@@ -125,16 +125,114 @@ window.logoutUser=()=>{
 
 
 /* =========================================================
+   VERIFY SUPABASE AUTH SESSION
+   ---------------------------------------------------------
+   Verifye JWT aktyèl la dirèkteman ak Supabase Auth.
+========================================================= */
+
+async function verifyAuthSession(){
+
+  const session=getSession();
+
+  if(!session?.token){
+
+    return null;
+
+  }
+
+  try{
+
+    const r=await fetch(
+      `${SUPABASE_URL}/auth/v1/user`,
+      {
+        method:"GET",
+
+        headers:{
+          "apikey":SUPABASE_KEY,
+          "Authorization":
+            `Bearer ${session.token}`
+        }
+      }
+    );
+
+    const text=await r.text();
+
+    let data=null;
+
+    try{
+
+      data=text
+        ? JSON.parse(text)
+        : null;
+
+    }catch(e){
+
+      data=null;
+
+    }
+
+    if(!r.ok || !data?.id){
+
+      clearSession();
+
+      return null;
+
+    }
+
+    /*
+      Mete user ki Supabase Auth verifye a
+      nan localStorage. Sa anpeche yon ansyen
+      user_id lokal diferan ak auth.uid().
+    */
+
+    const verifiedUser={
+      ...session.user,
+      ...data,
+      id:data.id
+    };
+
+    localStorage.setItem(
+      "supabase_user",
+      JSON.stringify(verifiedUser)
+    );
+
+    localStorage.setItem(
+      "supabase_user_id",
+      data.id
+    );
+
+    localStorage.setItem(
+      "supabase_user_email",
+      data.email || ""
+    );
+
+    return {
+      token:session.token,
+      user:verifiedUser
+    };
+
+  }catch(error){
+
+    console.error(
+      "Auth verification:",
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
    MOBILE MENU
-   menu.js owns the final navigation controller
 ========================================================= */
 
 function setupMobileMenu(){
   /* menu.js owns the final navigation controller */
 }
 
-
-/* Compatibility with pages using onclick="toggleMenu()" */
 
 window.toggleMenu=function(){
 
@@ -155,9 +253,10 @@ window.toggleMenu=function(){
 
 function msg(id,text,type="error"){
 
-  /* Translate system messages using the currently selected language. */
   if(window.EJC?.t){
+
     text=window.EJC.t(text);
+
   }
 
   const el=qs(id);
@@ -231,17 +330,34 @@ function fmtDate(v){
 
 async function api(path,options={}){
 
+  /*
+    skipAuth=true nesesè pou:
+    - signup
+    - login
+
+    Paske anvan login pa gen JWT itilizatè.
+  */
+
+  const {
+    skipAuth=false,
+    ...fetchOptions
+  }=options;
+
+
   const headers=Object.assign(
     {
       "apikey":SUPABASE_KEY,
       "Content-Type":"application/json"
     },
-    options.headers || {}
+    fetchOptions.headers || {}
   );
+
 
   const session=getSession();
 
+
   if(
+    !skipAuth &&
     session?.token &&
     !headers.Authorization
   ){
@@ -251,17 +367,20 @@ async function api(path,options={}){
 
   }
 
+
   const r=await fetch(
     SUPABASE_URL+path,
     {
-      ...options,
+      ...fetchOptions,
       headers
     }
   );
 
+
   const text=await r.text();
 
   let data=null;
+
 
   try{
 
@@ -275,6 +394,7 @@ async function api(path,options={}){
 
   }
 
+
   if(!r.ok){
 
     throw new Error(
@@ -282,10 +402,12 @@ async function api(path,options={}){
       data?.msg ||
       data?.error_description ||
       data?.details ||
+      data?.hint ||
       "Request failed"
     );
 
   }
+
 
   return data;
 
@@ -294,9 +416,7 @@ async function api(path,options={}){
 
 /* =========================================================
    ADMIN CHECK
-   ---------------------------------------------------------
-   Verifye si itilizatè konekte a nan admin_users.
-   ========================================================= */
+========================================================= */
 
 async function checkCurrentUserIsAdmin(userId){
 
@@ -306,20 +426,24 @@ async function checkCurrentUserIsAdmin(userId){
 
   }
 
+
   try{
 
     const rows=await api(
       `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
     );
 
+
     const isAdmin=
       Array.isArray(rows) &&
       rows.length>0;
+
 
     localStorage.setItem(
       "user_is_admin",
       isAdmin ? "true" : "false"
     );
+
 
     return isAdmin;
 
@@ -330,10 +454,12 @@ async function checkCurrentUserIsAdmin(userId){
       error.message
     );
 
+
     localStorage.setItem(
       "user_is_admin",
       "false"
     );
+
 
     return false;
 
@@ -349,6 +475,7 @@ async function checkCurrentUserIsAdmin(userId){
 async function registerUser(e){
 
   e.preventDefault();
+
 
   const firstName=
     qs("firstName")?.value.trim() || "";
@@ -433,10 +560,16 @@ async function registerUser(e){
 
   try{
 
+    /*
+      Signup pa dwe pran ansyen JWT lokal la.
+    */
+
     const data=await api(
       "/auth/v1/signup",
       {
         method:"POST",
+
+        skipAuth:true,
 
         body:JSON.stringify({
           email,
@@ -444,11 +577,15 @@ async function registerUser(e){
 
           data:{
             full_name:fullName,
+
             first_name:
               firstName ||
               fullName.split(" ")[0],
+
             last_name:lastName,
+
             phone,
+
             account_type:accountType
           }
 
@@ -477,17 +614,23 @@ async function registerUser(e){
           {
             method:"POST",
 
-            body:JSON.stringify({
-              id:data.user.id,
-              full_name:fullName,
-              email,
-              phone,
-              account_type:accountType
-            }),
-
             headers:{
               Prefer:"return=representation"
-            }
+            },
+
+            body:JSON.stringify({
+
+              id:data.user.id,
+
+              full_name:fullName,
+
+              email,
+
+              phone,
+
+              account_type:accountType
+
+            })
 
           }
         );
@@ -542,7 +685,7 @@ async function registerUser(e){
 
 /* =========================================================
    LOGIN
-   ========================================================= */
+========================================================= */
 
 async function loginUser(e){
 
@@ -580,19 +723,25 @@ async function loginUser(e){
 
   try{
 
-    /* -----------------------------------------------------
-       1. LOGIN SUPABASE AUTH
-    ----------------------------------------------------- */
+    /*
+      ENPÒTAN:
+
+      SUPABASE_KEY se publishable key.
+      Li pa dwe ale nan Authorization Bearer.
+
+      Login dwe itilize:
+      apikey = publishable key
+
+      Apre login, Supabase retounen:
+      access_token = JWT itilizatè a.
+    */
 
     const data=await api(
       "/auth/v1/token?grant_type=password",
       {
         method:"POST",
 
-        headers:{
-          Authorization:
-            "Bearer "+SUPABASE_KEY
-        },
+        skipAuth:true,
 
         body:JSON.stringify({
           email,
@@ -615,15 +764,35 @@ async function loginUser(e){
     }
 
 
-    /* -----------------------------------------------------
-       2. SAVE SESSION
-    ----------------------------------------------------- */
+    /* SAVE AUTH SESSION */
 
     saveSession(data);
 
 
+    /*
+      Verifye JWT a dirèkteman ak Supabase.
+      Sa enpòtan pou RLS auth.uid() mache
+      ak menm UUID nou mete nan businesses.user_id.
+    */
+
+    const verified=
+      await verifyAuthSession();
+
+
+    if(!verified){
+
+      throw new Error(
+        "Sesyon an pa t kapab verifye ak Supabase."
+      );
+
+    }
+
+
+    const authUser=verified.user;
+
+
     /* -----------------------------------------------------
-       3. GET PROFILE
+       GET PROFILE
     ----------------------------------------------------- */
 
     let profiles=[];
@@ -632,7 +801,7 @@ async function loginUser(e){
     try{
 
       profiles=await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(authUser.id)}&select=*`
       );
 
     }catch(err){
@@ -661,7 +830,7 @@ async function loginUser(e){
 
 
     /* -----------------------------------------------------
-       4. ACCOUNT STATUS
+       ACCOUNT STATUS
     ----------------------------------------------------- */
 
     if(
@@ -679,7 +848,7 @@ async function loginUser(e){
 
 
     /* -----------------------------------------------------
-       5. SAVE PROFILE DATA
+       SAVE PROFILE DATA
     ----------------------------------------------------- */
 
     localStorage.setItem(
@@ -701,7 +870,7 @@ async function loginUser(e){
     const user=
       Object.assign(
         {},
-        data.user,
+        authUser,
         {
           full_name:
             profile.full_name,
@@ -722,31 +891,29 @@ async function loginUser(e){
 
 
     /* -----------------------------------------------------
-       6. CHECK ADMIN
-       -----------------------------------------------------
-       Sa se koreksyon prensipal la.
-       Si UID la nan admin_users,
-       Admin ale admin.html.
-    */
+       CHECK ADMIN
+    ----------------------------------------------------- */
 
     const isAdmin=
       await checkCurrentUserIsAdmin(
-        data.user.id
+        authUser.id
       );
 
 
     msg(
       message,
+
       isAdmin
         ? "🛡️ Admin verifye. W ap antre nan Dashboard Admin..."
         : "✅ Ou konekte avèk siksè!",
+
       "success"
     );
 
 
     /* -----------------------------------------------------
-       7. ROUTING
-       ----------------------------------------------------- */
+       ROUTING
+    ----------------------------------------------------- */
 
     setTimeout(
       ()=>{
@@ -797,7 +964,8 @@ async function loginUser(e){
 
 async function loadDashboard(){
 
-  const session=getSession();
+  const session=
+    await verifyAuthSession();
 
 
   if(!session){
@@ -903,7 +1071,8 @@ async function loadDashboard(){
 
 async function loadEmployerDashboard(){
 
-  const session=getSession();
+  const session=
+    await verifyAuthSession();
 
 
   if(!session){
@@ -1002,7 +1171,8 @@ async function postJob(e){
   e.preventDefault();
 
 
-  const s=getSession();
+  let s=
+    await verifyAuthSession();
 
 
   if(!s){
@@ -1019,7 +1189,12 @@ async function postJob(e){
     title:
       qs("jobTitle")?.value.trim() || "",
 
-    company:
+    /*
+      Schema Supabase ou genyen:
+      company_name
+    */
+
+    company_name:
       qs("jobCompany")?.value.trim() || "",
 
     location:
@@ -1034,7 +1209,12 @@ async function postJob(e){
     description:
       qs("jobDescription")?.value.trim() || "",
 
-    contact:
+    /*
+      Schema Supabase ou genyen:
+      contact_phone
+    */
+
+    contact_phone:
       qs("jobContact")?.value.trim() || ""
 
   };
@@ -1042,11 +1222,11 @@ async function postJob(e){
 
   if(
     !vals.title ||
-    !vals.company ||
+    !vals.company_name ||
     !vals.location ||
     !vals.job_type ||
     !vals.description ||
-    !vals.contact
+    !vals.contact_phone
   ){
 
     msg(
@@ -1073,18 +1253,44 @@ async function postJob(e){
       {
         method:"POST",
 
+        headers:{
+          Authorization:
+            `Bearer ${s.token}`,
+
+          Prefer:
+            "return=representation"
+        },
+
         body:JSON.stringify({
-          ...vals,
+
+          title:
+            vals.title,
+
+          company_name:
+            vals.company_name,
+
+          location:
+            vals.location,
+
+          job_type:
+            vals.job_type,
+
+          salary:
+            vals.salary,
+
+          description:
+            vals.description,
+
+          contact_phone:
+            vals.contact_phone,
 
           employer_id:
             s.user.id,
 
-          status:"pending"
-        }),
+          status:
+            "pending"
 
-        headers:{
-          Prefer:"return=representation"
-        }
+        })
 
       }
     );
@@ -1332,8 +1538,8 @@ function renderJobs(){
 
 
       const company=
-        job.company ||
         job.company_name ||
+        job.company ||
         "Konpayi";
 
 
@@ -1357,6 +1563,7 @@ function renderJobs(){
 
 
       const contact=
+        job.contact_phone ||
         job.contact ||
         job.phone ||
         job.whatsapp ||
@@ -1541,8 +1748,8 @@ async function loadMyJobs(
           <p>
             <strong>
               ${esc(
-                job.company ||
                 job.company_name ||
+                job.company ||
                 ""
               )}
             </strong>
@@ -1611,21 +1818,27 @@ async function submitBusiness(e){
   e.preventDefault();
 
 
+  /*
+    Verifye JWT an premye.
+    Sa se pati ki pi enpòtan pou RLS:
+    businesses.user_id dwe egal auth.uid().
+  */
+
   const session=
-    getSession();
+    await verifyAuthSession();
 
 
   if(!session){
 
     msg(
       "formMessage",
-      "⚠️ Tanpri konekte anvan ou pibliye yon anons."
+      "⚠️ Sesyon ou fini oswa li pa valab. Tanpri konekte ankò."
     );
 
 
     setTimeout(
       ()=>location.href="login.html",
-      900
+      1200
     );
 
 
@@ -1655,6 +1868,11 @@ async function submitBusiness(e){
   const encodedCategory=
     `${listingType}:${category}`;
 
+
+  /*
+    Sa dwe sèvi ak ID Supabase Auth verifye a.
+    Se menm ID RLS auth.uid() ap wè.
+  */
 
   const values={
 
@@ -1745,6 +1963,14 @@ async function submitBusiness(e){
 
   try{
 
+    /*
+      Explicit Authorization:
+      Bearer <USER JWT>
+
+      Sa fè request la pase kòm itilizatè
+      ki konekte a, pa sèlman kòm anon.
+    */
+
     const rows=
       await api(
         "/rest/v1/businesses",
@@ -1752,6 +1978,9 @@ async function submitBusiness(e){
           method:"POST",
 
           headers:{
+            Authorization:
+              `Bearer ${session.token}`,
+
             Prefer:
               "return=representation"
           },
@@ -1859,6 +2088,11 @@ async function submitBusiness(e){
         `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
         {
           method:"PATCH",
+
+          headers:{
+            Authorization:
+              `Bearer ${session.token}`
+          },
 
           body:
             JSON.stringify({
@@ -2093,8 +2327,6 @@ function renderBusinesses(){
 
   if(location){
 
-    // Global location search: users can enter any country, city, region,
-    // neighborhood, postal code, or remote-work term. No country is hard-coded.
     const terms=[location];
 
 
@@ -2131,13 +2363,40 @@ function renderBusinesses(){
 
   if(!rows.length){
 
-    const currentLang = (window.EagleJLanguage && window.EagleJLanguage.getLanguage) ? window.EagleJLanguage.getLanguage() : "en";
+    const currentLang =
+      (
+        window.EagleJLanguage &&
+        window.EagleJLanguage.getLanguage
+      )
+        ? window.EagleJLanguage.getLanguage()
+        : "en";
+
+
     const emptyCopy = {
-      ht: ["Pa gen rezilta", "Eseye chanje rechèch ou oswa filtre a."],
-      en: ["No results", "Try changing your search or filter."],
-      fr: ["Aucun résultat", "Essayez de modifier votre recherche ou votre filtre."]
+
+      ht:[
+        "Pa gen rezilta",
+        "Eseye chanje rechèch ou oswa filtre a."
+      ],
+
+      en:[
+        "No results",
+        "Try changing your search or filter."
+      ],
+
+      fr:[
+        "Aucun résultat",
+        "Essayez de modifier votre recherche ou votre filtre."
+      ]
+
     };
-    const ec = emptyCopy[currentLang] || emptyCopy.en;
+
+
+    const ec=
+      emptyCopy[currentLang] ||
+      emptyCopy.en;
+
+
     box.innerHTML=
       `<div class='empty-state'><span>🔎</span><h3>${ec[0]}</h3><p>${ec[1]}</p></div>`;
 
@@ -2955,8 +3214,13 @@ function formatAccountType(type){
   };
 
 
-  const label = map[type] || "Manm Eagle-J Connect";
-  return window.EJC?.t ? window.EJC.t(label) : label;
+  const label =
+    map[type] ||
+    "Manm Eagle-J Connect";
+
+  return window.EJC?.t
+    ? window.EJC.t(label)
+    : label;
 
 }
 
