@@ -416,6 +416,9 @@ function applyLanguage(lang) {
 
   /* Save selected language */
   localStorage.setItem("selectedLanguage", lang);
+
+  /* Tell the global system to refresh translations on every page. */
+  document.dispatchEvent(new CustomEvent("ejc-language-changed", { detail: { language: lang } }));
 }
 
 

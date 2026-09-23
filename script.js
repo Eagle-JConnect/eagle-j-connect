@@ -155,6 +155,11 @@ window.toggleMenu=function(){
 
 function msg(id,text,type="error"){
 
+  /* Translate system messages using the currently selected language. */
+  if(window.EJC?.t){
+    text=window.EJC.t(text);
+  }
+
   const el=qs(id);
 
   if(!el)return;
@@ -2943,8 +2948,8 @@ function formatAccountType(type){
   };
 
 
-  return map[type] ||
-    "Manm Eagle-J Connect";
+  const label = map[type] || "Manm Eagle-J Connect";
+  return window.EJC?.t ? window.EJC.t(label) : label;
 
 }
 

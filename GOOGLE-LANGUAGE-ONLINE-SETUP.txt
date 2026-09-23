@@ -1,0 +1,59 @@
+EAGLE-J CONNECT V8 — GOOGLE LOGIN + LANGUAGE + ONLINE NOTIFICATIONS
+
+1) GOOGLE LOGIN / SUPABASE
+--------------------------------
+The website now has a "Continue with Google" button on login.html.
+
+In Supabase:
+- Authentication -> Providers -> Google -> Enable.
+- Add your Google OAuth Client ID and Client Secret.
+- In Google Cloud Console, add the Supabase callback URL shown by Supabase
+  under the Google provider settings.
+- In Supabase Authentication -> URL Configuration, add your production site URL:
+  https://eagle-jconnect.github.io
+  and make sure the redirect URL for this project can include:
+  https://eagle-jconnect.github.io/eagle-j-connect/
+
+2) PROFILE RLS
+--------------------------------
+Run:
+  google-profile-policy.sql
+
+This is required because a first-time Google user needs permission to create
+their own row in public.profiles.
+
+The first Google login creates a profile automatically with:
+- full name from Google
+- Google email
+- blank phone
+- account_type = job_seeker
+- account_status = active
+
+3) GLOBAL LANGUAGE
+--------------------------------
+The language selector is now persistent across pages using localStorage.
+The selected language is applied to the whole interface on every page.
+Supported:
+- Kreyòl
+- English
+- Français
+
+4) ONLINE / CONNECTION NOTIFICATIONS
+--------------------------------
+Every page displays the number of active browser sessions through Supabase
+Realtime Presence. When another session joins, a small notification appears:
+"Someone just connected" / translated equivalent.
+
+This is live presence, not a database counter. It does not expose email,
+name, or other private information to other visitors.
+
+5) IMPORTANT
+--------------------------------
+Supabase Realtime must be available/enabled for the project.
+If Realtime is disabled at the project level, the rest of the website still
+works, but the live online counter will not update.
+
+6) DEPLOY
+--------------------------------
+Upload the updated files to the same GitHub Pages repository and refresh with
+a hard reload after deployment.

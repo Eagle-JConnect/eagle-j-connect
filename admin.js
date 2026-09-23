@@ -73,7 +73,8 @@
   }
 
   function statusLabel(status){
-    return({
+
+    const label=({
       pending:"⏳ Pending",
       approved:"✅ Piblik",
       rejected:"❌ Refize",
@@ -81,6 +82,8 @@
       active:"✅ Aktif",
       disabled:"🚫 Dezaktive"
     })[status]||status||"—";
+
+    return window.EJC?.t ? window.EJC.t(label) : label;
   }
 
   async function checkAdmin(){
