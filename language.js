@@ -1324,7 +1324,44 @@
      TRANSLATE DATA-I18N ELEMENTS
      ========================================================= */
 
-  function translateElement(
+  
+  /* Rebuild the reverse lookup after the extended translation table above.
+     The previous version built reverseMap too early, so translations added
+     with Object.assign(textMap, ...) were never reachable. */
+  function rebuildReverseMap() {
+    SUPPORTED.forEach(function (language) {
+      reverseMap[language] = {};
+    });
+
+    Object.keys(textMap).forEach(function (source) {
+      const row = textMap[source];
+      SUPPORTED.forEach(function (language) {
+        if (row && row[language]) {
+          reverseMap[language][normalize(row[language])] = row;
+        }
+      });
+    });
+
+    /* Import the larger global translation table when global.js is loaded.
+       This makes untagged text on every page translatable in both directions. */
+    const external = window.EJC_TRANSLATIONS;
+    if (external && typeof external === "object") {
+      Object.keys(external).forEach(function (source) {
+        const row = external[source];
+        if (!Array.isArray(row)) return;
+        const mapped = { ht: row[0], en: row[1], fr: row[2] };
+        SUPPORTED.forEach(function (language) {
+          if (mapped[language]) {
+            reverseMap[language][normalize(mapped[language])] = mapped;
+          }
+        });
+      });
+    }
+  }
+
+  rebuildReverseMap();
+
+function translateElement(
     element,
     lang
   ) {
@@ -1819,6 +1856,7 @@
 
     try {
 
+      rebuildReverseMap();
       saveLanguage(lang);
 
       document.documentElement

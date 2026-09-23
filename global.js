@@ -1131,7 +1131,10 @@
 
   const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
 
-  function lang(){
+    /* Expose the shared translation table to language.js. */
+  window.EJC_TRANSLATIONS = T;
+
+function lang(){
     if(window.EagleJLanguage && typeof window.EagleJLanguage.getLanguage === "function"){
       return window.EagleJLanguage.getLanguage();
     }
