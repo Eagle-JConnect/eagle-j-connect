@@ -1,8 +1,16 @@
-/* Eagle-J Connect - Supabase application */
+/* =========================================================
+   Eagle-J Connect - Supabase application
+   CORRECTED VERSION
+========================================================= */
 
-const SUPABASE_URL="https://glwyqrvufmjscjbbszzz.supabase.co";
-const SUPABASE_KEY="sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
-const IMAGE_BUCKET="business-images";
+const SUPABASE_URL =
+  "https://glwyqrvufmjscjbbszzz.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
+
+const IMAGE_BUCKET =
+  "business-images";
 
 
 /* =========================================================
@@ -20,14 +28,26 @@ function qs(id){
 
 function getSession(){
 
-  const token=localStorage.getItem("supabase_access_token");
-  const userText=localStorage.getItem("supabase_user");
+  const token =
+    localStorage.getItem(
+      "supabase_access_token"
+    );
 
-  if(token && userText){
+  const userText =
+    localStorage.getItem(
+      "supabase_user"
+    );
 
-    try{
+  if(!token){
+    return null;
+  }
 
-      const user=JSON.parse(userText);
+  try{
+
+    if(userText){
+
+      const user =
+        JSON.parse(userText);
 
       if(user?.id){
 
@@ -38,95 +58,118 @@ function getSession(){
 
       }
 
-    }catch(e){}
+    }
+
+  }catch(error){
+
+    console.warn(
+      "Invalid local session:",
+      error
+    );
 
   }
 
-  const id=localStorage.getItem("supabase_user_id");
-  const email=localStorage.getItem("supabase_user_email");
 
-  return token && id
-    ? {
-        token,
-        user:{id,email}
+  const id =
+    localStorage.getItem(
+      "supabase_user_id"
+    );
+
+  const email =
+    localStorage.getItem(
+      "supabase_user_email"
+    );
+
+
+  if(id){
+
+    return {
+      token,
+      user:{
+        id,
+        email
       }
-    : null;
+    };
+
+  }
+
+
+  return null;
+
 }
 
 
 /* =========================================================
-   NEW: VERIFY CURRENT SUPABASE USER
-   ---------------------------------------------------------
-   Sa evite RLS error lè localStorage UID la pa sync
-   ak UID ki asosye ak access token Supabase la.
-========================================================= */
+   REFRESH SESSION
+   ========================================================= */
 
-async function getAuthenticatedUser(){
+async function refreshSession(){
 
-  const session=getSession();
+  const refreshToken =
+    localStorage.getItem(
+      "supabase_refresh_token"
+    );
 
-  if(!session?.token){
+
+  if(!refreshToken){
 
     return null;
 
   }
 
+
   try{
 
-    const user=await api(
-      "/auth/v1/user",
-      {
-        headers:{
-          Authorization:
-            `Bearer ${session.token}`
+    const response =
+      await fetch(
+        `${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,
+        {
+          method:"POST",
+
+          headers:{
+            apikey:SUPABASE_KEY,
+            Authorization:
+              `Bearer ${SUPABASE_KEY}`,
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify({
+              refresh_token:
+                refreshToken
+            })
+
         }
-      }
-    );
+      );
 
 
-    if(!user?.id){
+    const data =
+      await response.json();
+
+
+    if(
+      !response.ok ||
+      !data?.access_token ||
+      !data?.user
+    ){
 
       return null;
 
     }
 
 
-    /*
-     * Mete localStorage ajou ak vrè UID
-     * Supabase asosye ak access token lan.
-     */
+    saveSession(data);
 
-    localStorage.setItem(
-      "supabase_user_id",
-      user.id
-    );
-
-
-    localStorage.setItem(
-      "supabase_user",
-      JSON.stringify(user)
-    );
-
-
-    localStorage.setItem(
-      "supabase_user_email",
-      user.email || ""
-    );
-
-
-    return {
-      user,
-      token:session.token
-    };
+    return getSession();
 
 
   }catch(error){
 
-    console.error(
-      "Supabase authenticated user:",
+    console.warn(
+      "Session refresh failed:",
       error
     );
-
 
     return null;
 
@@ -134,6 +177,36 @@ async function getAuthenticatedUser(){
 
 }
 
+
+/* =========================================================
+   ENSURE AUTHENTICATED SESSION
+========================================================= */
+
+async function ensureSession(){
+
+  let session =
+    getSession();
+
+
+  if(session){
+
+    return session;
+
+  }
+
+
+  session =
+    await refreshSession();
+
+
+  return session;
+
+}
+
+
+/* =========================================================
+   SAVE SESSION
+========================================================= */
 
 function saveSession(data){
 
@@ -146,6 +219,7 @@ function saveSession(data){
 
   }
 
+
   if(data?.refresh_token){
 
     localStorage.setItem(
@@ -155,17 +229,22 @@ function saveSession(data){
 
   }
 
+
   if(data?.user){
 
     localStorage.setItem(
       "supabase_user",
-      JSON.stringify(data.user)
+      JSON.stringify(
+        data.user
+      )
     );
+
 
     localStorage.setItem(
       "supabase_user_id",
       data.user.id
     );
+
 
     localStorage.setItem(
       "supabase_user_email",
@@ -176,6 +255,10 @@ function saveSession(data){
 
 }
 
+
+/* =========================================================
+   CLEAR SESSION
+========================================================= */
 
 function clearSession(){
 
@@ -190,17 +273,23 @@ function clearSession(){
     "user_account_type",
     "user_is_admin"
   ].forEach(
-    k=>localStorage.removeItem(k)
+    key =>
+      localStorage.removeItem(key)
   );
 
 }
 
 
-window.logoutUser=()=>{
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+window.logoutUser = () => {
 
   clearSession();
 
-  location.href="login.html";
+  location.href =
+    "login.html";
 
 };
 
@@ -214,11 +303,14 @@ function setupMobileMenu(){
 }
 
 
-/* Compatibility with pages using onclick="toggleMenu()" */
+/* Compatibility */
 
-window.toggleMenu=function(){
+window.toggleMenu = function(){
 
-  const button=document.getElementById("menuToggle");
+  const button =
+    document.getElementById(
+      "menuToggle"
+    );
 
   if(button){
 
@@ -233,24 +325,44 @@ window.toggleMenu=function(){
    MESSAGES
 ========================================================= */
 
-function msg(id,text,type="error"){
+function msg(
+  id,
+  text,
+  type="error"
+){
 
   if(window.EJC?.t){
 
-    text=window.EJC.t(text);
+    text =
+      window.EJC.t(text);
 
   }
 
-  const el=qs(id);
 
-  if(!el)return;
+  const el =
+    qs(id);
 
-  el.textContent=text;
+
+  if(!el){
+
+    console.warn(
+      "Message element not found:",
+      id
+    );
+
+    return;
+
+  }
+
+
+  el.textContent =
+    text;
+
 
   el.style.color =
-    type==="success"
+    type === "success"
       ? "#18864b"
-      : type==="warning"
+      : type === "warning"
         ? "#b26a00"
         : "#c62828";
 
@@ -263,9 +375,13 @@ function msg(id,text,type="error"){
 
 function esc(v){
 
-  const d=document.createElement("div");
+  const d =
+    document.createElement(
+      "div"
+    );
 
-  d.textContent=v ?? "";
+  d.textContent =
+    v ?? "";
 
   return d.innerHTML;
 
@@ -274,19 +390,37 @@ function esc(v){
 
 function attr(v){
 
-  return String(v ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/"/g,"&quot;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;");
+  return String(
+    v ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    );
 
 }
 
 
 function waNumber(v){
 
-  return String(v || "")
-    .replace(/\D/g,"");
+  return String(
+    v || ""
+  ).replace(
+    /\D/g,
+    ""
+  );
 
 }
 
@@ -295,7 +429,9 @@ function fmtDate(v){
 
   try{
 
-    return new Date(v).toLocaleDateString();
+    return new Date(
+      v
+    ).toLocaleDateString();
 
   }catch(e){
 
@@ -310,66 +446,90 @@ function fmtDate(v){
    SUPABASE API
 ========================================================= */
 
-async function api(path,options={}){
+async function api(
+  path,
+  options={}
+){
 
-  const headers=Object.assign(
-    {
-      "apikey":SUPABASE_KEY,
-      "Content-Type":"application/json"
-    },
-    options.headers || {}
-  );
+  const headers =
+    Object.assign(
+      {
+        apikey:
+          SUPABASE_KEY,
+
+        "Content-Type":
+          "application/json"
+      },
+
+      options.headers || {}
+    );
 
 
-  const session=getSession();
+  const session =
+    getSession();
 
+
+  /*
+   * IMPORTANT:
+   * Always send the logged-in user's JWT
+   * when one exists.
+   */
 
   if(
     session?.token &&
     !headers.Authorization
   ){
 
-    headers.Authorization=
+    headers.Authorization =
       `Bearer ${session.token}`;
 
   }
 
 
-  const r=await fetch(
-    SUPABASE_URL+path,
-    {
-      ...options,
-      headers
-    }
-  );
+  const response =
+    await fetch(
+      SUPABASE_URL + path,
+      {
+        ...options,
+        headers
+      }
+    );
 
 
-  const text=await r.text();
+  const text =
+    await response.text();
 
-  let data=null;
+
+  let data = null;
 
 
   try{
 
-    data=text
-      ? JSON.parse(text)
-      : null;
+    data =
+      text
+        ? JSON.parse(text)
+        : null;
 
-  }catch(e){
+  }catch(error){
 
-    data=text;
+    data = text;
 
   }
 
 
-  if(!r.ok){
+  if(!response.ok){
 
-    throw new Error(
+    const message =
       data?.message ||
       data?.msg ||
       data?.error_description ||
       data?.details ||
-      "Request failed"
+      data?.hint ||
+      "Request failed";
+
+
+    throw new Error(
+      message
     );
 
   }
@@ -384,7 +544,9 @@ async function api(path,options={}){
    ADMIN CHECK
 ========================================================= */
 
-async function checkCurrentUserIsAdmin(userId){
+async function checkCurrentUserIsAdmin(
+  userId
+){
 
   if(!userId){
 
@@ -395,19 +557,22 @@ async function checkCurrentUserIsAdmin(userId){
 
   try{
 
-    const rows=await api(
-      `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
-    );
+    const rows =
+      await api(
+        `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
+      );
 
 
-    const isAdmin=
+    const isAdmin =
       Array.isArray(rows) &&
-      rows.length>0;
+      rows.length > 0;
 
 
     localStorage.setItem(
       "user_is_admin",
-      isAdmin ? "true" : "false"
+      isAdmin
+        ? "true"
+        : "false"
     );
 
 
@@ -444,43 +609,52 @@ async function registerUser(e){
   e.preventDefault();
 
 
-  const firstName=
-    qs("firstName")?.value.trim() || "";
+  const firstName =
+    qs("firstName")
+      ?.value.trim() || "";
 
 
-  const lastName=
-    qs("lastName")?.value.trim() || "";
+  const lastName =
+    qs("lastName")
+      ?.value.trim() || "";
 
 
-  const legacyFullName=
-    qs("fullName")?.value.trim() || "";
+  const legacyFullName =
+    qs("fullName")
+      ?.value.trim() || "";
 
 
-  const fullName=
+  const fullName =
     (
       legacyFullName ||
       `${firstName} ${lastName}`
     ).trim();
 
 
-  const email=
-    qs("email")?.value.trim().toLowerCase() || "";
+  const email =
+    qs("email")
+      ?.value.trim()
+      .toLowerCase() || "";
 
 
-  const phone=
-    qs("phone")?.value.trim() || "";
+  const phone =
+    qs("phone")
+      ?.value.trim() || "";
 
 
-  const accountType=
-    qs("accountType")?.value || "";
+  const accountType =
+    qs("accountType")
+      ?.value || "";
 
 
-  const password=
-    qs("password")?.value || "";
+  const password =
+    qs("password")
+      ?.value || "";
 
 
-  const confirm=
-    qs("confirmPassword")?.value || "";
+  const confirm =
+    qs("confirmPassword")
+      ?.value || "";
 
 
   if(
@@ -502,7 +676,7 @@ async function registerUser(e){
   }
 
 
-  if(password.length<6){
+  if(password.length < 6){
 
     msg(
       "registerMessage",
@@ -514,7 +688,7 @@ async function registerUser(e){
   }
 
 
-  if(password!==confirm){
+  if(password !== confirm){
 
     msg(
       "registerMessage",
@@ -535,38 +709,52 @@ async function registerUser(e){
 
   try{
 
-    const data=await api(
-      "/auth/v1/signup",
-      {
-        method:"POST",
+    const data =
+      await api(
+        "/auth/v1/signup",
+        {
+          method:"POST",
 
-        body:JSON.stringify({
-          email,
-          password,
+          headers:{
+            Authorization:
+              `Bearer ${SUPABASE_KEY}`
+          },
 
-          data:{
-            full_name:fullName,
+          body:
+            JSON.stringify({
 
-            first_name:
-              firstName ||
-              fullName.split(" ")[0],
+              email,
 
-            last_name:lastName,
+              password,
 
-            phone,
+              data:{
+                full_name:
+                  fullName,
 
-            account_type:accountType
-          }
+                first_name:
+                  firstName ||
+                  fullName.split(" ")[0],
 
-        })
+                last_name:
+                  lastName,
 
-      }
-    );
+                phone,
+
+                account_type:
+                  accountType
+              }
+
+            })
+
+        }
+      );
 
 
     if(data?.access_token){
 
-      saveSession(data);
+      saveSession(
+        data
+      );
 
     }
 
@@ -583,21 +771,28 @@ async function registerUser(e){
           {
             method:"POST",
 
-            body:JSON.stringify({
-              id:data.user.id,
-
-              full_name:fullName,
-
-              email,
-
-              phone,
-
-              account_type:accountType
-            }),
-
             headers:{
-              Prefer:"return=representation"
-            }
+              Prefer:
+                "return=representation"
+            },
+
+            body:
+              JSON.stringify({
+
+                id:
+                  data.user.id,
+
+                full_name:
+                  fullName,
+
+                email,
+
+                phone,
+
+                account_type:
+                  accountType
+
+              })
 
           }
         );
@@ -614,7 +809,9 @@ async function registerUser(e){
     }
 
 
-    qs("registerForm")?.reset();
+    qs(
+      "registerForm"
+    )?.reset();
 
 
     msg(
@@ -629,8 +826,11 @@ async function registerUser(e){
 
 
     setTimeout(
-      ()=>{
-        location.href="login.html";
+      () => {
+
+        location.href =
+          "login.html";
+
       },
       1400
     );
@@ -638,11 +838,18 @@ async function registerUser(e){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      err
+    );
+
 
     msg(
       "registerMessage",
-      "❌ "+err.message
+      "❌ " +
+      (
+        err.message ||
+        "Nou pa kapab kreye kont lan."
+      )
     );
 
   }
@@ -659,18 +866,24 @@ async function loginUser(e){
   e.preventDefault();
 
 
-  const email=
-    qs("loginEmail")?.value.trim() || "";
+  const email =
+    qs("loginEmail")
+      ?.value.trim() || "";
 
 
-  const password=
-    qs("loginPassword")?.value || "";
+  const password =
+    qs("loginPassword")
+      ?.value || "";
 
 
-  const message="loginMessage";
+  const message =
+    "loginMessage";
 
 
-  if(!email || !password){
+  if(
+    !email ||
+    !password
+  ){
 
     msg(
       message,
@@ -691,23 +904,26 @@ async function loginUser(e){
 
   try{
 
-    const data=await api(
-      "/auth/v1/token?grant_type=password",
-      {
-        method:"POST",
+    const data =
+      await api(
+        "/auth/v1/token?grant_type=password",
+        {
+          method:"POST",
 
-        headers:{
-          Authorization:
-            "Bearer "+SUPABASE_KEY
-        },
+          headers:{
+            Authorization:
+              "Bearer " +
+              SUPABASE_KEY
+          },
 
-        body:JSON.stringify({
-          email,
-          password
-        })
+          body:
+            JSON.stringify({
+              email,
+              password
+            })
 
-      }
-    );
+        }
+      );
 
 
     if(
@@ -722,17 +938,20 @@ async function loginUser(e){
     }
 
 
-    saveSession(data);
+    saveSession(
+      data
+    );
 
 
-    let profiles=[];
+    let profiles = [];
 
 
     try{
 
-      profiles=await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
-      );
+      profiles =
+        await api(
+          `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
+        );
 
     }catch(err){
 
@@ -744,7 +963,7 @@ async function loginUser(e){
     }
 
 
-    const profile=
+    const profile =
       profiles?.[0];
 
 
@@ -761,7 +980,7 @@ async function loginUser(e){
 
     if(
       profile.account_status &&
-      profile.account_status!=="active"
+      profile.account_status !== "active"
     ){
 
       clearSession();
@@ -791,7 +1010,7 @@ async function loginUser(e){
     );
 
 
-    const user=
+    const user =
       Object.assign(
         {},
         data.user,
@@ -814,7 +1033,7 @@ async function loginUser(e){
     );
 
 
-    const isAdmin=
+    const isAdmin =
       await checkCurrentUserIsAdmin(
         data.user.id
       );
@@ -822,19 +1041,22 @@ async function loginUser(e){
 
     msg(
       message,
+
       isAdmin
         ? "🛡️ Admin verifye. W ap antre nan Dashboard Admin..."
         : "✅ Ou konekte avèk siksè!",
+
       "success"
     );
 
 
     setTimeout(
-      ()=>{
+      () => {
 
         if(isAdmin){
 
-          location.href="admin.html";
+          location.href =
+            "admin.html";
 
           return;
 
@@ -842,14 +1064,17 @@ async function loginUser(e){
 
 
         if(
-          profile.account_type==="employer"
+          profile.account_type ===
+          "employer"
         ){
 
-          location.href="employer.html";
+          location.href =
+            "employer.html";
 
         }else{
 
-          location.href="dashboard.html";
+          location.href =
+            "dashboard.html";
 
         }
 
@@ -860,11 +1085,18 @@ async function loginUser(e){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      err
+    );
+
 
     msg(
       message,
-      "❌ "+err.message
+      "❌ " +
+      (
+        err.message ||
+        "Login echwe."
+      )
     );
 
   }
@@ -878,38 +1110,44 @@ async function loginUser(e){
 
 async function loadDashboard(){
 
-  const session=await getAuthenticatedUser();
+  const session =
+    await ensureSession();
 
 
   if(!session){
 
-    location.href="login.html";
+    location.href =
+      "login.html";
 
     return;
 
   }
 
 
-  qs("dashboardLoading")
-    ?.classList.add("hidden");
+  qs(
+    "dashboardLoading"
+  )?.classList.add(
+    "hidden"
+  );
 
 
-  const card=
+  const card =
     qs("profileCard");
 
 
-  const error=
+  const error =
     qs("dashboardError");
 
 
   try{
 
-    const rows=await api(
-      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
-    );
+    const rows =
+      await api(
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
+      );
 
 
-    const p=
+    const p =
       rows?.[0];
 
 
@@ -922,42 +1160,66 @@ async function loadDashboard(){
     }
 
 
-    qs("profileName").textContent=
-      p.full_name || "—";
+    if(qs("profileName")){
+
+      qs("profileName").textContent =
+        p.full_name || "—";
+
+    }
 
 
-    qs("profileEmail").textContent=
-      session.user.email || "—";
+    if(qs("profileEmail")){
+
+      qs("profileEmail").textContent =
+        session.user.email || "—";
+
+    }
 
 
-    qs("profilePhone").textContent=
-      p.phone || "—";
+    if(qs("profilePhone")){
+
+      qs("profilePhone").textContent =
+        p.phone || "—";
+
+    }
 
 
-    qs("profileType").textContent=
-      p.account_type==="employer"
-        ? "🏢 Anplwayè"
-        : "👷 Moun k ap chèche travay";
+    if(qs("profileType")){
+
+      qs("profileType").textContent =
+        p.account_type === "employer"
+          ? "🏢 Anplwayè"
+          : "👷 Moun k ap chèche travay";
+
+    }
 
 
     if(
-      p.account_type==="employer"
+      p.account_type ===
+      "employer"
     ){
 
-      qs("employerActions")
-        ?.classList.remove("hidden");
+      qs(
+        "employerActions"
+      )?.classList.remove(
+        "hidden"
+      );
 
     }else{
 
-      qs("jobSeekerActions")
-        ?.classList.remove("hidden");
+      qs(
+        "jobSeekerActions"
+      )?.classList.remove(
+        "hidden"
+      );
 
     }
 
 
     if(card){
 
-      card.style.display="block";
+      card.style.display =
+        "block";
 
     }
 
@@ -966,10 +1228,11 @@ async function loadDashboard(){
 
     if(error){
 
-      error.textContent=
-        "❌ "+err.message;
+      error.textContent =
+        "❌ " +
+        err.message;
 
-      error.style.display=
+      error.style.display =
         "block";
 
     }
@@ -985,12 +1248,14 @@ async function loadDashboard(){
 
 async function loadEmployerDashboard(){
 
-  const session=await getAuthenticatedUser();
+  const session =
+    await ensureSession();
 
 
   if(!session){
 
-    location.href="login.html";
+    location.href =
+      "login.html";
 
     return;
 
@@ -999,21 +1264,24 @@ async function loadEmployerDashboard(){
 
   try{
 
-    const rows=await api(
-      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
-    );
+    const rows =
+      await api(
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
+      );
 
 
-    const p=
+    const p =
       rows?.[0];
 
 
     if(
       !p ||
-      p.account_type!=="employer"
+      p.account_type !==
+      "employer"
     ){
 
-      location.href="dashboard.html";
+      location.href =
+        "dashboard.html";
 
       return;
 
@@ -1022,32 +1290,36 @@ async function loadEmployerDashboard(){
 
     if(qs("employerName")){
 
-      qs("employerName").textContent=
-        p.full_name || "Anplwayè";
+      qs("employerName").textContent =
+        p.full_name ||
+        "Anplwayè";
 
     }
 
 
     if(qs("profileName")){
 
-      qs("profileName").textContent=
-        p.full_name || "—";
+      qs("profileName").textContent =
+        p.full_name ||
+        "—";
 
     }
 
 
     if(qs("profileEmail")){
 
-      qs("profileEmail").textContent=
-        session.user.email || "—";
+      qs("profileEmail").textContent =
+        session.user.email ||
+        "—";
 
     }
 
 
     if(qs("profilePhone")){
 
-      qs("profilePhone").textContent=
-        p.phone || "—";
+      qs("profilePhone").textContent =
+        p.phone ||
+        "—";
 
     }
 
@@ -1060,13 +1332,18 @@ async function loadEmployerDashboard(){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      err
+    );
 
 
     if(qs("employerMessage")){
 
-      qs("employerMessage").textContent=
-        "❌ "+err.message;
+      qs(
+        "employerMessage"
+      ).textContent =
+        "❌ " +
+        err.message;
 
     }
 
@@ -1084,40 +1361,50 @@ async function postJob(e){
   e.preventDefault();
 
 
-  const s=await getAuthenticatedUser();
+  const s =
+    await ensureSession();
 
 
   if(!s){
 
-    location.href="login.html";
+    location.href =
+      "login.html";
 
     return;
 
   }
 
 
-  const vals={
+  const vals = {
 
     title:
-      qs("jobTitle")?.value.trim() || "",
+      qs("jobTitle")
+        ?.value.trim() || "",
 
     company:
-      qs("jobCompany")?.value.trim() || "",
+      qs("jobCompany")
+        ?.value.trim() || "",
 
     location:
-      qs("jobLocation")?.value.trim() || "",
+      qs("jobLocation")
+        ?.value.trim() || "",
 
     job_type:
-      qs("jobType")?.value || "",
+      qs("jobType")
+        ?.value || "",
 
     salary:
-      qs("jobSalary")?.value.trim() || null,
+      qs("jobSalary")
+        ?.value.trim() ||
+      null,
 
     description:
-      qs("jobDescription")?.value.trim() || "",
+      qs("jobDescription")
+        ?.value.trim() || "",
 
     contact:
-      qs("jobContact")?.value.trim() || ""
+      qs("jobContact")
+        ?.value.trim() || ""
 
   };
 
@@ -1155,27 +1442,34 @@ async function postJob(e){
       {
         method:"POST",
 
-        body:JSON.stringify({
-          ...vals,
-
-          employer_id:
-            s.user.id,
-
-          status:"pending"
-        }),
-
         headers:{
-          Prefer:"return=representation",
-
           Authorization:
-            `Bearer ${s.token}`
-        }
+            `Bearer ${s.token}`,
+
+          Prefer:
+            "return=representation"
+        },
+
+        body:
+          JSON.stringify({
+
+            ...vals,
+
+            employer_id:
+              s.user.id,
+
+            status:
+              "pending"
+
+          })
 
       }
     );
 
 
-    qs("jobForm")?.reset();
+    qs(
+      "jobForm"
+    )?.reset();
 
 
     msg(
@@ -1193,11 +1487,16 @@ async function postJob(e){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      "POST JOB ERROR:",
+      err
+    );
+
 
     msg(
       "jobMessage",
-      "❌ "+err.message
+      "❌ " +
+      err.message
     );
 
   }
@@ -1209,36 +1508,46 @@ async function postJob(e){
    PUBLIC JOBS
 ========================================================= */
 
-let publicJobs=[];
+let publicJobs = [];
 
 
 function jobTypeLabel(type){
 
-  const map={
+  const map = {
 
-    full_time:"Full-time",
+    full_time:
+      "Full-time",
 
-    part_time:"Part-time",
+    part_time:
+      "Part-time",
 
-    contract:"Contract",
+    contract:
+      "Contract",
 
-    temporary:"Temporary",
+    temporary:
+      "Temporary",
 
-    fulltime:"Full-time",
+    fulltime:
+      "Full-time",
 
-    parttime:"Part-time"
+    parttime:
+      "Part-time"
 
   };
 
 
   return map[
-    String(type || "").toLowerCase()
+    String(type || "")
+      .toLowerCase()
   ]
 
   ||
 
   String(type || "")
-    .replace(/_/g," ")
+    .replace(
+      /_/g,
+      " "
+    )
 
   ||
 
@@ -1249,7 +1558,7 @@ function jobTypeLabel(type){
 
 async function loadJobs(){
 
-  const box=
+  const box =
     qs("jobsList") ||
     qs("jobListings");
 
@@ -1257,19 +1566,19 @@ async function loadJobs(){
   if(!box)return;
 
 
-  box.innerHTML=
+  box.innerHTML =
     '<div class="loading-state"><span>⏳</span><p>Travay yo ap chaje...</p></div>';
 
 
   try{
 
-    const rows=
+    const rows =
       await api(
         "/rest/v1/jobs?status=eq.approved&select=*&order=created_at.desc"
       );
 
 
-    publicJobs=
+    publicJobs =
       Array.isArray(rows)
         ? rows
         : [];
@@ -1286,10 +1595,10 @@ async function loadJobs(){
     );
 
 
-    publicJobs=[];
+    publicJobs = [];
 
 
-    box.innerHTML=
+    box.innerHTML =
       `<div class="notice">
         ❌ Nou pa kapab chaje travay yo kounye a.
         <br>
@@ -1308,7 +1617,7 @@ async function loadJobs(){
 
 function renderJobs(){
 
-  const box=
+  const box =
     qs("jobsList") ||
     qs("jobListings");
 
@@ -1316,69 +1625,73 @@ function renderJobs(){
   if(!box)return;
 
 
-  const search=
+  const search =
     (
-      qs("searchJob")?.value ||
+      qs("searchJob")
+        ?.value ||
       ""
     )
-    .trim()
-    .toLowerCase();
-
-
-  const filter=
-    qs("jobFilter")?.value ||
-    "";
-
-
-  const jobs=
-    publicJobs.filter(job=>{
-
-      const haystack=[
-
-        job.title,
-
-        job.company,
-
-        job.company_name,
-
-        job.location,
-
-        job.description,
-
-        job.job_type,
-
-        job.type,
-
-        job.employment_type
-
-      ]
-
-      .filter(Boolean)
-      .join(" ")
+      .trim()
       .toLowerCase();
 
 
-      const type=
-        job.job_type ||
-        job.employment_type ||
-        job.type ||
-        "";
+  const filter =
+    qs("jobFilter")
+      ?.value || "";
 
 
-      return (
-        (!search ||
-          haystack.includes(search)) &&
+  const jobs =
+    publicJobs.filter(
+      job => {
 
-        (!filter ||
-          type===filter)
-      );
+        const haystack = [
 
-    });
+          job.title,
+
+          job.company,
+
+          job.company_name,
+
+          job.location,
+
+          job.description,
+
+          job.job_type,
+
+          job.type,
+
+          job.employment_type
+
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        const type =
+          job.job_type ||
+          job.employment_type ||
+          job.type ||
+          "";
+
+
+        return (
+          (!search ||
+            haystack.includes(
+              search
+            )) &&
+
+          (!filter ||
+            type === filter)
+        );
+
+      }
+    );
 
 
   if(!jobs.length){
 
-    box.innerHTML=
+    box.innerHTML =
       `<div class="empty-state">
 
         <div class="empty-icon">
@@ -1408,122 +1721,124 @@ function renderJobs(){
   }
 
 
-  box.innerHTML=
-    jobs.map(job=>{
+  box.innerHTML =
+    jobs.map(
+      job => {
 
-      const title=
-        job.title ||
-        "Travay";
-
-
-      const company=
-        job.company ||
-        job.company_name ||
-        "Konpayi";
+        const title =
+          job.title ||
+          "Travay";
 
 
-      const location=
-        job.location ||
-        "Lokalizasyon pa presize";
+        const company =
+          job.company ||
+          job.company_name ||
+          "Konpayi";
 
 
-      const type=
-        job.job_type ||
-        job.employment_type ||
-        job.type ||
-        "";
+        const location =
+          job.location ||
+          "Lokalizasyon pa presize";
 
 
-      const salary=
-        job.salary ||
-        job.pay ||
-        job.rate ||
-        "";
+        const type =
+          job.job_type ||
+          job.employment_type ||
+          job.type ||
+          "";
 
 
-      const contact=
-        job.contact ||
-        job.phone ||
-        job.whatsapp ||
-        "";
+        const salary =
+          job.salary ||
+          job.pay ||
+          job.rate ||
+          "";
 
 
-      return `
-        <article class="job-card card">
+        const contact =
+          job.contact ||
+          job.phone ||
+          job.whatsapp ||
+          "";
 
-          <div class="card-kicker">
-            OPÒTINITE TRAVAY
-          </div>
 
-          <h3>
-            ${esc(title)}
-          </h3>
+        return `
+          <article class="job-card card">
 
-          <p>
-            <strong>
-              ${esc(company)}
-            </strong>
-          </p>
+            <div class="card-kicker">
+              OPÒTINITE TRAVAY
+            </div>
 
-          <div class="meta">
+            <h3>
+              ${esc(title)}
+            </h3>
 
-            <span class="badge">
-              📍 ${esc(location)}
-            </span>
+            <p>
+              <strong>
+                ${esc(company)}
+              </strong>
+            </p>
+
+            <div class="meta">
+
+              <span class="badge">
+                📍 ${esc(location)}
+              </span>
+
+              ${
+                type
+                  ? `
+                    <span class="badge">
+                      💼 ${esc(
+                        jobTypeLabel(type)
+                      )}
+                    </span>
+                  `
+                  : ""
+              }
+
+              ${
+                salary
+                  ? `
+                    <span class="badge">
+                      💰 ${esc(salary)}
+                    </span>
+                  `
+                  : ""
+              }
+
+            </div>
 
             ${
-              type
+              job.description
                 ? `
-                  <span class="badge">
-                    💼 ${esc(
-                      jobTypeLabel(type)
+                  <p>
+                    ${esc(
+                      job.description
                     )}
-                  </span>
+                  </p>
                 `
                 : ""
             }
 
             ${
-              salary
+              contact
                 ? `
-                  <span class="badge">
-                    💰 ${esc(salary)}
-                  </span>
+                  <p class="job-contact">
+                    <strong>
+                      Kontak:
+                    </strong>
+                    ${esc(contact)}
+                  </p>
                 `
                 : ""
             }
 
-          </div>
+          </article>
+        `;
 
-          ${
-            job.description
-              ? `
-                <p>
-                  ${esc(
-                    job.description
-                  )}
-                </p>
-              `
-              : ""
-          }
-
-          ${
-            contact
-              ? `
-                <p class="job-contact">
-                  <strong>
-                    Kontak:
-                  </strong>
-                  ${esc(contact)}
-                </p>
-              `
-              : ""
-          }
-
-        </article>
-      `;
-
-    }).join("");
+      }
+    ).join("");
 
 }
 
@@ -1548,8 +1863,11 @@ function jobStatusLabel(status){
 
   ||
 
-  "📌 "+
-  (status || "—");
+  "📌 " +
+  (
+    status ||
+    "—"
+  );
 
 }
 
@@ -1563,7 +1881,7 @@ async function loadMyJobs(
   token
 ){
 
-  const box=
+  const box =
     qs("myJobs") ||
     qs("myJobsList");
 
@@ -1571,13 +1889,13 @@ async function loadMyJobs(
   if(!box)return;
 
 
-  box.innerHTML=
+  box.innerHTML =
     "<p>⏳ Travay yo ap chaje...</p>";
 
 
   try{
 
-    const jobs=
+    const jobs =
       await api(
         `/rest/v1/jobs?employer_id=eq.${encodeURIComponent(userId)}&select=*&order=created_at.desc`,
         {
@@ -1591,7 +1909,7 @@ async function loadMyJobs(
 
     if(!jobs?.length){
 
-      box.innerHTML=
+      box.innerHTML =
         "<p>Ou poko poste okenn travay.</p>";
 
       return;
@@ -1599,8 +1917,9 @@ async function loadMyJobs(
     }
 
 
-    box.innerHTML=
-      jobs.map(job=>`
+    box.innerHTML =
+      jobs.map(
+        job => `
 
         <article class="job-card card">
 
@@ -1672,14 +1991,18 @@ async function loadMyJobs(
 
         </article>
 
-      `).join("");
+      `
+      ).join("");
 
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      err
+    );
 
-    box.innerHTML=
+
+    box.innerHTML =
       "<p>❌ Nou pa kapab chaje travay ou yo.</p>";
 
   }
@@ -1698,24 +2021,25 @@ async function submitBusiness(e){
 
   /*
    * IMPORTANT:
-   * Nou pa sèvi sèlman ak localStorage UID la.
-   * Nou verifye user la ak access token Supabase la.
+   * Get a real authenticated Supabase session.
    */
 
-  const session=
-    await getAuthenticatedUser();
+  const session =
+    await ensureSession();
 
 
   if(!session){
 
     msg(
       "formMessage",
-      "⚠️ Sesyon ou a pa valid. Tanpri konekte ankò."
+      "⚠️ Tanpri konekte anvan ou pibliye yon anons."
     );
 
 
     setTimeout(
-      ()=>location.href="login.html",
+      () =>
+        location.href =
+          "login.html",
       900
     );
 
@@ -1725,29 +2049,62 @@ async function submitBusiness(e){
   }
 
 
-  const file=
+  /*
+   * Make sure we have both JWT and user ID.
+   */
+
+  if(
+    !session.token ||
+    !session.user?.id
+  ){
+
+    msg(
+      "formMessage",
+      "❌ Sesyon ou pa valab. Tanpri konekte ankò."
+    );
+
+    clearSession();
+
+    setTimeout(
+      () =>
+        location.href =
+          "login.html",
+      900
+    );
+
+    return;
+
+  }
+
+
+  const file =
     qs("businessImage")
       ?.files?.[0] ||
     null;
 
 
-  const listingType=
+  const listingType =
     qs("listingType")
       ?.value ||
     "business";
 
 
-  const category=
+  const category =
     qs("category")
       ?.value ||
     "";
 
 
-  const encodedCategory=
+  const encodedCategory =
     `${listingType}:${category}`;
 
 
-  const values={
+  /*
+   * IMPORTANT:
+   * user_id MUST be exactly auth.uid().
+   */
+
+  const values = {
 
     business_name:
       qs("businessName")
@@ -1782,20 +2139,21 @@ async function submitBusiness(e){
         ?.value.trim() ||
       "",
 
-    image_url:null,
-
-    /*
-     * IMPORTANT:
-     * Sa dwe egzakteman menm UID ak auth.uid()
-     */
+    image_url:
+      null,
 
     user_id:
       session.user.id,
 
-    status:"pending"
+    status:
+      "pending"
 
   };
 
+
+  /*
+   * Validate required fields.
+   */
 
   if(
     !values.business_name ||
@@ -1814,11 +2172,18 @@ async function submitBusiness(e){
   }
 
 
+  /*
+   * Validate image.
+   */
+
   if(
     file &&
     (
-      !file.type.startsWith("image/") ||
-      file.size>5*1024*1024
+      !file.type.startsWith(
+        "image/"
+      ) ||
+      file.size >
+        5 * 1024 * 1024
     )
   ){
 
@@ -1841,39 +2206,64 @@ async function submitBusiness(e){
 
   try{
 
+    console.log(
+      "Creating business:",
+      {
+        user_id:
+          values.user_id,
+
+        status:
+          values.status,
+
+        hasToken:
+          Boolean(
+            session.token
+          )
+      }
+    );
+
+
     /*
-     * INSERT BUSINESS
-     * Authorization header la sèvi ak access token
-     * ki te verifye anlè a.
+     * CREATE BUSINESS
+     *
+     * Authorization contains the user's JWT.
+     *
+     * RLS should verify:
+     * auth.uid() = user_id
      */
 
-    const rows=
+    const rows =
       await api(
         "/rest/v1/businesses",
         {
           method:"POST",
 
           headers:{
-            Prefer:
-              "return=representation",
 
             Authorization:
-              `Bearer ${session.token}`
+              `Bearer ${session.token}`,
+
+            Prefer:
+              "return=representation"
+
           },
 
           body:
-            JSON.stringify(values)
+            JSON.stringify(
+              values
+            )
+
         }
       );
 
 
-    const b=
+    const business =
       Array.isArray(rows)
         ? rows[0]
         : rows;
 
 
-    if(!b?.id){
+    if(!business?.id){
 
       throw new Error(
         "Anons lan pa retounen yon ID."
@@ -1882,13 +2272,13 @@ async function submitBusiness(e){
     }
 
 
-    /* -----------------------------------------------------
-       UPLOAD ONE IMAGE
-    ----------------------------------------------------- */
+    /*
+     * UPLOAD IMAGE
+     */
 
     if(file){
 
-      const ext=
+      const ext =
         (
           file.name
             .split(".")
@@ -1897,11 +2287,11 @@ async function submitBusiness(e){
         ).toLowerCase();
 
 
-      const fileName=
-        `${b.id}-${Date.now()}.${ext}`;
+      const fileName =
+        `${business.id}-${Date.now()}.${ext}`;
 
 
-      const up=
+      const uploadResponse =
         await fetch(
           `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
           {
@@ -1923,73 +2313,79 @@ async function submitBusiness(e){
 
             },
 
-            body:file
+            body:
+              file
 
           }
         );
 
 
-      if(!up.ok){
+      if(!uploadResponse.ok){
 
-        let uploadError=
+        let uploadMessage =
           "Foto a pa t kapab monte.";
 
 
         try{
 
-          const uploadBody=
-            await up.json();
+          const uploadBody =
+            await uploadResponse.json();
 
 
-          uploadError=
+          uploadMessage =
             uploadBody?.message ||
             uploadBody?.error ||
-            uploadError;
+            uploadMessage;
 
         }catch(_){}
 
 
         throw new Error(
-          uploadError
+          uploadMessage
         );
 
       }
 
 
-      const imageURL=
+      const imageURL =
         `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
 
 
       /*
-       * Owner update policy a pèmèt owner modifye
-       * pwòp business li.
+       * Update the business image.
        */
 
       await api(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
+        `/rest/v1/businesses?id=eq.${encodeURIComponent(business.id)}`,
         {
           method:"PATCH",
 
           headers:{
-            Authorization:
-              `Bearer ${session.token}`,
 
-            Prefer:
-              "return=representation"
+            Authorization:
+              `Bearer ${session.token}`
+
           },
 
           body:
             JSON.stringify({
-              image_url:imageURL
+              image_url:
+                imageURL
             })
+
         }
       );
 
     }
 
 
-    qs("businessForm")
-      ?.reset();
+    /*
+     * Success
+     */
+
+    qs(
+      "businessForm"
+    )?.reset();
 
 
     msg(
@@ -2002,17 +2398,38 @@ async function submitBusiness(e){
   }catch(err){
 
     console.error(
-      "Submit business error:",
+      "BUSINESS INSERT ERROR:",
       err
     );
 
 
+    let errorMessage =
+      err?.message ||
+      "Nou pa kapab voye anons lan.";
+
+
+    /*
+     * Give a clearer message for RLS.
+     */
+
+    if(
+      errorMessage
+        .toLowerCase()
+        .includes(
+          "row-level security"
+        )
+    ){
+
+      errorMessage =
+        "Supabase bloke anons lan ak RLS. Verifye policy businesses_users_can_insert la epi asire user_id egal ak auth.uid().";
+
+    }
+
+
     msg(
       "formMessage",
-      "❌ "+(
-        err.message ||
-        "Nou pa kapab pibliye anons lan."
-      )
+      "❌ " +
+      errorMessage
     );
 
   }
@@ -2026,26 +2443,28 @@ async function submitBusiness(e){
 
 async function loadBusinesses(){
 
-  const box=
-    qs("businessListings");
+  const box =
+    qs(
+      "businessListings"
+    );
 
 
   if(!box)return;
 
 
-  box.innerHTML=
+  box.innerHTML =
     "<div class='loading-state'><span>⏳</span><p>Anons yo ap chaje...</p></div>";
 
 
   try{
 
-    const rows=
+    const rows =
       await api(
         "/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc"
       );
 
 
-    window.__businessRows=
+    window.__businessRows =
       Array.isArray(rows)
         ? rows
         : [];
@@ -2056,10 +2475,12 @@ async function loadBusinesses(){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      err
+    );
 
 
-    box.innerHTML=
+    box.innerHTML =
       "<div class='empty-state'><span>⚠️</span><p>Nou pa kapab chaje anons yo.</p></div>";
 
   }
@@ -2067,41 +2488,53 @@ async function loadBusinesses(){
 }
 
 
-function businessType(category){
+function businessType(
+  category
+){
 
-  const raw=
-    String(category || "");
+  const raw =
+    String(
+      category || ""
+    );
 
 
-  const parts=
+  const parts =
     raw.split(":");
 
 
-  return parts.length>1
+  return parts.length > 1
     ? parts[0]
     : "";
 
 }
 
 
-function businessCategory(category){
+function businessCategory(
+  category
+){
 
-  const raw=
-    String(category || "");
+  const raw =
+    String(
+      category || ""
+    );
 
 
-  const parts=
+  const parts =
     raw.split(":");
 
 
-  return parts.length>1
-    ? parts.slice(1).join(":")
+  return parts.length > 1
+    ? parts
+        .slice(1)
+        .join(":")
     : raw;
 
 }
 
 
-function businessTypeLabel(type){
+function businessTypeLabel(
+  type
+){
 
   return ({
 
@@ -2134,14 +2567,16 @@ function businessTypeLabel(type){
 
 function renderBusinesses(){
 
-  const box=
-    qs("businessListings");
+  const box =
+    qs(
+      "businessListings"
+    );
 
 
   if(!box)return;
 
 
-  let rows=
+  let rows =
     Array.isArray(
       window.__businessRows
     )
@@ -2151,7 +2586,7 @@ function renderBusinesses(){
       : [];
 
 
-  const active=
+  const active =
     document
       .querySelector(
         ".market-tab.active"
@@ -2160,37 +2595,37 @@ function renderBusinesses(){
     "all";
 
 
-  const search=
+  const search =
     (
       qs("marketSearch")
         ?.value ||
       ""
     )
-    .trim()
-    .toLowerCase();
+      .trim()
+      .toLowerCase();
 
 
-  const location=
+  const location =
     (
       qs("marketLocation")
         ?.value ||
       ""
     )
-    .trim()
-    .toLowerCase();
+      .trim()
+      .toLowerCase();
 
 
   if(
     active &&
-    active!=="all"
+    active !== "all"
   ){
 
-    rows=
+    rows =
       rows.filter(
-        b=>
+        b =>
           businessType(
             b.category
-          )===active
+          ) === active
       );
 
   }
@@ -2198,19 +2633,22 @@ function renderBusinesses(){
 
   if(search){
 
-    rows=
+    rows =
       rows.filter(
-        b=>[
-          b.business_name,
-          b.category,
-          b.location,
-          b.description,
-          b.price
-        ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-        .includes(search)
+        b =>
+          [
+            b.business_name,
+            b.category,
+            b.location,
+            b.description,
+            b.price
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase()
+            .includes(
+              search
+            )
       );
 
   }
@@ -2218,35 +2656,35 @@ function renderBusinesses(){
 
   if(location){
 
-    const terms=[location];
+    rows =
+      rows.filter(
+        b => {
+
+          const value =
+            String(
+              b.location || ""
+            ).toLowerCase();
 
 
-    rows=
-      rows.filter(b=>{
+          return value.includes(
+            location
+          );
 
-        const value=
-          String(
-            b.location || ""
-          ).toLowerCase();
-
-
-        return terms.some(
-          term=>
-            value.includes(term)
-        );
-
-      });
+        }
+      );
 
   }
 
 
-  const count=
-    qs("marketResultCount");
+  const count =
+    qs(
+      "marketResultCount"
+    );
 
 
   if(count){
 
-    count.textContent=
+    count.textContent =
       `${rows.length} anons disponib`;
 
   }
@@ -2288,7 +2726,7 @@ function renderBusinesses(){
       emptyCopy.en;
 
 
-    box.innerHTML=
+    box.innerHTML =
       `<div class='empty-state'>
         <span>🔎</span>
         <h3>${ec[0]}</h3>
@@ -2301,169 +2739,145 @@ function renderBusinesses(){
   }
 
 
-  box.innerHTML=
-    rows.map(b=>{
+  box.innerHTML =
+    rows.map(
+      b => {
 
-      const wa=
-        waNumber(
-          b.whatsapp
-        );
-
-
-      const phone=
-        attr(
-          b.phone
-        );
+        const wa =
+          waNumber(
+            b.whatsapp
+          );
 
 
-      const type=
-        businessType(
-          b.category
-        );
+        const phone =
+          attr(
+            b.phone
+          );
 
 
-      const cat=
-        businessCategory(
-          b.category
-        );
+        const type =
+          businessType(
+            b.category
+          );
 
 
-      return `
-
-        <article
-          class="business-card card"
-          onclick="openBusinessAd('${attr(b.id)}')"
-          role="button"
-          tabindex="0"
-
-          onkeydown="
-            if(event.key==='Enter'||event.key===' '){
-              event.preventDefault();
-              openBusinessAd('${attr(b.id)}')
-            }
-          "
-        >
-
-          ${
-            b.image_url
-
-              ? `
-
-                <img
-                  src="${attr(
-                    b.image_url
-                  )}"
-                  alt="${attr(
-                    b.business_name
-                  )}"
-                  loading="lazy"
-
-                  onerror="
-                    this.style.display='none';
-                    this.nextElementSibling?.classList.remove('hidden')
-                  "
-                >
-
-              `
-
-              : `
-
-                <div class="business-card-placeholder">
-                  🏢
-                </div>
-
-              `
-          }
+        const cat =
+          businessCategory(
+            b.category
+          );
 
 
-          <div class="business-card-body">
+        return `
 
-            <div class="card-kicker">
+          <article
+            class="business-card card"
 
-              ${esc(
-                businessTypeLabel(
-                  type
-                )
-              )}
+            onclick="openBusinessAd('${attr(b.id)}')"
 
-            </div>
+            role="button"
 
+            tabindex="0"
 
-            <h3>
-              ${esc(
-                b.business_name ||
-                "Anons"
-              )}
-            </h3>
-
-
-            <div class="meta">
-
-              <span class="badge">
-                📍 ${esc(
-                  b.location ||
-                  "—"
-                )}
-              </span>
-
-              ${
-                cat
-
-                  ? `
-
-                    <span class="badge">
-                      ${esc(cat)}
-                    </span>
-
-                  `
-
-                  : ""
+            onkeydown="
+              if(event.key==='Enter'||event.key===' '){
+                event.preventDefault();
+                openBusinessAd('${attr(b.id)}')
               }
-
-            </div>
-
+            "
+          >
 
             ${
-              b.price
+              b.image_url
 
                 ? `
 
-                  <p class="price-line">
-                    💰 ${esc(
-                      b.price
-                    )}
-                  </p>
+                  <img
+                    src="${attr(
+                      b.image_url
+                    )}"
+
+                    alt="${attr(
+                      b.business_name
+                    )}"
+
+                    loading="lazy"
+
+                    onerror="
+                      this.style.display='none';
+                      this.nextElementSibling?.classList.remove('hidden')
+                    "
+                  >
 
                 `
 
-                : ""
+                : `
+
+                  <div class="business-card-placeholder">
+                    🏢
+                  </div>
+
+                `
             }
 
 
-            <p class="card-description">
-              ${esc(
-                b.description ||
-                ""
-              )}
-            </p>
+            <div class="business-card-body">
+
+              <div class="card-kicker">
+
+                ${esc(
+                  businessTypeLabel(
+                    type
+                  )
+                )}
+
+              </div>
 
 
-            <div
-              class="actions"
-              onclick="event.stopPropagation()"
-            >
+              <h3>
+                ${esc(
+                  b.business_name ||
+                  "Anons"
+                )}
+              </h3>
+
+
+              <div class="meta">
+
+                <span class="badge">
+                  📍 ${esc(
+                    b.location ||
+                    "—"
+                  )}
+                </span>
+
+
+                ${
+                  cat
+
+                    ? `
+
+                      <span class="badge">
+                        ${esc(cat)}
+                      </span>
+
+                    `
+
+                    : ""
+                }
+
+              </div>
+
 
               ${
-                phone
+                b.price
 
                   ? `
 
-                    <a
-                      class="btn btn-small btn-primary"
-                      href="tel:${phone}"
-                    >
-                      📞 Rele
-                    </a>
+                    <p class="price-line">
+                      💰 ${esc(
+                        b.price
+                      )}
+                    </p>
 
                   `
 
@@ -2471,39 +2885,73 @@ function renderBusinesses(){
               }
 
 
-              ${
-                wa
+              <p class="card-description">
 
-                  ? `
+                ${esc(
+                  b.description ||
+                  ""
+                )}
 
-                    <a
-                      class="btn btn-small btn-secondary"
-                      target="_blank"
-                      rel="noopener"
-                      href="https://wa.me/${wa}"
-                    >
-                      💬 WhatsApp
-                    </a>
+              </p>
 
-                  `
 
-                  : ""
-              }
+              <div
+                class="actions"
+                onclick="event.stopPropagation()"
+              >
+
+                ${
+                  phone
+
+                    ? `
+
+                      <a
+                        class="btn btn-small btn-primary"
+                        href="tel:${phone}"
+                      >
+                        📞 Rele
+                      </a>
+
+                    `
+
+                    : ""
+                }
+
+
+                ${
+                  wa
+
+                    ? `
+
+                      <a
+                        class="btn btn-small btn-secondary"
+                        target="_blank"
+                        rel="noopener"
+                        href="https://wa.me/${wa}"
+                      >
+                        💬 WhatsApp
+                      </a>
+
+                    `
+
+                    : ""
+                }
+
+              </div>
+
+
+              <div class="view-link">
+                Wè detay →
+              </div>
 
             </div>
 
+          </article>
 
-            <div class="view-link">
-              Wè detay →
-            </div>
+        `;
 
-          </div>
-
-        </article>
-
-      `;
-
-    }).join("");
+      }
+    ).join("");
 
 }
 
@@ -2512,23 +2960,24 @@ function renderBusinesses(){
    OPEN BUSINESS AD
 ========================================================= */
 
-window.openBusinessAd=function(id){
+window.openBusinessAd =
+  function(id){
 
-  if(!id){
+    if(!id){
 
-    console.error(
-      "Business ID missing."
-    );
+      console.error(
+        "Business ID missing."
+      );
 
-    return;
+      return;
 
-  }
+    }
 
 
-  location.href=
-    `anons.html?id=${encodeURIComponent(id)}`;
+    location.href =
+      `anons.html?id=${encodeURIComponent(id)}`;
 
-};
+  };
 
 
 /* =========================================================
@@ -2537,26 +2986,30 @@ window.openBusinessAd=function(id){
 
 async function loadBusinessDetail(){
 
-  const box=
-    qs("businessDetail");
+  const box =
+    qs(
+      "businessDetail"
+    );
 
 
   if(!box)return;
 
 
-  const params=
+  const params =
     new URLSearchParams(
       location.search
     );
 
 
-  const id=
-    params.get("id");
+  const id =
+    params.get(
+      "id"
+    );
 
 
   if(!id){
 
-    box.innerHTML=
+    box.innerHTML =
       "<p class='notice'>❌ Anons sa pa gen ID.</p>";
 
     return;
@@ -2566,19 +3019,19 @@ async function loadBusinessDetail(){
 
   try{
 
-    const rows=
+    const rows =
       await api(
         `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
       );
 
 
-    const b=
+    const b =
       rows?.[0];
 
 
     if(!b){
 
-      box.innerHTML=
+      box.innerHTML =
         "<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib.</p>";
 
       return;
@@ -2586,19 +3039,19 @@ async function loadBusinessDetail(){
     }
 
 
-    const phone=
+    const phone =
       attr(
         b.phone || ""
       );
 
 
-    const wa=
+    const wa =
       waNumber(
         b.whatsapp
       );
 
 
-    box.innerHTML=`
+    box.innerHTML = `
 
       ${
         b.image_url
@@ -2607,9 +3060,11 @@ async function loadBusinessDetail(){
 
             <img
               class="business-detail-image"
+
               src="${attr(
                 b.image_url
               )}"
+
               alt="${attr(
                 b.business_name
               )}"
@@ -2637,6 +3092,7 @@ async function loadBusinessDetail(){
       <div class="meta">
 
         <span class="badge">
+
           ${esc(
             businessTypeLabel(
               businessType(
@@ -2644,20 +3100,27 @@ async function loadBusinessDetail(){
               )
             )
           )}
+
         </span>
 
+
         <span class="badge">
+
           📂 ${esc(
             businessCategory(
               b.category
             )
           )}
+
         </span>
 
+
         <span class="badge">
+
           📍 ${esc(
             b.location
           )}
+
         </span>
 
       </div>
@@ -2669,6 +3132,7 @@ async function loadBusinessDetail(){
           ? `
 
             <p>
+
               <strong>
                 💰 Pri:
               </strong>
@@ -2702,9 +3166,11 @@ async function loadBusinessDetail(){
             ? `
 
               <a href="tel:${phone}">
+
                 <button type="button">
                   📞 Rele
                 </button>
+
               </a>
 
             `
@@ -2742,10 +3208,12 @@ async function loadBusinessDetail(){
 
   }catch(err){
 
-    console.error(err);
+    console.error(
+      err
+    );
 
 
-    box.innerHTML=
+    box.innerHTML =
       "<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p>";
 
   }
@@ -2759,7 +3227,7 @@ async function loadBusinessDetail(){
 
 async function loadStats(){
 
-  const ids=[
+  const ids = [
 
     [
       "stat-jobs",
@@ -2780,25 +3248,28 @@ async function loadStats(){
 
 
   for(
-    const [id,table]
+    const [
+      id,
+      table
+    ]
     of ids
   ){
 
     try{
 
-      const r=
+      const r =
         await fetch(
           `${SUPABASE_URL}/rest/v1/${table}?select=id&limit=1`,
           {
             headers:{
 
-              "apikey":
+              apikey:
                 SUPABASE_KEY,
 
-              "Range":
+              Range:
                 "0-0",
 
-              "Prefer":
+              Prefer:
                 "count=exact"
 
             }
@@ -2806,13 +3277,13 @@ async function loadStats(){
         );
 
 
-      const range=
+      const range =
         r.headers.get(
           "content-range"
         );
 
 
-      const count=
+      const count =
         range
           ? parseInt(
               range.split("/")[1],
@@ -2823,7 +3294,7 @@ async function loadStats(){
 
       if(qs(id)){
 
-        qs(id).textContent=
+        qs(id).textContent =
           Number.isFinite(count)
             ? count
             : 0;
@@ -2838,9 +3309,12 @@ async function loadStats(){
 
   if(qs("stat-ads")){
 
-    qs("stat-ads").textContent=
-      qs("stat-business")
-        ?.textContent ||
+    qs(
+      "stat-ads"
+    ).textContent =
+      qs(
+        "stat-business"
+      )?.textContent ||
       "0";
 
   }
@@ -2854,8 +3328,10 @@ async function loadStats(){
 
 function initContact(){
 
-  const form=
-    qs("contactForm");
+  const form =
+    qs(
+      "contactForm"
+    );
 
 
   if(!form)return;
@@ -2863,30 +3339,30 @@ function initContact(){
 
   form.addEventListener(
     "submit",
-    e=>{
+    e => {
 
       e.preventDefault();
 
 
-      const name=
+      const name =
         qs("contactName")
           ?.value.trim() ||
         "";
 
 
-      const email=
+      const email =
         qs("contactEmail")
           ?.value.trim() ||
         "";
 
 
-      const phone=
+      const phone =
         qs("contactPhone")
           ?.value.trim() ||
         "";
 
 
-      const message=
+      const message =
         qs("contactMessage")
           ?.value.trim() ||
         "";
@@ -2908,13 +3384,13 @@ function initContact(){
       }
 
 
-      const subject=
+      const subject =
         encodeURIComponent(
           "Eagle-J Connect - Contact"
         );
 
 
-      const body=
+      const body =
         encodeURIComponent(
 
           `Non: ${name}
@@ -2927,7 +3403,7 @@ ${message}`
         );
 
 
-      location.href=
+      location.href =
         `mailto:eaglejconnect@gmail.com?subject=${subject}&body=${body}`;
 
 
@@ -2949,12 +3425,16 @@ ${message}`
 
 async function loadUsersDirectory(){
 
-  const box=
-    qs("usersDirectory");
+  const box =
+    qs(
+      "usersDirectory"
+    );
 
 
-  const count=
-    qs("usersDirectoryCount");
+  const count =
+    qs(
+      "usersDirectoryCount"
+    );
 
 
   if(!box)return;
@@ -2962,13 +3442,13 @@ async function loadUsersDirectory(){
 
   try{
 
-    const rows=
+    const rows =
       await api(
         "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
       );
 
 
-    const users=
+    const users =
       Array.isArray(rows)
         ? rows
         : [];
@@ -2976,7 +3456,7 @@ async function loadUsersDirectory(){
 
     if(count){
 
-      count.textContent=
+      count.textContent =
         `${users.length} itilizatè afiche`;
 
     }
@@ -2984,84 +3464,85 @@ async function loadUsersDirectory(){
 
     if(!users.length){
 
-      box.innerHTML=
-        `
-          <div class="empty-state">
+      box.innerHTML = `
+        <div class="empty-state">
 
-            <div class="empty-icon">
-              👥
-            </div>
-
-            <h3>
-              Pa gen itilizatè pou afiche
-            </h3>
-
-            <p>
-              Nou poko gen pwofil piblik ki disponib.
-            </p>
-
+          <div class="empty-icon">
+            👥
           </div>
-        `;
+
+          <h3>
+            Pa gen itilizatè pou afiche
+          </h3>
+
+          <p>
+            Nou poko gen pwofil piblik ki disponib.
+          </p>
+
+        </div>
+      `;
 
       return;
 
     }
 
 
-    box.innerHTML=
-      users.map(u=>{
+    box.innerHTML =
+      users.map(
+        u => {
 
-        const name=
-          esc(
-            u.full_name ||
-            "Itilizatè Eagle-J"
-          );
-
-
-        const type=
-          esc(
-            formatAccountType(
-              u.account_type
-            )
-          );
+          const name =
+            esc(
+              u.full_name ||
+              "Itilizatè Eagle-J"
+            );
 
 
-        return `
-
-          <article class="user-card">
-
-            <div class="user-avatar">
-
-              ${esc(
-                (
-                  u.full_name ||
-                  "EJ"
-                )
-                .trim()
-                .slice(0,1)
-                .toUpperCase()
-              )}
-
-            </div>
+          const type =
+            esc(
+              formatAccountType(
+                u.account_type
+              )
+            );
 
 
-            <div class="user-card-body">
+          return `
 
-              <h3>
-                ${name}
-              </h3>
+            <article class="user-card">
 
-              <p>
-                ${type}
-              </p>
+              <div class="user-avatar">
 
-            </div>
+                ${esc(
+                  (
+                    u.full_name ||
+                    "EJ"
+                  )
+                    .trim()
+                    .slice(0,1)
+                    .toUpperCase()
+                )}
 
-          </article>
+              </div>
 
-        `;
 
-      }).join("");
+              <div class="user-card-body">
+
+                <h3>
+                  ${name}
+                </h3>
+
+                <p>
+                  ${type}
+                </p>
+
+              </div>
+
+            </article>
+
+          `;
+
+        }
+      ).join("");
 
 
   }catch(err){
@@ -3074,26 +3555,28 @@ async function loadUsersDirectory(){
 
     if(count){
 
-      count.textContent="";
+      count.textContent =
+        "";
 
     }
 
 
-    box.innerHTML=
-      `
-        <div class="notice">
-          ❌ Nou pa kapab chaje lis itilizatè yo kounye a.
-        </div>
-      `;
+    box.innerHTML = `
+      <div class="notice">
+        ❌ Nou pa kapab chaje lis itilizatè yo kounye a.
+      </div>
+    `;
 
   }
 
 }
 
 
-function formatAccountType(type){
+function formatAccountType(
+  type
+){
 
-  const map={
+  const map = {
 
     job_seeker:
       "Moun k ap chèche travay",
@@ -3128,8 +3611,7 @@ function formatAccountType(type){
 
 document.addEventListener(
   "DOMContentLoaded",
-  ()=>{
-
+  () => {
 
     /* =====================================================
        MOBILE MENU
@@ -3142,8 +3624,10 @@ document.addEventListener(
        REGISTRATION
     ===================================================== */
 
-    const reg=
-      qs("registerForm");
+    const reg =
+      qs(
+        "registerForm"
+      );
 
 
     if(reg){
@@ -3160,8 +3644,10 @@ document.addEventListener(
        LOGIN
     ===================================================== */
 
-    const login=
-      qs("loginForm");
+    const login =
+      qs(
+        "loginForm"
+      );
 
 
     if(login){
@@ -3207,13 +3693,22 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("businessListings")
+      qs(
+        "businessListings"
+      )
     ){
 
       loadBusinesses();
 
 
       qs("marketSearch")
+        ?.addEventListener(
+          "input",
+          renderBusinesses
+        );
+
+
+      qs("marketLocation")
         ?.addEventListener(
           "input",
           renderBusinesses
@@ -3231,35 +3726,37 @@ document.addEventListener(
         .querySelectorAll(
           ".market-tab"
         )
-        .forEach(tab=>{
+        .forEach(
+          tab => {
 
-          tab.addEventListener(
-            "click",
-            ()=>{
+            tab.addEventListener(
+              "click",
+              () => {
 
-              document
-                .querySelectorAll(
-                  ".market-tab"
-                )
-                .forEach(
-                  t=>
-                    t.classList.remove(
-                      "active"
-                    )
+                document
+                  .querySelectorAll(
+                    ".market-tab"
+                  )
+                  .forEach(
+                    t =>
+                      t.classList.remove(
+                        "active"
+                      )
+                  );
+
+
+                tab.classList.add(
+                  "active"
                 );
 
 
-              tab.classList.add(
-                "active"
-              );
+                renderBusinesses();
 
+              }
+            );
 
-              renderBusinesses();
-
-            }
-          );
-
-        });
+          }
+        );
 
     }
 
@@ -3269,7 +3766,9 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("businessDetail")
+      qs(
+        "businessDetail"
+      )
     ){
 
       loadBusinessDetail();
@@ -3282,10 +3781,14 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("businessForm")
+      qs(
+        "businessForm"
+      )
     ){
 
-      qs("businessForm")
+      qs(
+        "businessForm"
+      )
         .addEventListener(
           "submit",
           submitBusiness
@@ -3299,7 +3802,9 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("dashboardLoading")
+      qs(
+        "dashboardLoading"
+      )
     ){
 
       loadDashboard();
@@ -3312,7 +3817,9 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("employerName")
+      qs(
+        "employerName"
+      )
     ){
 
       loadEmployerDashboard();
@@ -3325,10 +3832,14 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("jobForm")
+      qs(
+        "jobForm"
+      )
     ){
 
-      qs("jobForm")
+      qs(
+        "jobForm"
+      )
         .addEventListener(
           "submit",
           postJob
@@ -3342,10 +3853,12 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("myJobs")
+      qs(
+        "myJobs"
+      )
     ){
 
-      const s=
+      const s =
         getSession();
 
 
@@ -3366,7 +3879,9 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("stats")
+      qs(
+        "stats"
+      )
     ){
 
       loadStats();
@@ -3379,7 +3894,9 @@ document.addEventListener(
     ===================================================== */
 
     if(
-      qs("usersDirectory")
+      qs(
+        "usersDirectory"
+      )
     ){
 
       loadUsersDirectory();
@@ -3394,4 +3911,4 @@ document.addEventListener(
     initContact();
 
   }
-); 
+);
