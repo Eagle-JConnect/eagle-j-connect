@@ -1255,6 +1255,21 @@
     "BUSINESS ADS": { ht: "ANONS BIZNIS", en: "BUSINESS ADS", fr: "ANNONCES D’ENTREPRISES" },
     "USERS": { ht: "ITILIZATÈ", en: "USERS", fr: "UTILISATEURS" },
   });
+  /* Rebuild the reverse map after ALL translation entries are loaded.
+     This is important for pages that switch more than once (HT -> EN -> FR)
+     and for translations added by the extended project-wide map above. */
+  SUPPORTED.forEach(function (targetLang) {
+    reverseMap[targetLang] = {};
+  });
+  Object.keys(textMap).forEach(function (source) {
+    const row = textMap[source];
+    SUPPORTED.forEach(function (targetLang) {
+      if (row && row[targetLang]) {
+        reverseMap[targetLang][normalize(row[targetLang])] = row;
+      }
+    });
+  });
+
   /* =========================================================
      GET CURRENT LANGUAGE
      ========================================================= */
@@ -1930,6 +1945,19 @@
 
   window.getLanguage =
     getLanguage;
+
+  /* Robust language-selector handler. Some pages/scripts can replace the
+     selector after DOM load, so delegation keeps the switch working everywhere. */
+  document.addEventListener("change", function (event) {
+    const target = event.target;
+    if (!target || !target.matches) return;
+    if (target.matches("#languageSelect, #languageSelector, #language-select, select[name='language'], .language-selector, .language-select, select[data-language]")) {
+      const selected = target.value;
+      if (SUPPORTED.includes(selected)) {
+        changeLanguage(selected);
+      }
+    }
+  }, true);
 
 
   /* =========================================================
