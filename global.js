@@ -1132,7 +1132,10 @@
   const norm = (s) => String(s ?? "").replace(/\s+/g, " ").trim();
 
   function lang(){
-    return localStorage.getItem("selectedLanguage") || "en";
+    if(window.EagleJLanguage && typeof window.EagleJLanguage.getLanguage === "function"){
+      return window.EagleJLanguage.getLanguage();
+    }
+    return localStorage.getItem("eagleJConnectLanguage") || localStorage.getItem("selectedLanguage") || "ht";
   }
 
   function tr(original, language=lang()){
@@ -1150,43 +1153,15 @@
   window.EJC.language = lang;
 
   function translateTextNodes(){
-    const language = lang();
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode(node){
-          const p = node.parentElement;
-          if(!p || ["SCRIPT","STYLE","NOSCRIPT"].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
-          if(!norm(node.nodeValue)) return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        }
-      }
-    );
-
-    const nodes=[];
-    while(walker.nextNode()) nodes.push(walker.currentNode);
-
-    nodes.forEach(node=>{
-      if(node.closest(".ejc-online-widget,.ejc-toast")) return;
-      if(!node.dataset.ejcOriginal) node.dataset.ejcOriginal = node.nodeValue;
-      const original = node.dataset.ejcOriginal;
-      const translated = tr(original, language);
-      if(translated !== original) node.nodeValue = translated;
-      else if(language === "ht" || language === "en" || language === "fr") node.nodeValue = translated;
-    });
-
-    document.querySelectorAll("input[placeholder],textarea[placeholder],select[aria-label],button[aria-label],input[aria-label],textarea[aria-label]").forEach(el=>{
-      ["placeholder","aria-label"].forEach(attr=>{
-        if(!el.hasAttribute(attr)) return;
-        const original = el.dataset["ejc"+attr.replace("-","_")+"Original"] || el.getAttribute(attr);
-        const dataKey = attr === "placeholder" ? "ejcPlaceholderOriginal" : "ejcAriaOriginal";
-        if(!el.dataset[dataKey]) el.dataset[dataKey] = el.getAttribute(attr);
-        el.setAttribute(attr, tr(el.dataset[dataKey], language));
-      });
-    });
-
-    document.documentElement.lang = language;
+    /*
+      Eagle-J Connect now uses language.js as the single global
+      translation engine. Keeping a second DOM translator here caused
+      pages to switch back to their original text. Re-apply the main
+      engine instead, including dynamically created elements.
+    */
+    if(window.EagleJLanguage && typeof window.EagleJLanguage.applyLanguage === "function"){
+      window.EagleJLanguage.applyLanguage(window.EagleJLanguage.getLanguage());
+    }
   }
 
   function injectOnlineUI(){
@@ -1390,6 +1365,7 @@
     injectOnlineUI();
     translateTextNodes();
     document.addEventListener("ejc-language-changed",()=>setTimeout(translateTextNodes,20));
+    document.addEventListener("languageChanged",()=>setTimeout(translateTextNodes,20));
     const selector=document.getElementById("languageSelect");
     selector?.addEventListener("change",()=>setTimeout(translateTextNodes,30));
     addGoogleButton();

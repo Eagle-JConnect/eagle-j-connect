@@ -1093,6 +1093,150 @@
   });
 
 
+
+  /* =========================================================
+     EXTENDED GLOBAL TRANSLATIONS — ALL PROJECT PAGES
+     ========================================================= */
+  Object.assign(textMap, {
+    "Members | Eagle-J Connect": { ht: "Manm | Eagle-J Connect", en: "Members | Eagle-J Connect", fr: "Membres | Eagle-J Connect" },
+    "Login | Eagle-J Connect": { ht: "Konekte | Eagle-J Connect", en: "Login | Eagle-J Connect", fr: "Connexion | Eagle-J Connect" },
+    "Itilizatè | Eagle-J Connect": { ht: "Itilizatè | Eagle-J Connect", en: "Users | Eagle-J Connect", fr: "Utilisateurs | Eagle-J Connect" },
+    "Post a Job | Eagle-J Connect": { ht: "Poste yon Travay | Eagle-J Connect", en: "Post a Job | Eagle-J Connect", fr: "Publier un emploi | Eagle-J Connect" },
+    "Contact | Eagle-J Connect": { ht: "Kontak | Eagle-J Connect", en: "Contact | Eagle-J Connect", fr: "Contact | Eagle-J Connect" },
+    "Register | Eagle-J Connect": { ht: "Enskri | Eagle-J Connect", en: "Register | Eagle-J Connect", fr: "Inscription | Eagle-J Connect" },
+    "Jobs | Eagle-J Connect": { ht: "Travay | Eagle-J Connect", en: "Jobs | Eagle-J Connect", fr: "Emplois | Eagle-J Connect" },
+    "Listings | Eagle-J Connect": { ht: "Anons | Eagle-J Connect", en: "Listings | Eagle-J Connect", fr: "Annonces | Eagle-J Connect" },
+    "Listing Details | Eagle-J Connect": { ht: "Detay Anons | Eagle-J Connect", en: "Listing Details | Eagle-J Connect", fr: "Détails de l’annonce | Eagle-J Connect" },
+    "Create a Listing | Eagle-J Connect": { ht: "Kreye yon Anons | Eagle-J Connect", en: "Create a Listing | Eagle-J Connect", fr: "Créer une annonce | Eagle-J Connect" },
+    "Businesses & Services | Eagle-J Connect": { ht: "Biznis ak Sèvis | Eagle-J Connect", en: "Businesses & Services | Eagle-J Connect", fr: "Entreprises et services | Eagle-J Connect" },
+    "Admin Dashboard | Eagle-J Connect": { ht: "Dashboard Administratè | Eagle-J Connect", en: "Admin Dashboard | Eagle-J Connect", fr: "Tableau de bord administrateur | Eagle-J Connect" },
+    "Dashboard | Eagle-J Connect": { ht: "Dashboard | Eagle-J Connect", en: "Dashboard | Eagle-J Connect", fr: "Tableau de bord | Eagle-J Connect" },
+    "Profile | Eagle-J Connect": { ht: "Pwofil | Eagle-J Connect", en: "Profile | Eagle-J Connect", fr: "Profil | Eagle-J Connect" },
+    "Employer Area | Eagle-J Connect": { ht: "Zòn Anplwayè | Eagle-J Connect", en: "Employer Area | Eagle-J Connect", fr: "Espace employeur | Eagle-J Connect" },
+    "Job Seeker | Eagle-J Connect": { ht: "Moun k ap chèche travay | Eagle-J Connect", en: "Job Seeker | Eagle-J Connect", fr: "Chercheur d’emploi | Eagle-J Connect" },
+    "Akèy": { ht: "Akèy", en: "Home", fr: "Accueil" },
+    "Travay": { ht: "Travay", en: "Jobs", fr: "Emplois" },
+    "Biznis": { ht: "Biznis", en: "Business", fr: "Entreprises" },
+    "Anons": { ht: "Anons", en: "Listings", fr: "Annonces" },
+    "Kontak": { ht: "Kontak", en: "Contact", fr: "Contact" },
+    "Enskri": { ht: "Enskri", en: "Register", fr: "S’inscrire" },
+    "Konekte": { ht: "Konekte", en: "Login", fr: "Connexion" },
+    "Kont Mwen": { ht: "Kont Mwen", en: "My Account", fr: "Mon compte" },
+    "Dekonekte": { ht: "Dekonekte", en: "Logout", fr: "Déconnexion" },
+    "Itilizatè": { ht: "Itilizatè", en: "Users", fr: "Utilisateurs" },
+    "Dekouvri manm ki gen pwofil piblik sou Eagle-J Connect.": { ht: "Dekouvri manm ki gen pwofil piblik sou Eagle-J Connect.", en: "Discover members with public profiles on Eagle-J Connect.", fr: "Découvrez les membres ayant un profil public sur Eagle-J Connect." },
+    "Manm kominote a": { ht: "Manm kominote a", en: "Community members", fr: "Membres de la communauté" },
+    "⏳ Ap chaje...": { ht: "⏳ Ap chaje...", en: "⏳ Loading...", fr: "⏳ Chargement..." },
+    "Itilizatè yo ap chaje...": { ht: "Itilizatè yo ap chaje...", en: "Users are loading...", fr: "Les utilisateurs se chargent..." },
+    "Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.": { ht: "Konekte moun, travay, biznis ak sèvis ant Ayiti ak Bahamas.", en: "Connect people, jobs, businesses, and services between Haiti and the Bahamas.", fr: "Connectez les personnes, emplois, entreprises et services entre Haïti et les Bahamas." },
+    "📢 Poste yon Travay": { ht: "📢 Poste yon Travay", en: "📢 Post a Job", fr: "📢 Publier un emploi" },
+    "Paj sa a itilize menm espas anplwayè a pou pibliye travay.": { ht: "Paj sa a itilize menm espas anplwayè a pou pibliye travay.", en: "This page uses the same employer area to post jobs.", fr: "Cette page utilise le même espace employeur pour publier des emplois." },
+    "Ale nan Zòn Anplwayè": { ht: "Ale nan Zòn Anplwayè", en: "Go to Employer Area", fr: "Aller à l’espace employeur" },
+    "📩 Kontakte Nou": { ht: "📩 Kontakte Nou", en: "📩 Contact Us", fr: "📩 Contactez-nous" },
+    "Voye yon mesaj; n ap prepare li nan aplikasyon imèl ou.": { ht: "Voye yon mesaj; n ap prepare li nan aplikasyon imèl ou.", en: "Send a message; we will prepare it in your email application.", fr: "Envoyez un message ; nous le préparerons dans votre application e-mail." },
+    "Kreye kont ou pou chèche travay oswa poste travay.": { ht: "Kreye kont ou pou chèche travay oswa poste travay.", en: "Create your account to find jobs or post jobs.", fr: "Créez votre compte pour trouver ou publier des emplois." },
+    "📧 Apre enskripsyon an, verifye imèl ou. Lè ou klike sou lyen konfimasyon an, w ap retounen sou paj Konekte a.": { ht: "📧 Apre enskripsyon an, verifye imèl ou. Lè ou klike sou lyen konfimasyon an, w ap retounen sou paj Konekte a.", en: "📧 After registration, check your email. When you click the confirmation link, you will return to the Login page.", fr: "📧 Après l’inscription, vérifiez votre e-mail. Lorsque vous cliquez sur le lien de confirmation, vous reviendrez à la page Connexion." },
+    "NON": { ht: "NON", en: "FIRST NAME", fr: "PRÉNOM" },
+    "SIYATI": { ht: "SIYATI", en: "LAST NAME", fr: "NOM" },
+    "EMAIL": { ht: "IMÈL", en: "EMAIL", fr: "E-MAIL" },
+    "TELEFON": { ht: "TELEFÒN", en: "PHONE", fr: "TÉLÉPHONE" },
+    "KALITE KONT": { ht: "KALITE KONT", en: "ACCOUNT TYPE", fr: "TYPE DE COMPTE" },
+    "MODPAS": { ht: "MODPAS", en: "PASSWORD", fr: "MOT DE PASSE" },
+    "KONFIME MODPAS": { ht: "KONFIME MODPAS", en: "CONFIRM PASSWORD", fr: "CONFIRMER LE MOT DE PASSE" },
+    "Kalite kont": { ht: "Kalite kont", en: "Account type", fr: "Type de compte" },
+    "Konfime modpas": { ht: "Konfime modpas", en: "Confirm password", fr: "Confirmer le mot de passe" },
+    "Ou deja gen kont?": { ht: "Ou deja gen kont?", en: "Already have an account?", fr: "Vous avez déjà un compte ?" },
+    "Ou gen yon travay pou poste?": { ht: "Ou gen yon travay pou poste?", en: "Have a job to post?", fr: "Vous avez un emploi à publier ?" },
+    "1️⃣ Kreye Kont": { ht: "1️⃣ Kreye Kont", en: "1️⃣ Create Account", fr: "1️⃣ Créer un compte" },
+    "2️⃣ Chèche Travay": { ht: "2️⃣ Chèche Travay", en: "2️⃣ Find Jobs", fr: "2️⃣ Chercher un emploi" },
+    "3️⃣ Aplike": { ht: "3️⃣ Aplike", en: "3️⃣ Apply", fr: "3️⃣ Postuler" },
+    "Chèche opòtinite ki disponib sou platfòm lan.": { ht: "Chèche opòtinite ki disponib sou platfòm lan.", en: "Find opportunities available on the platform.", fr: "Trouvez les opportunités disponibles sur la plateforme." },
+    "👷 Moun k ap chèche travay": { ht: "👷 Moun k ap chèche travay", en: "👷 Job Seeker", fr: "👷 Chercheur d’emploi" },
+    "🏢 Zòn Anplwayè": { ht: "🏢 Zòn Anplwayè", en: "🏢 Employer Area", fr: "🏢 Espace employeur" },
+    "Pwofil Anplwayè": { ht: "Pwofil Anplwayè", en: "Employer Profile", fr: "Profil employeur" },
+    "Non:": { ht: "Non:", en: "Name:", fr: "Nom :" },
+    "Imèl:": { ht: "Imèl:", en: "Email:", fr: "E-mail :" },
+    "Telefòn:": { ht: "Telefòn:", en: "Phone:", fr: "Téléphone :" },
+    "Kalite kont:": { ht: "Kalite kont:", en: "Account type:", fr: "Type de compte :" },
+    "📢 Pibliye yon travay": { ht: "📢 Pibliye yon travay", en: "📢 Post a Job", fr: "📢 Publier un emploi" },
+    "🚪 Dekonekte": { ht: "🚪 Dekonekte", en: "🚪 Logout", fr: "🚪 Déconnexion" },
+    "Dekouvri travay ki disponib epi jwenn opòtinite ki koresponn ak konpetans ou.": { ht: "Dekouvri travay ki disponib epi jwenn opòtinite ki koresponn ak konpetans ou.", en: "Discover available jobs and find opportunities that match your skills.", fr: "Découvrez les emplois disponibles et trouvez des opportunités correspondant à vos compétences." },
+    "Chèche opòtinite travay selon tit, konpayi, lokalizasyon ak kalite travay.": { ht: "Chèche opòtinite travay selon tit, konpayi, lokalizasyon ak kalite travay.", en: "Search for job opportunities by title, company, location, and job type.", fr: "Recherchez des opportunités d’emploi par titre, entreprise, lieu et type d’emploi." },
+    "Chèche opòtinite travay selon tit, konpayi, lokalizasyon oswa kalite travay.": { ht: "Chèche opòtinite travay selon tit, konpayi, lokalizasyon oswa kalite travay.", en: "Search for job opportunities by title, company, location, or job type.", fr: "Recherchez des opportunités d’emploi par titre, entreprise, lieu ou type d’emploi." },
+    "Kijan sa mache?": { ht: "Kijan sa mache?", en: "How does it work?", fr: "Comment ça marche ?" },
+    "Biznis, sèvis & pwofesyonèl": { ht: "Biznis, sèvis & pwofesyonèl", en: "Businesses, services & professionals", fr: "Entreprises, services et professionnels" },
+    "Jwenn moun ak biznis ki ka ede w. Oswa mete sa w ap ofri devan kominote a.": { ht: "Jwenn moun ak biznis ki ka ede w. Oswa mete sa w ap ofri devan kominote a.", en: "Find people and businesses that can help you, or put what you offer in front of the community.", fr: "Trouvez des personnes et des entreprises qui peuvent vous aider, ou présentez votre offre à la communauté." },
+    "📢 Mete yon Anons": { ht: "📢 Mete yon Anons", en: "📢 Create a Listing", fr: "📢 Créer une annonce" },
+    "Gade Tout Anons": { ht: "Gade Tout Anons", en: "View All Listings", fr: "Voir toutes les annonces" },
+    "← Biznis & Sèvis": { ht: "← Biznis & Sèvis", en: "← Businesses & Services", fr: "← Entreprises et services" },
+    "← Retounen nan Biznis": { ht: "← Retounen nan Biznis", en: "← Back to Business", fr: "← Retour aux entreprises" },
+    "⏳ Anons lan ap chaje...": { ht: "⏳ Anons lan ap chaje...", en: "⏳ Listing is loading...", fr: "⏳ L’annonce se charge..." },
+    "Fè moun jwenn biznis, pwofesyon, sèvis oswa byen ou ap ofri.": { ht: "Fè moun jwenn biznis, pwofesyon, sèvis oswa byen ou ap ofri.", en: "Help people find the business, profession, service, or property you offer.", fr: "Aidez les gens à trouver l’entreprise, le service, le professionnel ou le bien que vous proposez." },
+    "📢 Kreye yon Anons Biznis": { ht: "📢 Kreye yon Anons Biznis", en: "📢 Create a Business Listing", fr: "📢 Créer une annonce d’entreprise" },
+    "📢 Create a Listing": { ht: "📢 Kreye yon Anons", en: "📢 Create a Listing", fr: "📢 Créer une annonce" },
+    "🌎 Tout": { ht: "🌎 Tout", en: "🌎 All", fr: "🌎 Tout" },
+    "👷 Anplwaye": { ht: "👷 Anplwaye", en: "👷 Employees", fr: "👷 Employés" },
+    "🏢 Anplwayè": { ht: "🏢 Anplwayè", en: "🏢 Employers", fr: "🏢 Employeurs" },
+    "🧑🏾‍🔧 Pwofesyonèl": { ht: "🧑🏾‍🔧 Pwofesyonèl", en: "🧑🏾‍🔧 Professionals", fr: "🧑🏾‍🔧 Professionnels" },
+    "🛠️ Sèvis": { ht: "🛠️ Sèvis", en: "🛠️ Services", fr: "🛠️ Services" },
+    "🛍️ Biznis": { ht: "🛍️ Biznis", en: "🛍️ Business", fr: "🛍️ Entreprises" },
+    "🏠 Byen": { ht: "🏠 Byen", en: "🏠 Property", fr: "🏠 Biens" },
+    "🏠 Byen / Pwopriyete": { ht: "🏠 Byen / Pwopriyete", en: "🏠 Property", fr: "🏠 Bien / Propriété" },
+    "👷 Job Seeker": { ht: "👷 Moun k ap chèche travay", en: "👷 Job Seeker", fr: "👷 Chercheur d’emploi" },
+    "Tout": { ht: "Tout", en: "All", fr: "Tout" },
+    "Tout kalite kont": { ht: "Tout kalite kont", en: "All account types", fr: "Tous les types de comptes" },
+    "Tout kalite travay": { ht: "Tout kalite travay", en: "All job types", fr: "Tous les types d’emploi" },
+    "Tout status": { ht: "Tout status", en: "All statuses", fr: "Tous les statuts" },
+    "Chwazi": { ht: "Chwazi", en: "Choose", fr: "Choisir" },
+    "Chwazi...": { ht: "Chwazi...", en: "Choose...", fr: "Choisir..." },
+    "Chwazi kalite anons": { ht: "Chwazi kalite anons", en: "Choose listing type", fr: "Choisir le type d’annonce" },
+    "Chwazi yon kategori": { ht: "Chwazi yon kategori", en: "Choose a category", fr: "Choisir une catégorie" },
+    "Contract": { ht: "Kontra", en: "Contract", fr: "Contrat" },
+    "Full-time": { ht: "Tan plen", en: "Full-time", fr: "Temps plein" },
+    "Part-time": { ht: "Tan pasyèl", en: "Part-time", fr: "Temps partiel" },
+    "Temporary": { ht: "Tanporè", en: "Temporary", fr: "Temporaire" },
+    "⏳ Pending": { ht: "⏳ An atant", en: "⏳ Pending", fr: "⏳ En attente" },
+    "⚡ Elektrisite": { ht: "⚡ Elektrisite", en: "⚡ Electricity", fr: "⚡ Électricité" },
+    "✅ Aktif": { ht: "✅ Aktif", en: "✅ Active", fr: "✅ Actif" },
+    "✅ Piblik": { ht: "✅ Piblik", en: "✅ Public", fr: "✅ Public" },
+    "❌ Refize": { ht: "❌ Refize", en: "❌ Rejected", fr: "❌ Refusé" },
+    "🚫 Dezaktive": { ht: "🚫 Dezaktive", en: "🚫 Disabled", fr: "🚫 Désactivé" },
+    "🚫 Pa disponib": { ht: "🚫 Pa disponib", en: "🚫 Unavailable", fr: "🚫 Indisponible" },
+    "🍔 Manje": { ht: "🍔 Manje", en: "🍔 Food", fr: "🍔 Alimentation" },
+    "🍽 Restoran": { ht: "🍽 Restoran", en: "🍽 Restaurant", fr: "🍽 Restaurant" },
+    "🏗️ Konstriksyon": { ht: "🏗️ Konstriksyon", en: "🏗️ Construction", fr: "🏗️ Construction" },
+    "🏠 Imobilye": { ht: "🏠 Imobilye", en: "🏠 Real Estate", fr: "🏠 Immobilier" },
+    "👗 Kouti / Rad": { ht: "👗 Kouti / Rad", en: "👗 Sewing / Clothing", fr: "👗 Couture / Vêtements" },
+    "💄 Beauty / Bote": { ht: "💄 Bote", en: "💄 Beauty", fr: "💄 Beauté" },
+    "💇🏾 Bote / Barber": { ht: "💇🏾 Bote / Barber", en: "💇🏾 Beauty / Barber", fr: "💇🏾 Beauté / Barbier" },
+    "💻 Digital Services": { ht: "💻 Sèvis Dijital", en: "💻 Digital Services", fr: "💻 Services numériques" },
+    "💻 IT / Teknoloji": { ht: "💻 IT / Teknoloji", en: "💻 IT / Technology", fr: "💻 Informatique / Technologie" },
+    "📍 Tout lokalizasyon": { ht: "📍 Tout lokalizasyon", en: "📍 All locations", fr: "📍 Toutes les localisations" },
+    "📦 Lòt": { ht: "📦 Lòt", en: "📦 Other", fr: "📦 Autre" },
+    "🔧 Reparasyon": { ht: "🔧 Reparasyon", en: "🔧 Repairs", fr: "🔧 Réparations" },
+    "🔧 Sèvis jeneral": { ht: "🔧 Sèvis jeneral", en: "🔧 General services", fr: "🔧 Services généraux" },
+    "🛡️ Administratè": { ht: "🛡️ Administratè", en: "🛡️ Administrator", fr: "🛡️ Administrateur" },
+    "🧹 Netwayaj": { ht: "🧹 Netwayaj", en: "🧹 Cleaning", fr: "🧹 Nettoyage" },
+    "📧 Envoyer le message": { ht: "📧 Voye mesaj la", en: "📧 Send the message", fr: "📧 Envoyer le message" },
+    "Connect with people, discover jobs and services, promote your business, and find opportunities anywhere in the world.": { ht: "Konekte ak moun, dekouvri travay ak sèvis, pwomote biznis ou, epi jwenn opòtinite nenpòt kote nan mond lan.", en: "Connect with people, discover jobs and services, promote your business, and find opportunities anywhere in the world.", fr: "Connectez-vous avec des personnes, découvrez des emplois et des services, faites connaître votre entreprise et trouvez des opportunités partout dans le monde." },
+    "Create Account": { ht: "Kreye Kont", en: "Create Account", fr: "Créer un compte" },
+    "Find Jobs": { ht: "Chèche Travay", en: "Find Jobs", fr: "Chercher un emploi" },
+    "CONNECT. DISCOVER.": { ht: "KONEKTE. DEKOUVRI.", en: "CONNECT. DISCOVER.", fr: "CONNECTEZ. DÉCOUVREZ." },
+    "GROW.": { ht: "GRANDI.", en: "GROW.", fr: "GRANDISSEZ." },
+    "👋 Pwofil mwen": { ht: "👋 Pwofil mwen", en: "👋 My Profile", fr: "👋 Mon profil" },
+    "⏳ Nap chaje pwofil ou...": { ht: "⏳ Nap chaje pwofil ou...", en: "⏳ Loading your profile...", fr: "⏳ Chargement de votre profil..." },
+    "👤 Enfòmasyon mwen": { ht: "👤 Enfòmasyon mwen", en: "👤 My Information", fr: "👤 Mes informations" },
+    "➕ Poste yon Travay": { ht: "➕ Poste yon Travay", en: "➕ Post a Job", fr: "➕ Publier un emploi" },
+    "Jesyon pwofil ou disponib nan": { ht: "Jesyon pwofil ou disponib nan", en: "Profile management is available in", fr: "La gestion de votre profil est disponible dans" },
+    "Se Admin ki valide sa ki vin piblik sou Eagle-J Connect.": { ht: "Se Admin ki valide sa ki vin piblik sou Eagle-J Connect.", en: "The administrator reviews and approves what becomes public on Eagle-J Connect.", fr: "L’administrateur examine et valide ce qui devient public sur Eagle-J Connect." },
+    "⏳ Travay ki bezwen validasyon": { ht: "⏳ Travay ki bezwen validasyon", en: "⏳ Jobs awaiting approval", fr: "⏳ Emplois en attente de validation" },
+    "📢 Anons biznis/sèvis ki bezwen validasyon": { ht: "📢 Anons biznis/sèvis ki bezwen validasyon", en: "📢 Business/service listings awaiting approval", fr: "📢 Annonces d’entreprises/services en attente de validation" },
+    "⏳ Nap chaje...": { ht: "⏳ Nap chaje...", en: "⏳ Loading...", fr: "⏳ Chargement..." },
+    "HEADER ADMIN": { ht: "HEADER ADMIN", en: "ADMIN HEADER", fr: "EN-TÊTE ADMINISTRATEUR" },
+    "ADMIN APPLICATION": { ht: "ADMIN APPLICATION", en: "ADMIN APPLICATION", fr: "APPLICATION ADMINISTRATEUR" },
+    "BUSINESS ADS": { ht: "ANONS BIZNIS", en: "BUSINESS ADS", fr: "ANNONCES D’ENTREPRISES" },
+    "USERS": { ht: "ITILIZATÈ", en: "USERS", fr: "UTILISATEURS" },
+  });
   /* =========================================================
      GET CURRENT LANGUAGE
      ========================================================= */
@@ -1314,8 +1458,7 @@
     if (
       tag === "SCRIPT" ||
       tag === "STYLE" ||
-      tag === "NOSCRIPT" ||
-      tag === "OPTION"
+      tag === "NOSCRIPT"
     ) {
 
       return true;
@@ -1650,6 +1793,15 @@
           "lang",
           lang
         );
+
+      /* Translate the browser tab title too. */
+      if (document.title) {
+        const titleKey = normalize(document.title);
+        const titleRow = reverseMap[lang][titleKey];
+        if (titleRow && titleRow[lang]) {
+          document.title = titleRow[lang];
+        }
+      }
 
       /* DATA-I18N */
 
