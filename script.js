@@ -2131,8 +2131,15 @@ function renderBusinesses(){
 
   if(!rows.length){
 
+    const currentLang = (window.EagleJLanguage && window.EagleJLanguage.getLanguage) ? window.EagleJLanguage.getLanguage() : "en";
+    const emptyCopy = {
+      ht: ["Pa gen rezilta", "Eseye chanje rechèch ou oswa filtre a."],
+      en: ["No results", "Try changing your search or filter."],
+      fr: ["Aucun résultat", "Essayez de modifier votre recherche ou votre filtre."]
+    };
+    const ec = emptyCopy[currentLang] || emptyCopy.en;
     box.innerHTML=
-      "<div class='empty-state'><span>🔎</span><h3>Pa gen rezilta</h3><p>Eseye chanje rechèch ou oswa filtre a.</p></div>";
+      `<div class='empty-state'><span>🔎</span><h3>${ec[0]}</h3><p>${ec[1]}</p></div>`;
 
     return;
 

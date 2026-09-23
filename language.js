@@ -9,7 +9,7 @@
   const STORAGE_KEY = "eagleJConnectLanguage";
   const OLD_STORAGE_KEY = "selectedLanguage";
 
-  const DEFAULT_LANGUAGE = "ht";
+  const DEFAULT_LANGUAGE = "en";
   const SUPPORTED = ["ht", "en", "fr"];
 
   let isApplying = false;
@@ -1254,6 +1254,28 @@
     "ADMIN APPLICATION": { ht: "ADMIN APPLICATION", en: "ADMIN APPLICATION", fr: "APPLICATION ADMINISTRATEUR" },
     "BUSINESS ADS": { ht: "ANONS BIZNIS", en: "BUSINESS ADS", fr: "ANNONCES D’ENTREPRISES" },
     "USERS": { ht: "ITILIZATÈ", en: "USERS", fr: "UTILISATEURS" },
+    "Konekte moun, travay, biznis ak sèvis ant moun atravè mond lan.": { ht: "Konekte moun, travay, biznis ak sèvis ant moun atravè mond lan.", en: "Connect people, jobs, businesses and services around the world.", fr: "Connectez les personnes, les emplois, les entreprises et les services partout dans le monde." },
+    "✅ Kreye Kont": { ht: "✅ Kreye Kont", en: "✅ Create Account", fr: "✅ Créer un compte" },
+    "Kreye kont ou sou Eagle-J Connect pou jwenn aksè ak opòtinite yo.": { ht: "Kreye kont ou sou Eagle-J Connect pou jwenn aksè ak opòtinite yo.", en: "Create your Eagle-J Connect account to access opportunities.", fr: "Créez votre compte Eagle-J Connect pour accéder aux opportunités." },
+    "Chèche travay selon tit, konpayi, lokalizasyon oswa kalite travay.": { ht: "Chèche travay selon tit, konpayi, lokalizasyon oswa kalite travay.", en: "Search for jobs by title, company, location, or job type.", fr: "Recherchez des emplois par titre, entreprise, localisation ou type d'emploi." },
+    "Lè ou jwenn yon travay ki enterese w, itilize enfòmasyon kontak yo pou aplike.": { ht: "Lè ou jwenn yon travay ki enterese w, itilize enfòmasyon kontak yo pou aplike.", en: "When you find a job that interests you, use the contact information to apply.", fr: "Lorsque vous trouvez un emploi qui vous intéresse, utilisez les coordonnées pour postuler." },
+    "Pibliye opòtinite travay ou pou moun k ap chèche travay kapab dekouvri li.": { ht: "Pibliye opòtinite travay ou pou moun k ap chèche travay kapab dekouvri li.", en: "Post your job opportunity so job seekers can discover it.", fr: "Publiez votre offre d'emploi pour que les demandeurs d'emploi puissent la découvrir." },
+    "Poste yon Travay": { ht: "Poste yon Travay", en: "Post a Job", fr: "Publier un emploi" },
+    "WhatsApp": { ht: "WhatsApp", en: "WhatsApp", fr: "WhatsApp" },
+    "🔎 Chèche nan anons yo...": { ht: "🔎 Chèche nan anons yo...", en: "🔎 Search listings...", fr: "🔎 Rechercher dans les annonces..." },
+    "Filtre pa lokalizasyon": { ht: "Filtre pa lokalizasyon", en: "Filter by location", fr: "Filtrer par localisation" },
+    "Ouvri meni": { ht: "Ouvri meni", en: "Open menu", fr: "Ouvrir le menu" },
+    "Navigasyon prensipal": { ht: "Navigasyon prensipal", en: "Main navigation", fr: "Navigation principale" },
+    "Chwazi lang": { ht: "Chwazi lang", en: "Choose language", fr: "Choisir la langue" },
+    "Chèche biznis, sèvis, pwofesyonèl...": { ht: "Chèche biznis, sèvis, pwofesyonèl...", en: "Search businesses, services, professionals...", fr: "Rechercher des entreprises, services, professionnels..." },
+    "Chèche anons": { ht: "Chèche anons", en: "Search listings", fr: "Rechercher des annonces" },
+    "Filtre lokalizasyon": { ht: "Filtre lokalizasyon", en: "Filter location", fr: "Filtrer par localisation" },
+    "Chèche travay pa tit, konpayi oswa lokalizasyon...": { ht: "Chèche travay pa tit, konpayi oswa lokalizasyon...", en: "Search jobs by title, company, or location...", fr: "Rechercher des emplois par titre, entreprise ou localisation..." },
+    "Chèche travay": { ht: "Chèche travay", en: "Search jobs", fr: "Rechercher des emplois" },
+    "Filtre travay": { ht: "Filtre travay", en: "Filter jobs", fr: "Filtrer les emplois" },
+    "🔎 Tit, konpayi oswa lokalizasyon...": { ht: "🔎 Tit, konpayi oswa lokalizasyon...", en: "🔎 Title, company, or location...", fr: "🔎 Titre, entreprise ou localisation..." },
+    "🔎 Non biznis, kategori oswa lokalizasyon...": { ht: "🔎 Non biznis, kategori oswa lokalizasyon...", en: "🔎 Business name, category, or location...", fr: "🔎 Nom d'entreprise, catégorie ou localisation..." },
+    "🔎 Non, telefòn oswa ID...": { ht: "🔎 Non, telefòn oswa ID...", en: "🔎 Name, phone, or ID...", fr: "🔎 Nom, téléphone ou ID..." },
   });
   /* Rebuild the reverse map after ALL translation entries are loaded.
      This is important for pages that switch more than once (HT -> EN -> FR)
@@ -1616,6 +1638,19 @@
         normalize(
           textNode.nodeValue
         );
+
+      /* Dynamic marketplace messages */
+      const countMatch = original.match(/^(\d+)\s+anons disponib$/i);
+      if (countMatch) {
+        const n = countMatch[1];
+        const dynamic = {
+          ht: `${n} anons disponib`,
+          en: `${n} listings available`,
+          fr: `${n} annonces disponibles`
+        };
+        if (dynamic[lang]) textNode.nodeValue = dynamic[lang];
+        return;
+      }
 
       const row =
         lookup[original];
