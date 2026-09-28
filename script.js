@@ -1780,18 +1780,41 @@ async function submitBusiness(e){
 
     msg(
       "formMessage",
-      "⚠️ Sesyon ou fini oswa li pa valab. Tanpri konekte ankò."
+      "⚠️ Pou mete yon anons, ou dwe konekte sou yon kont aktif. Tanpri konekte ankò."
     );
 
 
     setTimeout(
-      ()=>location.href="login.html",
+      ()=>location.href="login.html?next=kreye-anons.html",
       1200
     );
 
 
     return;
 
+  }
+
+  // IMPORTANT:
+  // Admin status is NOT required to publish an ad.
+  // Any authenticated active member may submit an ad.
+  // RLS forces the row to belong to the current user and status=pending.
+  try{
+    const profileRows = await api(
+      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=id,account_status`
+    );
+
+    const profile = profileRows?.[0];
+
+    if(!profile){
+      throw new Error("Pwofil ou pa jwenn. Tanpri fini kreye pwofil ou anvan ou mete yon anons.");
+    }
+
+    if(profile.account_status && profile.account_status !== "active"){
+      throw new Error("Kont ou pa aktif. Tanpri kontakte administratè a.");
+    }
+  }catch(err){
+    msg("formMessage", "❌ " + err.message);
+    return;
   }
 
 
