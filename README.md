@@ -95,3 +95,6 @@ Suggested global positioning:
 > Your World. Your Network. Your Opportunities.
 
 The platform can serve local and international users without making any single country the identity of the brand.
+
+## Member posting V2
+Run `member-posting-final.sql` in Supabase SQL Editor. Normal authenticated users can submit jobs and business/listing ads; new submissions are `pending` until an admin approves them.

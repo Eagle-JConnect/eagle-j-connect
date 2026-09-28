@@ -1,12 +1,19 @@
--- EAGLE-J CONNECT — FINAL MEMBER POSTING + MODERATION RLS
--- Run this AFTER any older jobs/business RLS scripts.
--- Rule:
---   * Any ACTIVE authenticated member may submit jobs and business/listing ads.
---   * New submissions are forced to status='pending'.
---   * Only admins can approve/reject/mark unavailable.
---   * Public users see only approved content from active accounts.
---   * Members can manage only their own pending ads.
---   * Members cannot make themselves admins.
+-- =========================================================
+-- EAGLE-J CONNECT — MEMBER POSTING + ADMIN MODERATION v2
+-- =========================================================
+-- IMPORTANT: Run this file ONCE in Supabase SQL Editor.
+-- Do NOT run the older jobs-rls-fix.sql/business-rls-fix.sql
+-- after this migration, because they intentionally have older rules.
+--
+-- Rules:
+--   * Any authenticated user can submit a JOB they own.
+--   * Any authenticated user can submit a BUSINESS/LISTING they own.
+--   * Every new submission is forced to status='pending'.
+--   * Public visitors see only approved content.
+--   * Members can see/manage their own submissions.
+--   * Admins can see, approve, reject, mark unavailable and delete.
+--   * Normal members cannot change another user's rows or approve posts.
+-- =========================================================
 
 BEGIN;
 
@@ -33,6 +40,7 @@ UPDATE public.businesses SET status='approved' WHERE status IS NULL;
 UPDATE public.profiles SET account_status='active' WHERE account_status IS NULL;
 
 CREATE INDEX IF NOT EXISTS jobs_status_idx ON public.jobs(status);
+CREATE INDEX IF NOT EXISTS jobs_employer_id_idx ON public.jobs(employer_id);
 CREATE INDEX IF NOT EXISTS businesses_status_idx ON public.businesses(status);
 CREATE INDEX IF NOT EXISTS businesses_user_id_idx ON public.businesses(user_id);
 CREATE INDEX IF NOT EXISTS profiles_account_status_idx ON public.profiles(account_status);
@@ -58,7 +66,7 @@ REVOKE ALL ON FUNCTION public.is_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 
 -- ---------------------------------------------------------
--- 3. Admin users
+-- 3. Admin users table
 -- ---------------------------------------------------------
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
@@ -70,49 +78,49 @@ ON public.admin_users
 FOR SELECT TO authenticated
 USING (auth.uid() = user_id OR public.is_admin());
 
--- No INSERT/UPDATE/DELETE policy for normal browser users.
+-- No browser INSERT/UPDATE/DELETE policy for normal users.
 
 -- ---------------------------------------------------------
--- 4. JOBS
+-- 4. JOBS RLS
 -- ---------------------------------------------------------
 ALTER TABLE public.jobs ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "jobs_public_read" ON public.jobs;
+DROP POLICY IF EXISTS "jobs_member_select_own" ON public.jobs;
 DROP POLICY IF EXISTS "jobs_employer_insert" ON public.jobs;
+DROP POLICY IF EXISTS "jobs_member_insert" ON public.jobs;
 DROP POLICY IF EXISTS "jobs_employer_update" ON public.jobs;
+DROP POLICY IF EXISTS "jobs_member_update_pending" ON public.jobs;
 DROP POLICY IF EXISTS "jobs_employer_delete" ON public.jobs;
+DROP POLICY IF EXISTS "jobs_member_delete" ON public.jobs;
 DROP POLICY IF EXISTS "jobs_admin_select_all" ON public.jobs;
 DROP POLICY IF EXISTS "jobs_admin_update_all" ON public.jobs;
 DROP POLICY IF EXISTS "jobs_admin_delete_all" ON public.jobs;
 
+-- Public: approved jobs only.
 CREATE POLICY "jobs_public_read"
 ON public.jobs
 FOR SELECT TO anon, authenticated
-USING (
-  status = 'approved'
-  AND EXISTS (
-    SELECT 1 FROM public.profiles p
-    WHERE p.id = jobs.employer_id
-      AND COALESCE(p.account_status,'active') = 'active'
-  )
-);
+USING (status = 'approved');
 
--- ALL authenticated members may submit a job, not only admins.
--- The row MUST belong to the current user and MUST start pending.
+-- Members: can see their own jobs, including pending/rejected/unavailable.
+CREATE POLICY "jobs_member_select_own"
+ON public.jobs
+FOR SELECT TO authenticated
+USING (auth.uid() = employer_id);
+
+-- Members: ANY authenticated user can submit their own job.
+-- No profile lookup is used here. This avoids the RLS failure caused by
+-- checking profiles from inside another table's INSERT policy.
 CREATE POLICY "jobs_member_insert"
 ON public.jobs
 FOR INSERT TO authenticated
 WITH CHECK (
   auth.uid() = employer_id
   AND status = 'pending'
-  AND EXISTS (
-    SELECT 1 FROM public.profiles p
-    WHERE p.id = auth.uid()
-      AND COALESCE(p.account_status,'active') = 'active'
-  )
 );
 
--- Owners may edit only their own pending jobs.
+-- Members: edit only their own pending jobs and keep them pending.
 CREATE POLICY "jobs_member_update_pending"
 ON public.jobs
 FOR UPDATE TO authenticated
@@ -125,12 +133,13 @@ WITH CHECK (
   AND status = 'pending'
 );
 
+-- Members: delete only their own jobs.
 CREATE POLICY "jobs_member_delete"
 ON public.jobs
 FOR DELETE TO authenticated
 USING (auth.uid() = employer_id);
 
--- Admin moderation controls.
+-- Admin moderation.
 CREATE POLICY "jobs_admin_select_all"
 ON public.jobs
 FOR SELECT TO authenticated
@@ -148,11 +157,12 @@ FOR DELETE TO authenticated
 USING (public.is_admin());
 
 -- ---------------------------------------------------------
--- 5. BUSINESS / LISTING ADS
+-- 5. BUSINESS / LISTING RLS
 -- ---------------------------------------------------------
 ALTER TABLE public.businesses ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "businesses_public_read" ON public.businesses;
+DROP POLICY IF EXISTS "businesses_member_select_own" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_owner_insert" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_member_insert" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_owner_update" ON public.businesses;
@@ -163,36 +173,28 @@ DROP POLICY IF EXISTS "businesses_admin_select_all" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_admin_update_all" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_admin_delete_all" ON public.businesses;
 
+-- Public: approved listings only.
 CREATE POLICY "businesses_public_read"
 ON public.businesses
 FOR SELECT TO anon, authenticated
-USING (
-  status = 'approved'
-  AND (
-    user_id IS NULL
-    OR EXISTS (
-      SELECT 1 FROM public.profiles p
-      WHERE p.id = businesses.user_id
-        AND COALESCE(p.account_status,'active') = 'active'
-    )
-  )
-);
+USING (status = 'approved');
 
--- ALL active authenticated members may submit a listing.
+-- Members: can see their own submissions.
+CREATE POLICY "businesses_member_select_own"
+ON public.businesses
+FOR SELECT TO authenticated
+USING (auth.uid() = user_id);
+
+-- Members: ANY authenticated user can submit their own listing.
 CREATE POLICY "businesses_member_insert"
 ON public.businesses
 FOR INSERT TO authenticated
 WITH CHECK (
   auth.uid() = user_id
   AND status = 'pending'
-  AND EXISTS (
-    SELECT 1 FROM public.profiles p
-    WHERE p.id = auth.uid()
-      AND COALESCE(p.account_status,'active') = 'active'
-  )
 );
 
--- Owner can edit only a pending ad. It stays pending.
+-- Members: edit only their own pending listings and keep them pending.
 CREATE POLICY "businesses_member_update_pending"
 ON public.businesses
 FOR UPDATE TO authenticated
@@ -205,12 +207,13 @@ WITH CHECK (
   AND status = 'pending'
 );
 
+-- Members: delete only their own listings.
 CREATE POLICY "businesses_member_delete"
 ON public.businesses
 FOR DELETE TO authenticated
 USING (auth.uid() = user_id);
 
--- Admin moderation controls.
+-- Admin moderation.
 CREATE POLICY "businesses_admin_select_all"
 ON public.businesses
 FOR SELECT TO authenticated
@@ -228,7 +231,7 @@ FOR DELETE TO authenticated
 USING (public.is_admin());
 
 -- ---------------------------------------------------------
--- 6. PROFILES
+-- 6. PROFILES RLS
 -- ---------------------------------------------------------
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
@@ -261,7 +264,7 @@ FOR DELETE TO authenticated
 USING (public.is_admin());
 
 -- ---------------------------------------------------------
--- 7. STORAGE
+-- 7. BUSINESS IMAGE STORAGE
 -- ---------------------------------------------------------
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('business-images','business-images',true)
@@ -298,7 +301,9 @@ USING (bucket_id='business-images' AND owner_id=auth.uid());
 
 COMMIT;
 
--- IMPORTANT:
--- Keep this migration AFTER older *_rls_fix.sql files.
--- Existing rows remain approved.
--- New member posts are pending until an admin approves them.
+-- =========================================================
+-- RESULT
+-- =========================================================
+-- Normal members can now submit jobs/listings without admin status.
+-- New submissions are pending until an admin approves them.
+-- =========================================================

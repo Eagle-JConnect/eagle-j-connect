@@ -1,98 +1,61 @@
--- Eagle-J Connect: Business marketplace RLS + Storage fix
--- Run this ONCE in Supabase SQL Editor.
--- This migration safely adds an owner column if the existing businesses table
--- does not already have one, then locks INSERT/UPDATE/DELETE to the owner.
+-- Eagle-J Connect — BUSINESS/LISTING RLS
+-- Use member-posting-final.sql as the master migration.
+-- This compatibility file is intentionally safe if run by itself.
 
 BEGIN;
 
 ALTER TABLE public.businesses
   ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL;
 
-CREATE INDEX IF NOT EXISTS businesses_user_id_idx
-  ON public.businesses(user_id);
-
 ALTER TABLE public.businesses ENABLE ROW LEVEL SECURITY;
 
--- Public marketplace can read published rows.
 DROP POLICY IF EXISTS "businesses_public_read" ON public.businesses;
-CREATE POLICY "businesses_public_read"
-ON public.businesses
-FOR SELECT
-TO anon, authenticated
-USING (true);
-
--- A signed-in member may create an ad only for their own account.
+DROP POLICY IF EXISTS "businesses_member_select_own" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_owner_insert" ON public.businesses;
-CREATE POLICY "businesses_owner_insert"
-ON public.businesses
-FOR INSERT
-TO authenticated
-WITH CHECK (auth.uid() = user_id);
-
--- A member may edit only their own ads.
+DROP POLICY IF EXISTS "businesses_member_insert" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_owner_update" ON public.businesses;
-CREATE POLICY "businesses_owner_update"
-ON public.businesses
-FOR UPDATE
-TO authenticated
-USING (auth.uid() = user_id)
-WITH CHECK (auth.uid() = user_id);
-
--- A member may delete only their own ads.
+DROP POLICY IF EXISTS "businesses_member_update_pending" ON public.businesses;
 DROP POLICY IF EXISTS "businesses_owner_delete" ON public.businesses;
-CREATE POLICY "businesses_owner_delete"
-ON public.businesses
-FOR DELETE
-TO authenticated
+DROP POLICY IF EXISTS "businesses_member_delete" ON public.businesses;
+DROP POLICY IF EXISTS "businesses_admin_select_all" ON public.businesses;
+DROP POLICY IF EXISTS "businesses_admin_update_all" ON public.businesses;
+DROP POLICY IF EXISTS "businesses_admin_delete_all" ON public.businesses;
+
+CREATE POLICY "businesses_public_read"
+ON public.businesses FOR SELECT TO anon, authenticated
+USING (status = 'approved');
+
+CREATE POLICY "businesses_member_select_own"
+ON public.businesses FOR SELECT TO authenticated
 USING (auth.uid() = user_id);
 
--- Storage bucket used by the create-ad form.
+CREATE POLICY "businesses_member_insert"
+ON public.businesses FOR INSERT TO authenticated
+WITH CHECK (auth.uid() = user_id AND status = 'pending');
+
+CREATE POLICY "businesses_member_update_pending"
+ON public.businesses FOR UPDATE TO authenticated
+USING (auth.uid() = user_id AND status = 'pending')
+WITH CHECK (auth.uid() = user_id AND status = 'pending');
+
+CREATE POLICY "businesses_member_delete"
+ON public.businesses FOR DELETE TO authenticated
+USING (auth.uid() = user_id);
+
+CREATE POLICY "businesses_admin_select_all"
+ON public.businesses FOR SELECT TO authenticated
+USING (public.is_admin());
+
+CREATE POLICY "businesses_admin_update_all"
+ON public.businesses FOR UPDATE TO authenticated
+USING (public.is_admin()) WITH CHECK (public.is_admin());
+
+CREATE POLICY "businesses_admin_delete_all"
+ON public.businesses FOR DELETE TO authenticated
+USING (public.is_admin());
+
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('business-images', 'business-images', true)
-ON CONFLICT (id) DO UPDATE SET public = true;
-
--- Anyone may read objects from this public marketplace bucket.
-DROP POLICY IF EXISTS "business_images_public_read" ON storage.objects;
-CREATE POLICY "business_images_public_read"
-ON storage.objects
-FOR SELECT
-TO anon, authenticated
-USING (bucket_id = 'business-images');
-
--- Signed-in users may upload only to this bucket. Supabase sets owner_id to auth.uid().
-DROP POLICY IF EXISTS "business_images_owner_insert" ON storage.objects;
-CREATE POLICY "business_images_owner_insert"
-ON storage.objects
-FOR INSERT
-TO authenticated
-WITH CHECK (
-  bucket_id = 'business-images'
-  AND owner_id = auth.uid()
-);
-
--- Signed-in users may replace/delete only their own uploaded images.
-DROP POLICY IF EXISTS "business_images_owner_update" ON storage.objects;
-CREATE POLICY "business_images_owner_update"
-ON storage.objects
-FOR UPDATE
-TO authenticated
-USING (
-  bucket_id = 'business-images'
-  AND owner_id = auth.uid()
-)
-WITH CHECK (
-  bucket_id = 'business-images'
-  AND owner_id = auth.uid()
-);
-
-DROP POLICY IF EXISTS "business_images_owner_delete" ON storage.objects;
-CREATE POLICY "business_images_owner_delete"
-ON storage.objects
-FOR DELETE
-TO authenticated
-USING (
-  bucket_id = 'business-images'
-  AND owner_id = auth.uid()
-);
+VALUES ('business-images','business-images',true)
+ON CONFLICT (id) DO UPDATE SET public=true;
 
 COMMIT;
