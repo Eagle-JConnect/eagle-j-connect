@@ -381,14 +381,19 @@ async function api(path,options={}){
 
   if(!r.ok){
 
-    throw new Error(
+    const errorMessage =
       data?.message ||
       data?.msg ||
       data?.error_description ||
       data?.details ||
       data?.hint ||
-      "Request failed"
-    );
+      (typeof data === "string" ? data : "Request failed");
+
+    const err = new Error(errorMessage);
+    err.code = data?.code || r.status;
+    err.details = data?.details || "";
+    err.hint = data?.hint || "";
+    throw err;
 
   }
 
@@ -1109,60 +1114,35 @@ async function postJob(e){
 
   e.preventDefault();
 
+  const session = await verifyAuthSession();
 
-  let s=
-    await verifyAuthSession();
-
-
-  /*
-    DEBUG TEST:
-    Sa montre UUID Supabase Auth frontend la ap itilize.
-  */
-
-  console.log(
-    "JOB AUTH TEST:",
-    {
-      authUserId:s?.user?.id,
-      email:s?.user?.email,
-      tokenExists:!!s?.token
-    }
-  );
-
-
-  if(!s){
-
-    location.href="login.html";
-
+  if(!session?.token || !session?.user?.id){
+    msg(
+      "jobMessage",
+      "⚠️ Sesyon ou a pa aktif. Tanpri konekte ankò."
+    );
     return;
-
   }
 
+  // IMPORTANT: always use the UUID returned directly by Supabase Auth.
+  // Do not trust a stale UUID stored in localStorage.
+  const authUserId = session.user.id;
 
-  const vals={
+  console.log("JOB AUTH TEST:", {
+    authUserId,
+    email: session.user.email,
+    tokenExists: !!session.token
+  });
 
-    title:
-      qs("jobTitle")?.value.trim() || "",
-
-    company_name:
-      qs("jobCompany")?.value.trim() || "",
-
-    location:
-      qs("jobLocation")?.value.trim() || "",
-
-    job_type:
-      qs("jobType")?.value || "",
-
-    salary:
-      qs("jobSalary")?.value.trim() || null,
-
-    description:
-      qs("jobDescription")?.value.trim() || "",
-
-    contact_phone:
-      qs("jobContact")?.value.trim() || ""
-
+  const vals = {
+    title: qs("jobTitle")?.value.trim() || "",
+    company_name: qs("jobCompany")?.value.trim() || "",
+    location: qs("jobLocation")?.value.trim() || "",
+    job_type: qs("jobType")?.value || "",
+    salary: qs("jobSalary")?.value.trim() || null,
+    description: qs("jobDescription")?.value.trim() || "",
+    contact_phone: qs("jobContact")?.value.trim() || ""
   };
-
 
   if(
     !vals.title ||
@@ -1172,16 +1152,9 @@ async function postJob(e){
     !vals.description ||
     !vals.contact_phone
   ){
-
-    msg(
-      "jobMessage",
-      "⚠️ Tanpri ranpli tout chan obligatwa yo."
-    );
-
+    msg("jobMessage", "⚠️ Tanpri ranpli tout chan obligatwa yo.");
     return;
-
   }
-
 
   msg(
     "jobMessage",
@@ -1189,66 +1162,33 @@ async function postJob(e){
     "warning"
   );
 
+  const payload = {
+    title: vals.title,
+    company_name: vals.company_name,
+    location: vals.location,
+    job_type: vals.job_type,
+    salary: vals.salary,
+    description: vals.description,
+    contact_phone: vals.contact_phone,
+    // These two values match the active Supabase INSERT policies.
+    employer_id: authUserId,
+    status: "pending"
+  };
 
   try{
+    const rows = await api("/rest/v1/jobs", {
+      method: "POST",
+      headers: {
+        // Explicitly use the verified Supabase access token.
+        Authorization: `Bearer ${session.token}`,
+        Prefer: "return=representation"
+      },
+      body: JSON.stringify(payload)
+    });
 
-    const rows=
-      await api(
-        "/rest/v1/jobs",
-        {
-          method:"POST",
-
-          headers:{
-            Authorization:
-              `Bearer ${s.token}`,
-
-            Prefer:
-              "return=representation"
-          },
-
-          body:JSON.stringify({
-
-            title:
-              vals.title,
-
-            company_name:
-              vals.company_name,
-
-            location:
-              vals.location,
-
-            job_type:
-              vals.job_type,
-
-            salary:
-              vals.salary,
-
-            description:
-              vals.description,
-
-            contact_phone:
-              vals.contact_phone,
-
-            employer_id:
-              s.user.id,
-
-            status:
-              "pending"
-
-          })
-
-        }
-      );
-
-
-    console.log(
-      "JOB INSERT RESULT:",
-      rows
-    );
-
+    console.log("JOB INSERT SUCCESS:", { authUserId, rows });
 
     qs("jobForm")?.reset();
-
 
     msg(
       "jobMessage",
@@ -1256,510 +1196,24 @@ async function postJob(e){
       "success"
     );
 
-
-    await loadMyJobs(
-      s.user.id,
-      s.token
-    );
-
+    await loadMyJobs(authUserId, session.token);
 
   }catch(err){
-
-    console.error(
-      "JOB INSERT ERROR:",
-      err
-    );
-
-    msg(
-      "jobMessage",
-      "❌ "+err.message
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   PUBLIC JOBS
-========================================================= */
-
-let publicJobs=[];
-
-
-function jobTypeLabel(type){
-
-  const map={
-
-    full_time:"Full-time",
-
-    part_time:"Part-time",
-
-    contract:"Contract",
-
-    temporary:"Temporary",
-
-    fulltime:"Full-time",
-
-    parttime:"Part-time"
-
-  };
-
-
-  return map[
-    String(type || "").toLowerCase()
-  ]
-
-  ||
-
-  String(type || "")
-    .replace(/_/g," ")
-
-  ||
-
-  "—";
-
-}
-
-
-async function loadJobs(){
-
-  const box=
-    qs("jobsList") ||
-    qs("jobListings");
-
-
-  if(!box)return;
-
-
-  box.innerHTML=
-    '<div class="loading-state"><span>⏳</span><p>Travay yo ap chaje...</p></div>';
-
-
-  try{
-
-    const rows=
-      await api(
-        "/rest/v1/jobs?status=eq.approved&select=*&order=created_at.desc"
-      );
-
-
-    publicJobs=
-      Array.isArray(rows)
-        ? rows
-        : [];
-
-
-    renderJobs();
-
-
-  }catch(err){
-
-    console.error(
-      "Public jobs:",
-      err
-    );
-
-
-    publicJobs=[];
-
-
-    box.innerHTML=
-      `<div class="notice">
-        ❌ Nou pa kapab chaje travay yo kounye a.
-        <br>
-        <small>
-          ${esc(
-            err.message ||
-            "Request failed"
-          )}
-        </small>
-      </div>`;
-
-  }
-
-}
-
-
-function renderJobs(){
-
-  const box=
-    qs("jobsList") ||
-    qs("jobListings");
-
-
-  if(!box)return;
-
-
-  const search=
-    (
-      qs("searchJob")?.value ||
-      ""
-    )
-    .trim()
-    .toLowerCase();
-
-
-  const filter=
-    qs("jobFilter")?.value ||
-    "";
-
-
-  const jobs=
-    publicJobs.filter(job=>{
-
-      const haystack=[
-
-        job.title,
-
-        job.company,
-
-        job.company_name,
-
-        job.location,
-
-        job.description,
-
-        job.job_type,
-
-        job.type,
-
-        job.employment_type
-
-      ]
-
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-
-      const type=
-        job.job_type ||
-        job.employment_type ||
-        job.type ||
-        "";
-
-
-      return (
-        (!search ||
-          haystack.includes(search)) &&
-
-        (!filter ||
-          type===filter)
-      );
-
+    console.error("JOB INSERT ERROR:", {
+      message: err?.message,
+      code: err?.code,
+      details: err?.details,
+      hint: err?.hint,
+      authUserId,
+      payload
     });
 
+    let detail = err?.message || "Erè pandan piblikasyon an.";
+    if(err?.details) detail += ` — ${err.details}`;
+    if(err?.hint) detail += ` — ${err.hint}`;
 
-  if(!jobs.length){
-
-    box.innerHTML=
-      `<div class="empty-state">
-
-        <div class="empty-icon">
-          💼
-        </div>
-
-        <h3>
-          ${
-            publicJobs.length
-              ? "Pa gen travay ki koresponn"
-              : "Pa gen travay ki disponib"
-          }
-        </h3>
-
-        <p>
-          ${
-            publicJobs.length
-              ? "Eseye yon lòt rechèch oswa yon lòt kalite travay."
-              : "Lè yon anplwayè poste yon travay, li ap parèt isit la."
-          }
-        </p>
-
-      </div>`;
-
-    return;
-
+    msg("jobMessage", `❌ ${detail}`);
   }
-
-
-  box.innerHTML=
-    jobs.map(job=>{
-
-      const title=
-        job.title ||
-        "Travay";
-
-
-      const company=
-        job.company_name ||
-        job.company ||
-        "Konpayi";
-
-
-      const location=
-        job.location ||
-        "Lokalizasyon pa presize";
-
-
-      const type=
-        job.job_type ||
-        job.employment_type ||
-        job.type ||
-        "";
-
-
-      const salary=
-        job.salary ||
-        job.pay ||
-        job.rate ||
-        "";
-
-
-      const contact=
-        job.contact_phone ||
-        job.contact ||
-        job.phone ||
-        job.whatsapp ||
-        "";
-
-
-      return `
-        <article class="job-card card">
-
-          <div class="card-kicker">
-            OPÒTINITE TRAVAY
-          </div>
-
-          <h3>
-            ${esc(title)}
-          </h3>
-
-          <p>
-            <strong>
-              ${esc(company)}
-            </strong>
-          </p>
-
-          <div class="meta">
-
-            <span class="badge">
-              📍 ${esc(location)}
-            </span>
-
-            ${
-              type
-                ? `
-                  <span class="badge">
-                    💼 ${esc(
-                      jobTypeLabel(type)
-                    )}
-                  </span>
-                `
-                : ""
-            }
-
-            ${
-              salary
-                ? `
-                  <span class="badge">
-                    💰 ${esc(salary)}
-                  </span>
-                `
-                : ""
-            }
-
-          </div>
-
-          ${
-            job.description
-              ? `
-                <p>
-                  ${esc(
-                    job.description
-                  )}
-                </p>
-              `
-              : ""
-          }
-
-          ${
-            contact
-              ? `
-                <p class="job-contact">
-                  <strong>
-                    Kontak:
-                  </strong>
-                  ${esc(contact)}
-                </p>
-              `
-              : ""
-          }
-
-        </article>
-      `;
-
-    }).join("");
-
-}
-
-
-function jobStatusLabel(status){
-
-  return ({
-
-    pending:
-      "⏳ Ap tann validasyon",
-
-    approved:
-      "✅ Piblik",
-
-    rejected:
-      "❌ Refize",
-
-    unavailable:
-      "🚫 Pa disponib"
-
-  })[status]
-
-  ||
-
-  "📌 "+
-  (status || "—");
-
-}
-
-
-/* =========================================================
-   MY JOBS
-========================================================= */
-
-async function loadMyJobs(
-  userId,
-  token
-){
-
-  const box=
-    qs("myJobs") ||
-    qs("myJobsList");
-
-
-  if(!box)return;
-
-
-  box.innerHTML=
-    "<p>⏳ Travay yo ap chaje...</p>";
-
-
-  try{
-
-    const jobs=
-      await api(
-        `/rest/v1/jobs?employer_id=eq.${encodeURIComponent(userId)}&select=*&order=created_at.desc`,
-        {
-          headers:{
-            Authorization:
-              `Bearer ${token}`
-          }
-        }
-      );
-
-
-    if(!jobs?.length){
-
-      box.innerHTML=
-        "<p>Ou poko poste okenn travay.</p>";
-
-      return;
-
-    }
-
-
-    box.innerHTML=
-      jobs.map(job=>`
-
-        <article class="job-card card">
-
-          <div class="card-kicker">
-
-            TRAVAY POU OU ·
-
-            ${esc(
-              jobStatusLabel(
-                job.status
-              )
-            )}
-
-          </div>
-
-          <h3>
-            ${esc(
-              job.title ||
-              "Travay"
-            )}
-          </h3>
-
-          <p>
-            <strong>
-              ${esc(
-                job.company_name ||
-                job.company ||
-                ""
-              )}
-            </strong>
-          </p>
-
-          <div class="meta">
-
-            <span class="badge">
-              📍 ${esc(
-                job.location ||
-                "—"
-              )}
-            </span>
-
-            <span class="badge">
-              💼 ${esc(
-                job.job_type ||
-                "—"
-              )}
-            </span>
-
-            ${
-              job.salary
-                ? `
-                  <span class="badge">
-                    💰 ${esc(
-                      job.salary
-                    )}
-                  </span>
-                `
-                : ""
-            }
-
-          </div>
-
-          <p>
-            ${esc(
-              job.description ||
-              ""
-            )}
-          </p>
-
-        </article>
-
-      `).join("");
-
-
-  }catch(err){
-
-    console.error(err);
-
-    box.innerHTML=
-      "<p>❌ Nou pa kapab chaje travay ou yo.</p>";
-
-  }
-
 }
 
 

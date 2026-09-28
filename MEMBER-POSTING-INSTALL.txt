@@ -1,17 +1,18 @@
-EAGLE-J CONNECT — MEMBER POSTING V2
+EAGLE-J CONNECT — MEMBER POSTING V3
 
-1. Open Supabase > SQL Editor.
-2. Run: member-posting-final.sql
-3. Do not run the old RLS scripts after it.
-4. Log out of Eagle-J Connect and log in again.
-5. Test "Poste yon Travay".
-6. The job should save as status=pending.
-7. Admin must approve it before it appears publicly.
-8. Test "Kreye yon Anons" the same way.
+IMPORTANT:
+1. Open the Supabase project used by Eagle-J Connect.
+2. Open SQL Editor.
+3. Run member-posting-final.sql ONCE.
+4. Wait for the SQL to finish successfully.
+5. The final SELECT must show ej_jobs_member_insert with cmd=INSERT and role authenticated.
+6. Log out of Eagle-J Connect and log in again.
+7. Test Poste yon Travay.
 
-IMPORTANT FIX:
-The previous jobs INSERT policy checked profiles from inside the jobs INSERT policy.
-That could cause an RLS rejection even for a legitimate logged-in member.
-V2 removes that circular/extra profile check. Ownership is still enforced by
-auth.uid() = employer_id (jobs) and auth.uid() = user_id (businesses), while
-status is forced to pending for new member submissions.
+This version removes EVERY old RLS policy on public.jobs before creating the final policies.
+It also uses a BEFORE INSERT trigger to force employer_id=auth.uid() and status='pending'.
+That means a normal logged-in member can post, but cannot impersonate another user or publish directly.
+
+Do NOT run older jobs-rls-fix.sql, moderation-v7.sql, or other old jobs policy scripts after this.
+
+If the same RLS error remains, copy/paste the result of the final SELECT from member-posting-final.sql here. That result will identify the exact remaining policy problem.
