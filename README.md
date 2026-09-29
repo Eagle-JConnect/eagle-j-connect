@@ -20,6 +20,7 @@ The marketplace no longer contains hard-coded country location filters.
 ## Main pages
 
 - `index.html` — global homepage
+- `search.html` — global search/discovery
 - `travay.html` — jobs
 - `biznis.html` — businesses and services
 - `anons-list.html` — all listings

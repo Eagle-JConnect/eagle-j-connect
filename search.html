@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="search-page-title">Search | Eagle-J Connect</title>
+  <meta name="description" content="Search jobs, businesses, services and opportunities on Eagle-J Connect.">
+  <link rel="stylesheet" href="style.css?v=global2">
+</head>
+<body>
+<header class="header">
+  <div class="container nav-container">
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect logo">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false" aria-controls="menu">☰</button>
+    <nav id="menu" aria-label="Navigasyon prensipal">
+      <a href="index.html" data-i18n="nav-home">Akèy</a>
+      <a href="travay.html" data-i18n="nav-jobs">Travay</a>
+      <a href="biznis.html" data-i18n="nav-business">Biznis</a>
+      <a href="anons-list.html" data-i18n="nav-ads">Anons</a>
+      <a href="search.html" data-i18n="nav-search">Rechèch</a>
+      <a href="kontak.html" data-i18n="nav-contact">Kontak</a>
+      <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a>
+      <a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a>
+      <a href="profil.html" data-i18n="nav-account" data-auth="user">Kont Mwen</a>
+      <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
+      <div class="language">
+        <select id="languageSelect" aria-label="Chwazi lang">
+          <option value="en">🌐 English</option><option value="fr">🇫🇷 Français</option><option value="ht">🗣️ Kreyòl</option>
+        </select>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero search-hero">
+    <div class="container hero-content">
+      <p class="card-kicker" style="color:#9edcff;letter-spacing:2px" data-i18n="search-kicker">EAGLE-J DISCOVER</p>
+      <h1 data-i18n="search-title">Search Eagle-J Connect</h1>
+      <p data-i18n="search-subtitle">Find jobs, businesses, services and opportunities in one place.</p>
+      <form id="globalSearchForm" class="global-search-form">
+        <label class="sr-only" for="globalSearchInput" data-i18n="search-label">Search</label>
+        <input id="globalSearchInput" type="search" autocomplete="off" data-i18n-placeholder="search-placeholder" placeholder="Search jobs, businesses, services..." required>
+        <button class="btn btn-primary" type="submit" data-i18n="search-button">Search</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="services">
+    <div class="container">
+      <div class="search-toolbar">
+        <button class="search-filter active" type="button" data-type="all" data-i18n="search-all">All</button>
+        <button class="search-filter" type="button" data-type="jobs" data-i18n="search-jobs">Jobs</button>
+        <button class="search-filter" type="button" data-type="businesses" data-i18n="search-businesses">Businesses & Services</button>
+      </div>
+      <p id="searchStatus" class="market-result-count" aria-live="polite"></p>
+      <div id="searchResults" class="listing-grid">
+        <div class="empty-state"><div class="empty-icon">🔎</div><h3 data-i18n="search-start-title">Start your search</h3><p data-i18n="search-start-text">Enter a keyword above to discover what is available.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>Eagle-J Connect</h3><p data-i18n="footer-text">Connect with people, discover opportunities, and grow together.</p></div>
+      <div class="footer-links"><a href="index.html" data-i18n="nav-home">Akèy</a><a href="travay.html" data-i18n="nav-jobs">Travay</a><a href="biznis.html" data-i18n="nav-business">Biznis</a><a href="anons-list.html" data-i18n="nav-ads">Anons</a><a href="kontak.html" data-i18n="nav-contact">Kontak</a></div>
+    </div>
+    <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
+  </div>
+</footer>
+
+<script src="language.js?v=global2"></script>
+<script src="script.js?v=global2"></script>
+<script src="menu.js?v=global2"></script>
+<script src="global.js?v=global2"></script>
+<script src="search.js?v=global2"></script>
+</body>
+</html>

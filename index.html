@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eagle-J Connect | Connect • Discover • Grow</title>
   <meta name="description" content="Eagle-J Connect is a global platform for jobs, businesses, services, listings, and opportunities.">
-  <link rel="stylesheet" href="style.css?v=language-final-8">
+  <link rel="stylesheet" href="style.css?v=global2">
 </head>
 <body>
 
@@ -21,6 +21,7 @@
       <a href="travay.html" data-i18n="nav-jobs">Travay</a>
       <a href="biznis.html" data-i18n="nav-business">Biznis</a>
       <a href="anons-list.html" data-i18n="nav-ads">Anons</a>
+      <a href="search.html" data-i18n="nav-search">Rechèch</a>
       <a href="kontak.html" data-i18n="nav-contact">Kontak</a>
       <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a>
       <a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a>
@@ -46,6 +47,23 @@
       <div class="hero-buttons">
         <a href="enskri.html" class="btn btn-primary" data-i18n="create-account">Create Account</a>
         <a href="travay.html" class="btn btn-secondary" data-i18n="find-job">Find Jobs</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="global-search-home">
+    <div class="container">
+      <div class="global-search-card">
+        <div>
+          <p class="card-kicker" data-i18n="search-kicker">EAGLE-J DISCOVER</p>
+          <h2 data-i18n="home-search-title">What are you looking for?</h2>
+          <p data-i18n="home-search-text">Search jobs, businesses, services and opportunities from one place.</p>
+        </div>
+        <form class="home-search-form" action="search.html" method="get">
+          <label class="sr-only" for="homeSearchInput" data-i18n="search-label">Search</label>
+          <input id="homeSearchInput" name="q" type="search" data-i18n-placeholder="home-search-placeholder" placeholder="Try: carpenter, restaurant, marketing..." required>
+          <button class="btn btn-primary" type="submit" data-i18n="search-button">Search</button>
+        </form>
       </div>
     </div>
   </section>
@@ -154,9 +172,9 @@
   </div>
 </footer>
 
-<script src="language.js?v=language-final-8"></script>
-<script src="script.js?v=language-final-8"></script>
-<script src="menu.js?v=language-final-8"></script>
-<script src="global.js?v=language-final-8"></script>
+<script src="language.js?v=global2"></script>
+<script src="script.js?v=global2"></script>
+<script src="menu.js?v=global2"></script>
+<script src="global.js?v=global2"></script>
 </body>
 </html>

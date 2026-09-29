@@ -76,6 +76,120 @@
       fr: "Déconnexion"
     },
 
+    "nav-search": {
+      ht: "Rechèch",
+      en: "Search",
+      fr: "Recherche"
+    },
+
+    "search-page-title": {
+      ht: "Rechèch | Eagle-J Connect",
+      en: "Search | Eagle-J Connect",
+      fr: "Recherche | Eagle-J Connect"
+    },
+
+    "search-kicker": {
+      ht: "EAGLE-J DEKOUVRI",
+      en: "EAGLE-J DISCOVER",
+      fr: "EAGLE-J DÉCOUVRIR"
+    },
+
+    "search-title": {
+      ht: "Chèche sou Eagle-J Connect",
+      en: "Search Eagle-J Connect",
+      fr: "Rechercher sur Eagle-J Connect"
+    },
+
+    "search-subtitle": {
+      ht: "Jwenn travay, biznis, sèvis ak opòtinite nan yon sèl kote.",
+      en: "Find jobs, businesses, services and opportunities in one place.",
+      fr: "Trouvez des emplois, entreprises, services et opportunités au même endroit."
+    },
+
+    "search-label": {
+      ht: "Rechèch",
+      en: "Search",
+      fr: "Recherche"
+    },
+
+    "search-placeholder": {
+      ht: "Chèche travay, biznis, sèvis...",
+      en: "Search jobs, businesses, services...",
+      fr: "Rechercher emplois, entreprises, services..."
+    },
+
+    "home-search-title": {
+      ht: "Kisa w ap chèche?",
+      en: "What are you looking for?",
+      fr: "Que recherchez-vous ?"
+    },
+
+    "home-search-text": {
+      ht: "Chèche travay, biznis, sèvis ak opòtinite nan yon sèl kote.",
+      en: "Search jobs, businesses, services and opportunities from one place.",
+      fr: "Recherchez emplois, entreprises, services et opportunités au même endroit."
+    },
+
+    "home-search-placeholder": {
+      ht: "Egzanp: carpenter, restaurant, marketing...",
+      en: "Try: carpenter, restaurant, marketing...",
+      fr: "Essayez : carpenter, restaurant, marketing..."
+    },
+
+    "search-button": {
+      ht: "Chèche",
+      en: "Search",
+      fr: "Rechercher"
+    },
+
+    "search-all": {
+      ht: "Tout",
+      en: "All",
+      fr: "Tout"
+    },
+
+    "search-jobs": {
+      ht: "Travay",
+      en: "Jobs",
+      fr: "Emplois"
+    },
+
+    "search-businesses": {
+      ht: "Biznis & Sèvis",
+      en: "Businesses & Services",
+      fr: "Entreprises & Services"
+    },
+
+    "search-start-title": {
+      ht: "Kòmanse rechèch ou",
+      en: "Start your search",
+      fr: "Commencez votre recherche"
+    },
+
+    "search-start-text": {
+      ht: "Antre yon mo anlè a pou dekouvri sa ki disponib.",
+      en: "Enter a keyword above to discover what is available.",
+      fr: "Entrez un mot-clé ci-dessus pour découvrir ce qui est disponible."
+    },
+
+    "search-no-results": {
+      ht: "Nou pa jwenn rezilta",
+      en: "No results found",
+      fr: "Aucun résultat trouvé"
+    },
+
+    "search-no-results-text": {
+      ht: "Eseye yon lòt mo oswa chwazi yon lòt kategori.",
+      en: "Try another keyword or choose a different category.",
+      fr: "Essayez un autre mot-clé ou choisissez une autre catégorie."
+    },
+
+    "view-business": {
+      ht: "Gade detay →",
+      en: "View Details →",
+      fr: "Voir les détails →"
+    },
+
     /* HERO */
     "hero-text": {
       ht: "Konekte ak moun, dekouvri opòtinite, devlope rezo ou, epi kreye nouvo posiblite.",
