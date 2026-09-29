@@ -1,0 +1,26 @@
+EAGLE-J CONNECT — SOCIAL MEDIA MODULE — STEP 1
+
+Files added:
+- social-media.html
+- social-media.css
+- social-media.js
+
+Existing file changed:
+- admin.html (one link only: Social Media Manager)
+
+What this step does:
+- Adds a protected Social Media Manager page.
+- Shows Facebook, Instagram, TikTok, YouTube and WhatsApp integration cards.
+- Adds a social post draft interface.
+- Adds a publishing-history placeholder.
+- Checks the current Supabase session and admin_users table before enabling controls.
+- Does NOT store provider secrets in frontend code.
+
+Important:
+The Connect buttons intentionally do not pretend to connect accounts yet. Real OAuth requires provider app credentials and a server-side callback/publishing layer (Supabase Edge Functions). This keeps the current GitHub Pages site safe while the integration is built incrementally.
+
+Step 2 will add:
+- social_connections database table + RLS
+- social_posts database table + RLS
+- server-side OAuth/token handling through Supabase Edge Functions
+- provider-specific configuration for Facebook/Instagram, TikTok, YouTube and WhatsApp
