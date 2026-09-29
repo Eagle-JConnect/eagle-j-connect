@@ -249,9 +249,40 @@
       ht: "Konekte ak moun, dekouvri opòtinite epi grandi ansanm.",
       en: "Connect with people, discover opportunities, and grow together.",
       fr: "Connectez-vous avec les gens, découvrez des opportunités et grandissez ensemble."
-    }
-  };
+    },
 
+    /* SOCIAL MEDIA MANAGER */
+    "social-title": { ht: "Social Media Manager", en: "Social Media Manager", fr: "Gestionnaire des réseaux sociaux" },
+    "social-subtitle": { ht: "Jere Facebook, Instagram, TikTok ak YouTube depi yon sèl espas.", en: "Manage Facebook, Instagram, TikTok and YouTube from one place.", fr: "Gérez Facebook, Instagram, TikTok et YouTube depuis un seul espace." },
+    "social-connected": { ht: "● Konekte", en: "● Connected", fr: "● Connecté" },
+    "social-connect-title": { ht: "🔗 Konekte rezo sosyal yo", en: "🔗 Connect social networks", fr: "🔗 Connecter les réseaux sociaux" },
+    "social-connect-help": { ht: "Token ak sekrè yo pa dwe rete nan navigatè a. Koneksyon reyèl yo pase nan Supabase Edge Functions.", en: "Tokens and secrets should not stay in the browser. Real connections run through Supabase Edge Functions.", fr: "Les jetons et secrets ne doivent pas rester dans le navigateur. Les connexions réelles passent par les Edge Functions Supabase." },
+    "social-refresh": { ht: "🔄 Rafrechi", en: "🔄 Refresh", fr: "🔄 Actualiser" },
+    "social-connect": { ht: "Konekte", en: "Connect", fr: "Connecter" },
+    "social-facebook-help": { ht: "Page publishing", en: "Page publishing", fr: "Publication sur une Page" },
+    "social-instagram-help": { ht: "Business/Creator publishing", en: "Business/Creator publishing", fr: "Publication Business/Creator" },
+    "social-tiktok-help": { ht: "Content Posting API", en: "Content Posting API", fr: "API de publication de contenu" },
+    "social-youtube-help": { ht: "Video publishing", en: "Video publishing", fr: "Publication vidéo" },
+    "social-whatsapp-help": { ht: "Share / Business API ready", en: "Share / Business API ready", fr: "Partage / API Business prête" },
+    "social-whatsapp-note": { ht: "WhatsApp ka sèvi kòm share link imedyatman; WhatsApp Business Cloud API mande konfigirasyon Meta Business separe.", en: "WhatsApp works immediately as a share link; WhatsApp Business Cloud API requires separate Meta Business configuration.", fr: "WhatsApp fonctionne immédiatement comme lien de partage ; l’API WhatsApp Business Cloud nécessite une configuration Meta Business séparée." },
+    "social-create-title": { ht: "✍️ Kreye yon piblikasyon", en: "✍️ Create a post", fr: "✍️ Créer une publication" },
+    "social-create-help": { ht: "Ekri caption ou, mete hashtags, epi chwazi kote pou voye l.", en: "Write your caption, add hashtags, and choose where to publish it.", fr: "Écrivez votre légende, ajoutez des hashtags et choisissez où la publier." },
+    "social-caption": { ht: "Caption", en: "Caption", fr: "Légende" },
+    "social-caption-placeholder": { ht: "Ekri mesaj ou la... #EagleJConnect", en: "Write your message here... #EagleJConnect", fr: "Écrivez votre message ici... #EagleJConnect" },
+    "social-media-url": { ht: "URL imaj/videyo piblik", en: "Public image/video URL", fr: "URL publique de l’image/vidéo" },
+    "social-media-url-placeholder": { ht: "https://...", en: "https://...", fr: "https://..." },
+    "social-media-type": { ht: "Kalite medya", en: "Media type", fr: "Type de média" },
+    "social-none": { ht: "San medya", en: "No media", fr: "Sans média" },
+    "social-image": { ht: "Imaj", en: "Image", fr: "Image" },
+    "social-video": { ht: "Videyo", en: "Video", fr: "Vidéo" },
+    "social-publish": { ht: "🚀 Pibliye", en: "🚀 Publish", fr: "🚀 Publier" },
+    "social-clear": { ht: "Netwaye", en: "Clear", fr: "Effacer" },
+    "social-history-title": { ht: "🧾 Istwa piblikasyon", en: "🧾 Publishing history", fr: "🧾 Historique des publications" },
+    "social-history-help": { ht: "Wè sa ki te kreye ak status chak platfòm.", en: "See what was created and the status for each platform.", fr: "Voir ce qui a été créé et le statut de chaque plateforme." },
+    "social-date": { ht: "Dat", en: "Date", fr: "Date" },
+    "social-platforms": { ht: "Platfòm", en: "Platforms", fr: "Plateformes" },
+    "social-status": { ht: "Status", en: "Status", fr: "Statut" }
+  };
 
   /* =========================================================
      EXACT VISIBLE TEXT

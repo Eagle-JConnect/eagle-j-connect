@@ -1,81 +1,27 @@
-/* =========================================================
-   EAGLE-J CONNECT — SOCIAL MEDIA MANAGER
-   Safe frontend shell. No provider secret is stored here.
-   ========================================================= */
+
+/* Eagle-J Connect — Social Media Manager */
 (function(){
   "use strict";
-
-  const SUPABASE_URL = "https://glwyqrvufmjscjbbszzz.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
-  const PROVIDERS = ["facebook","instagram","tiktok","youtube","whatsapp"];
-
-  function token(){ return localStorage.getItem("supabase_access_token") || ""; }
-  function userId(){ return localStorage.getItem("supabase_user_id") || ""; }
-
-  function message(text,type="info"){
-    const el=document.getElementById("socialMessage");
-    if(!el)return;
-    el.textContent=text;
-    el.className="social-message show "+type;
-  }
-
-  async function isAdmin(){
-    const uid=userId(), t=token();
-    if(!uid || !t) return false;
-    try{
-      const r=await fetch(`${SUPABASE_URL}/rest/v1/admin_users?user_id=eq.${encodeURIComponent(uid)}&select=user_id&limit=1`,{
-        headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${t}`}
-      });
-      if(!r.ok)return false;
-      const rows=await r.json();
-      return Array.isArray(rows)&&rows.length>0;
-    }catch(e){ return false; }
-  }
-
-  async function guard(){
-    const ok=await isAdmin();
-    if(!ok){
-      message("Aksè Social Media Manager la rezève pou administratè a pou kounye a.","warn");
-      document.querySelectorAll("[data-connect],[data-test],#socialPostForm").forEach(el=>{
-        if(el.tagName==="FORM") el.querySelectorAll("button,input,textarea,select").forEach(x=>x.disabled=true);
-        else el.disabled=true;
-      });
-    }
-  }
-
-  function providerName(p){
-    return p.charAt(0).toUpperCase()+p.slice(1);
-  }
-
-  document.querySelectorAll("[data-connect]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const p=btn.dataset.connect;
-      if(!PROVIDERS.includes(p))return;
-      message(`${providerName(p)} OAuth pa aktive nan premye etap sa a. Nou bezwen mete App ID/Client ID ak redirect URI provider la nan backend Supabase anvan bouton Connect la ka otorize kont lan.`,"warn");
-    });
+  const SUPABASE_URL="https://glwyqrvufmjscjbbszzz.supabase.co";
+  const SUPABASE_KEY="sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
+  const FN=SUPABASE_URL+"/functions/v1/";
+  const $=id=>document.getElementById(id);
+  const esc=v=>{const d=document.createElement("div");d.textContent=v??"";return d.innerHTML;};
+  function session(){const token=localStorage.getItem("supabase_access_token");const raw=localStorage.getItem("supabase_user");if(!token||!raw)return null;try{return {token,user:JSON.parse(raw)};}catch(e){return null;}}
+  function show(text,type="info"){const el=$("socialMessage");if(!el)return;el.textContent=text;el.className="social-message "+type;el.classList.remove("hidden");}
+  function apiHeaders(s){return {apikey:SUPABASE_KEY,Authorization:`Bearer ${s.token}`,"Content-Type":"application/json"};}
+  async function invoke(name,body){const s=session();if(!s)throw new Error("Ou dwe konekte anvan.");const r=await fetch(FN+name,{method:"POST",headers:apiHeaders(s),body:JSON.stringify(body||{})});const txt=await r.text();let data=null;try{data=txt?JSON.parse(txt):null;}catch(e){data={message:txt};}if(!r.ok)throw new Error(data?.message||data?.error||`Request failed (${r.status})`);return data;}
+  async function loadConnections(){const s=session();if(!s)return;try{const r=await fetch(SUPABASE_URL+`/rest/v1/social_connections?user_id=eq.${encodeURIComponent(s.user.id)}&select=id,platform,account_name,status,created_at,updated_at&order=platform.asc`,{headers:apiHeaders(s)});const rows=r.ok?await r.json():[];document.querySelectorAll(".platform-card").forEach(card=>{const p=card.dataset.platform;const row=Array.isArray(rows)?rows.find(x=>x.platform===p&&x.status==="connected"):null;const btn=card.querySelector(".connect-btn");const badge=card.querySelector(".connected-badge");if(row){const l=localStorage.getItem("eagleJConnectLanguage")||localStorage.getItem("selectedLanguage")||"en";const labels={ht:{disconnect:"Dekonekte",connected:"● Konekte"},en:{disconnect:"Disconnect",connected:"● Connected"},fr:{disconnect:"Déconnecter",connected:"● Connecté"}}[l]||{disconnect:"Disconnect",connected:"● Connected"};btn.textContent=labels.disconnect;btn.dataset.action="disconnect";badge.textContent=`${labels.connected}${row.account_name?" — "+row.account_name:""}`;badge.classList.remove("hidden");}else{const l=localStorage.getItem("eagleJConnectLanguage")||localStorage.getItem("selectedLanguage")||"en";btn.textContent=({ht:"Konekte",en:"Connect",fr:"Connecter"}[l]||"Connect");btn.dataset.action="connect";badge.classList.add("hidden");}});}catch(e){show("Nou pa kapab li koneksyon yo. Asire SQL sosyal la enstale.","error");}}
+  async function loadPosts(){const s=session();const body=$("postsBody");if(!s||!body)return;try{const r=await fetch(SUPABASE_URL+`/rest/v1/social_posts?user_id=eq.${encodeURIComponent(s.user.id)}&select=id,caption,platforms,status,created_at,published_at&order=created_at.desc&limit=50`,{headers:apiHeaders(s)});const rows=r.ok?await r.json():[];if(!Array.isArray(rows)||!rows.length){body.innerHTML='<tr><td colspan="4">Pa gen piblikasyon toujou.</td></tr>';return;}body.innerHTML=rows.map(x=>`<tr><td>${esc(new Date(x.created_at).toLocaleString())}</td><td>${esc((x.caption||"").slice(0,180))}</td><td>${esc((x.platforms||[]).join(", "))}</td><td class="${x.status==="published"?"status-ok":x.status==="failed"?"status-bad":"status-pending"}">${esc(x.status||"—")}</td></tr>`).join("");}catch(e){body.innerHTML=`<tr><td colspan="4">❌ ${esc(e.message)}</td></tr>`;}}
+  async function startOAuth(platform){const s=session();if(!s){location.href="login.html";return;}try{const returnUrl=new URL("social-media.html",location.href).href;const result=await invoke("social-oauth",{action:"start",platform,return_url:returnUrl});if(!result?.authorization_url)throw new Error("OAuth URL pa retounen.");location.href=result.authorization_url;}catch(e){show(e.message,"error");}}
+  async function disconnect(platform){try{await invoke("social-oauth",{action:"disconnect",platform});show("Koneksyon "+platform+" dekonekte.","success");await loadConnections();}catch(e){show(e.message,"error");}}
+  document.addEventListener("DOMContentLoaded",async()=>{
+    const s=session();if(!s){$("socialUserStatus").textContent="🔒 Konekte pou itilize Social Media Manager";setTimeout(()=>location.href="login.html",900);return;}
+    $("socialUserStatus").textContent="✅ Sesyon aktif";
+    document.querySelectorAll("[data-connect]").forEach(btn=>btn.addEventListener("click",()=>{const p=btn.dataset.connect;btn.dataset.action==="disconnect"?disconnect(p):startOAuth(p);}));
+    $("refreshConnections")?.addEventListener("click",loadConnections);$("refreshPosts")?.addEventListener("click",loadPosts);$("clearPost")?.addEventListener("click",()=>$("socialPostForm").reset());
+    $("socialPostForm")?.addEventListener("submit",async e=>{e.preventDefault();const caption=$("postCaption").value.trim();const media_url=$("postMediaUrl").value.trim();const media_type=$("postMediaType").value;const platforms=[...document.querySelectorAll('#publishPlatforms input:checked')].map(x=>x.value);if(!caption&&!media_url){show("Mete yon caption oswa yon medya.","error");return;}if(!platforms.length){show("Chwazi omwen yon platfòm.","error");return;}if(platforms.includes("youtube")&&!media_url){show("YouTube bezwen yon videyo URL pou piblikasyon sa a.","error");return;}const b=$("publishBtn");b.disabled=true;b.textContent="⏳ Nap pibliye...";try{const result=await invoke("social-publish",{caption,media_url:media_url||null,media_type,platforms});show(result.message||"Piblikasyon fini.",result.failed?.length?"info":"success");if(result.results?.whatsapp?.share_url){window.open(result.results.whatsapp.share_url,"_blank","noopener");}await loadPosts();}catch(err){show(err.message,"error");}finally{b.disabled=false;b.textContent="🚀 Pibliye";}});
+    document.addEventListener("languageChanged",()=>loadConnections());
+    await Promise.all([loadConnections(),loadPosts()]);
   });
-
-  document.querySelectorAll("[data-test]").forEach(btn=>{
-    btn.addEventListener("click",()=>{
-      const p=btn.dataset.test;
-      message(`${providerName(p)} module loaded successfully. API connection still needs provider credentials + OAuth backend configuration.`,"info");
-    });
-  });
-
-  const form=document.getElementById("socialPostForm");
-  if(form){
-    form.addEventListener("submit",e=>{
-      e.preventDefault();
-      const title=document.getElementById("socialTitle").value.trim();
-      const caption=document.getElementById("socialCaption").value.trim();
-      const platforms=[...document.querySelectorAll('input[name="platform"]:checked')].map(x=>x.value);
-      if(!caption){message("Ekri caption la anvan ou prepare post la.","warn");return;}
-      if(!platforms.length){message("Chwazi omwen yon platform.","warn");return;}
-      const payload={title,caption,platforms,created_at:new Date().toISOString()};
-      localStorage.setItem("eagleJ_social_draft",JSON.stringify(payload));
-      message("Post la pare kòm draft. Publishing ap aktive lè OAuth backend provider yo konfigire.","info");
-    });
-  }
-
-  guard();
 })();

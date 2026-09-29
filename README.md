@@ -99,3 +99,7 @@ The platform can serve local and international users without making any single c
 
 ## Member posting V2
 Run `member-posting-final.sql` in Supabase SQL Editor. Normal authenticated users can submit jobs and business/listing ads; new submissions are `pending` until an admin approves them.
+
+
+## Social Media Manager
+See `SOCIAL-MEDIA-SETUP.md` for the final social integration layer.

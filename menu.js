@@ -42,6 +42,15 @@
     const logged=!!getSession();
     document.querySelectorAll('[data-auth="guest"]').forEach(el=>el.hidden=logged);
     document.querySelectorAll('[data-auth="user"]').forEach(el=>el.hidden=!logged);
+    const menu=document.getElementById("menu");
+    if(menu && logged && !menu.querySelector('[data-social-link="1"]')){
+      const a=document.createElement("a");
+      a.href="social-media.html";
+      a.textContent="📣 Social Media";
+      a.dataset.socialLink="1";
+      const lang=menu.querySelector('.language');
+      if(lang)menu.insertBefore(a,lang);else menu.appendChild(a);
+    }
     const logout=document.getElementById("logoutBtn");
     if(logout && !logout.dataset.logoutReady){
       logout.dataset.logoutReady="1";

@@ -5,10 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Social Media Manager | Eagle-J Connect</title>
 <link rel="stylesheet" href="style.css?v=global2">
-<link rel="stylesheet" href="social-media.css?v=1">
+<link rel="stylesheet" href="social-media.css?v=final1">
 </head>
 <body>
-
 <header class="header">
   <div class="container nav-container">
     <a href="index.html" class="logo-area">
@@ -26,88 +25,72 @@
       <a href="login.html" data-auth="guest">Konekte</a>
       <a href="profil.html" data-auth="user">Kont Mwen</a>
       <a href="#" id="logoutBtn" data-auth="user">Dekonekte</a>
-      <div class="language">
-        <select id="languageSelect" aria-label="Chwazi lang">
-          <option value="ht">🇭🇹 Kreyòl</option>
-          <option value="en">🇺🇸 English</option>
-          <option value="fr">🇫🇷 Français</option>
-        </select>
-      </div>
+      <div class="language"><select id="languageSelect" aria-label="Chwazi lang"><option value="ht">🇭🇹 Kreyòl</option><option value="en">🇺🇸 English</option><option value="fr">🇫🇷 Français</option></select></div>
     </nav>
   </div>
 </header>
 
 <main class="social-wrap">
   <section class="social-hero">
-    <h1>📱 Social Media Manager</h1>
-    <p>Jere koneksyon Eagle-J Connect ak Facebook, Instagram, TikTok, YouTube ak WhatsApp nan yon sèl espas.</p>
-    <div class="social-note"><strong>Premye etap:</strong> paj sa a se yon modil apa. Li pa modifye travay, biznis, login, admin moderation oswa sistèm lang ki deja egziste.</div>
+    <div>
+      <span class="social-kicker">📣 EAGLE-J CONNECT</span>
+      <h1 data-i18n="social-title">Social Media Manager</h1>
+      <p data-i18n="social-subtitle">Jere Facebook, Instagram, TikTok ak YouTube depi yon sèl espas.</p>
+    </div>
+    <div class="social-status-pill" id="socialUserStatus">⏳ Nap verifye sesyon...</div>
   </section>
 
-  <div id="socialMessage" class="social-message"></div>
+  <div id="socialMessage" class="social-message hidden"></div>
 
-  <section class="social-grid" aria-label="Social platforms">
-    <article class="social-card" data-provider="facebook">
-      <div class="social-card-top"><div class="social-icon">🔵</div><div><h2>Facebook</h2><span class="social-muted">Pages & publishing</span></div><span class="social-status">Not connected</span></div>
-      <p>Konekte paj Facebook Eagle-J la pou prepare epi pibliye kontni depi Social Media Manager la.</p>
-      <div class="social-actions"><button class="social-btn" data-connect="facebook">Connect Facebook</button><button class="social-btn ghost" data-test="facebook">Test</button></div>
-    </article>
-
-    <article class="social-card" data-provider="instagram">
-      <div class="social-card-top"><div class="social-icon">📸</div><div><h2>Instagram</h2><span class="social-muted">Professional account</span></div><span class="social-status">Not connected</span></div>
-      <p>Konekte Instagram pwofesyonèl ki asosye ak Meta pou pibliye kontni mak Eagle-J.</p>
-      <div class="social-actions"><button class="social-btn" data-connect="instagram">Connect Instagram</button><button class="social-btn ghost" data-test="instagram">Test</button></div>
-    </article>
-
-    <article class="social-card" data-provider="tiktok">
-      <div class="social-card-top"><div class="social-icon">🎵</div><div><h2>TikTok</h2><span class="social-muted">Content Posting API</span></div><span class="social-status">Not connected</span></div>
-      <p>Prepare pou konekte TikTok ak Content Posting API a pou direct post oswa upload draft.</p>
-      <div class="social-actions"><button class="social-btn" data-connect="tiktok">Connect TikTok</button><button class="social-btn ghost" data-test="tiktok">Test</button></div>
-    </article>
-
-    <article class="social-card" data-provider="youtube">
-      <div class="social-card-top"><div class="social-icon">▶️</div><div><h2>YouTube</h2><span class="social-muted">YouTube Data API</span></div><span class="social-status">Not connected</span></div>
-      <p>Konekte chanèl YouTube la pou upload videyo ak metadata depi Eagle-J Connect.</p>
-      <div class="social-actions"><button class="social-btn" data-connect="youtube">Connect YouTube</button><button class="social-btn ghost" data-test="youtube">Test</button></div>
-    </article>
-
-    <article class="social-card" data-provider="whatsapp">
-      <div class="social-card-top"><div class="social-icon">💬</div><div><h2>WhatsApp</h2><span class="social-muted">Business messaging</span></div><span class="social-status">Not connected</span></div>
-      <p>Modil sa ap prepare pou koneksyon WhatsApp Business pou pataje anons ak mesaj marketing.</p>
-      <div class="social-actions"><button class="social-btn" data-connect="whatsapp">Connect WhatsApp</button><button class="social-btn ghost" data-test="whatsapp">Test</button></div>
-    </article>
+  <section class="social-card">
+    <div class="section-title-row"><div><h2 data-i18n="social-connect-title">🔗 Konekte rezo sosyal yo</h2><p data-i18n="social-connect-help">Token ak sekrè yo pa dwe rete nan navigatè a. Koneksyon reyèl yo pase nan Supabase Edge Functions.</p></div><button class="secondary-btn" id="refreshConnections" type="button" data-i18n="social-refresh">🔄 Rafrechi</button></div>
+    <div class="social-platform-grid" id="platformGrid">
+      <article class="platform-card" data-platform="facebook"><div class="platform-icon">f</div><div><h3>Facebook</h3><p data-i18n="social-facebook-help">Page publishing</p></div><button class="connect-btn" data-connect="facebook">Konekte</button><span class="connected-badge hidden">● Konekte</span></article>
+      <article class="platform-card" data-platform="instagram"><div class="platform-icon">◎</div><div><h3>Instagram</h3><p data-i18n="social-instagram-help">Business/Creator publishing</p></div><button class="connect-btn" data-connect="instagram">Konekte</button><span class="connected-badge hidden">● Konekte</span></article>
+      <article class="platform-card" data-platform="tiktok"><div class="platform-icon">♪</div><div><h3>TikTok</h3><p data-i18n="social-tiktok-help">Content Posting API</p></div><button class="connect-btn" data-connect="tiktok">Konekte</button><span class="connected-badge hidden">● Konekte</span></article>
+      <article class="platform-card" data-platform="youtube"><div class="platform-icon">▶</div><div><h3>YouTube</h3><p data-i18n="social-youtube-help">Video publishing</p></div><button class="connect-btn" data-connect="youtube">Konekte</button><span class="connected-badge hidden">● Konekte</span></article>
+      <article class="platform-card" data-platform="whatsapp"><div class="platform-icon">✆</div><div><h3>WhatsApp</h3><p data-i18n="social-whatsapp-help">Share / Business API ready</p></div><button class="connect-btn" data-connect="whatsapp">Konekte</button><span class="connected-badge hidden">● Konekte</span></article>
+    </div>
+    <p class="small-note" data-i18n="social-whatsapp-note">WhatsApp ka sèvi kòm share link imedyatman; WhatsApp Business Cloud API mande konfigirasyon Meta Business separe.</p>
   </section>
 
-  <section class="social-section">
-    <h2>📝 Create Social Post</h2>
-    <p class="social-muted">Nou mete zouti a pare kounye a; publishing ap aktive apre OAuth/provider credentials yo fin konfigire.</p>
+  <section class="social-card">
+    <div class="section-title-row"><div><h2 data-i18n="social-create-title">✍️ Kreye yon piblikasyon</h2><p data-i18n="social-create-help">Ekri caption ou, mete hashtags, epi chwazi kote pou voye l.</p></div></div>
     <form id="socialPostForm" class="social-form">
-      <div><label for="socialTitle">Title</label><input id="socialTitle" maxlength="120" placeholder="Eagle-J Connect — New Opportunity"></div>
-      <div><label for="socialCaption">Caption</label><textarea id="socialCaption" maxlength="5000" placeholder="Ekri mesaj ou vle pibliye..."></textarea></div>
-      <div><label>Platforms</label><div class="social-platforms">
-        <label><input type="checkbox" name="platform" value="facebook"> Facebook</label>
-        <label><input type="checkbox" name="platform" value="instagram"> Instagram</label>
-        <label><input type="checkbox" name="platform" value="tiktok"> TikTok</label>
-        <label><input type="checkbox" name="platform" value="youtube"> YouTube</label>
-        <label><input type="checkbox" name="platform" value="whatsapp"> WhatsApp</label>
-      </div></div>
-      <button class="social-btn secondary" type="submit">Prepare Post</button>
+      <label data-i18n="social-caption">Caption
+        <textarea id="postCaption" rows="6" maxlength="5000" placeholder="Ekri mesaj ou la... #EagleJConnect" data-i18n-placeholder="social-caption-placeholder"></textarea>
+      </label>
+      <div class="social-form-grid">
+        <label data-i18n="social-media-url">URL imaj/videyo piblik
+          <input id="postMediaUrl" type="url" placeholder="https://..." data-i18n-placeholder="social-media-url-placeholder">
+        </label>
+        <label data-i18n="social-media-type">Kalite medya
+          <select id="postMediaType"><option value="none" data-i18n="social-none">San medya</option><option value="image" data-i18n="social-image">Imaj</option><option value="video" data-i18n="social-video">Videyo</option></select>
+        </label>
+      </div>
+      <div class="platform-checks" id="publishPlatforms">
+        <label><input type="checkbox" value="facebook"> Facebook</label>
+        <label><input type="checkbox" value="instagram"> Instagram</label>
+        <label><input type="checkbox" value="tiktok"> TikTok</label>
+        <label><input type="checkbox" value="youtube"> YouTube</label>
+        <label><input type="checkbox" value="whatsapp"> WhatsApp</label>
+      </div>
+      <div class="social-actions"><button class="primary-btn" type="submit" id="publishBtn" data-i18n="social-publish">🚀 Pibliye</button><button class="secondary-btn" type="button" id="clearPost" data-i18n="social-clear">Netwaye</button></div>
     </form>
   </section>
 
-  <section class="social-section">
-    <h2>📊 Publishing History</h2>
-    <div class="social-muted">Publishing history ap kòmanse ranpli lè premye provider la konekte.</div>
-    <div style="overflow-x:auto;margin-top:14px">
-      <table class="social-table"><thead><tr><th>Platform</th><th>Status</th><th>Date</th><th>Post</th></tr></thead><tbody id="socialHistory"><tr><td colspan="4" class="social-muted">No social posts yet.</td></tr></tbody></table>
-    </div>
+  <section class="social-card">
+    <div class="section-title-row"><div><h2 data-i18n="social-history-title">🧾 Istwa piblikasyon</h2><p data-i18n="social-history-help">Wè sa ki te kreye ak status chak platfòm.</p></div><button class="secondary-btn" id="refreshPosts" type="button" data-i18n="social-refresh">🔄 Rafrechi</button></div>
+    <div class="social-table-wrap"><table class="social-table"><thead><tr><th data-i18n="social-date">Dat</th><th data-i18n="social-caption">Caption</th><th data-i18n="social-platforms">Platfòm</th><th data-i18n="social-status">Status</th></tr></thead><tbody id="postsBody"><tr><td colspan="4">⏳ Nap chaje...</td></tr></tbody></table></div>
   </section>
 </main>
 
+<footer><div class="container"><div class="footer-grid"><div><h3>Eagle-J Connect</h3><p>Konekte moun, travay, biznis ak sèvis atravè mond lan.</p></div><div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a></div></div><p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p></div></footer>
+
 <script src="language.js?v=global2"></script>
 <script src="script.js?v=global2"></script>
-<script src="menu.js?v=global2"></script>
+<script src="menu.js?v=global3"></script>
 <script src="global.js?v=global2"></script>
-<script src="social-media.js?v=1"></script>
+<script src="social-media.js?v=final1"></script>
 </body>
 </html>
