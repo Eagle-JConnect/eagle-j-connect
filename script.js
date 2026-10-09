@@ -756,37 +756,31 @@ async function loginUser(e){
     const authUser=verified.user;
 
 
-    let profiles=[];
+    let profiles;
 
-
+    // Use the freshly verified access token explicitly. If the profile request
+    // fails, do not hide the Supabase error behind a misleading "no profile"
+    // message and do not erase a valid login session.
     try{
-
       profiles=await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(authUser.id)}&select=*`
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(authUser.id)}&select=id,full_name,phone,account_type,account_status,email`,
+        {headers:{Authorization:`Bearer ${verified.token}`}}
       );
-
     }catch(err){
-
-      console.warn(
-        "Profile request:",
-        err
+      console.error("Eagle-J Connect profile lookup failed:", err);
+      const detail = err?.message || "Unknown Supabase error";
+      throw new Error(
+        `Nou pa rive li pwofil ou nan Supabase (ID: ${authUser.id}). Detay: ${detail}. Verifye RLS/SELECT policy pou profiles.`
       );
-
     }
 
-
-    const profile=
-      profiles?.[0];
-
+    const profile=Array.isArray(profiles) ? profiles[0] : null;
 
     if(!profile){
-
-      clearSession();
-
+      // Keep the verified auth session so the user is not unnecessarily logged out.
       throw new Error(
-        "Kont ou pa gen pwofil aktif sou Eagle-J Connect."
+        `Supabase pa retounen pwofil pou kont sa a (ID: ${authUser.id}). Pwofil la ka kache pa RLS. Kouri FIX-LOGIN-PROFILE.sql ki nan ZIP la, epi eseye ankò.`
       );
-
     }
 
 

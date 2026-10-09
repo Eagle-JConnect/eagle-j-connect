@@ -1,0 +1,8 @@
+EAGLE-J CONNECT — PROFILE LOGIN FIX
+
+1. Upload the files in this ZIP to the same GitHub Pages repository, keeping the eagle-j-connect-main folder contents at the repository root (do not create an extra nested folder).
+2. In Supabase Dashboard, open SQL Editor and run FIX-LOGIN-PROFILE.sql if login still reports that the profile is missing. This policy lets a logged-in user read only their own profile.
+3. Commit/push the updated files to GitHub Pages.
+4. Open the site and sign in again. If it still fails, the updated page will show the actual Supabase error instead of hiding it behind the generic missing-profile message.
+
+The update does not delete users, profiles, jobs, businesses, or other database records.
