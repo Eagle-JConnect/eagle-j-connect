@@ -1,3 +1,5 @@
+-- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
+
 -- Eagle-J Connect v7 — moderation, approval and admin controls
 -- Run this ONCE in Supabase SQL Editor.
 -- This migration keeps existing approved jobs/businesses visible,

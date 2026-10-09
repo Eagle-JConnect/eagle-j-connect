@@ -4,7 +4,7 @@ This module is a staged integration. The current backend implements the Meta OAu
 
 ## 1. Database
 
-Run `supabase/social-media-schema.sql` in Supabase SQL Editor. If you already created the social tables manually, inspect their columns first; do not blindly replace existing production tables.
+The canonical `SUPABASE-BASE-FINAL.sql` now creates the social tables and their owner-only RLS policies. Do not run `supabase/social-media-schema.sql` after the canonical migration. That older file is retained for reference only.
 
 ## 2. Edge Function secrets
 

@@ -1,3 +1,5 @@
+-- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
+
 -- Eagle-J Connect: profile photo setup
 -- Run this script in Supabase SQL Editor before using profile-photo upload.
 

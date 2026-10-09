@@ -1,3 +1,5 @@
+-- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
+
 -- Eagle-J Connect V8 — Google OAuth profile support
 -- Run once in Supabase SQL Editor.
 --

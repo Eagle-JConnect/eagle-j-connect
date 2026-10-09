@@ -1,3 +1,5 @@
+-- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
+
 -- Eagle-J Connect: allow an authenticated user to read ONLY their own profile.
 -- Run this in Supabase SQL Editor if login still says the profile is missing.
 -- This does not expose other users' profiles and does not modify profile data.

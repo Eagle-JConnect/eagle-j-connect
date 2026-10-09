@@ -1219,7 +1219,9 @@
     "members-label": { ht: "👥 Manm", en: "👥 Members", fr: "👥 Membres" },
     "view-members": { ht: "Gade manm →", en: "View members →", fr: "Voir les membres →" },
     "listings-label": { ht: "📢 Anons", en: "📢 Listings", fr: "📢 Annonces" },
-    "view-listings": { ht: "Gade anons →", en: "View listings →", fr: "Voir les annonces →" }
+    "view-listings": { ht: "Gade anons →", en: "View listings →", fr: "Voir les annonces →" },
+    "members-page-title": { ht: "Manm ki gen pwofil piblik", en: "Public Members", fr: "Membres publics" },
+    "members-page-description": { ht: "Dekouvri manm ki chwazi rann pwofil yo piblik. Enfòmasyon kontak prive pa parèt isit la.", en: "Discover members who chose to make their profiles public. Private contact information is never shown here.", fr: "Découvrez les membres qui ont choisi de rendre leur profil public. Les coordonnées privées ne sont jamais affichées ici." }
   });
 
   /* =========================================================

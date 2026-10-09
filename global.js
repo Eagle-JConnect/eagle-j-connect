@@ -1315,11 +1315,16 @@
       localStorage.setItem("supabase_user_id",user.id);
       localStorage.setItem("supabase_user_email",user.email||"");
 
-      const profileR=await fetch(SUPABASE_URL+"/rest/v1/profiles?id=eq."+encodeURIComponent(user.id)+"&select=*",{
+      const profileR=await fetch(SUPABASE_URL+"/rest/v1/profiles?id=eq."+encodeURIComponent(user.id)+"&select=id,full_name,phone,account_type,account_status,email",{
         headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+access}
       });
-      const profiles=profileR.ok ? await profileR.json() : [];
+      if(!profileR.ok){
+        const detail=await profileR.text();
+        throw new Error("Supabase could not read the profile ("+profileR.status+"): "+detail);
+      }
+      const profiles=await profileR.json();
 
+      let googleAccountType = "job_seeker";
       if(!Array.isArray(profiles) || !profiles.length){
         const meta=user.user_metadata || {};
         const fullName=meta.full_name || meta.name || (user.email||"").split("@")[0] || "Eagle-J Member";
@@ -1329,7 +1334,7 @@
             apikey:SUPABASE_KEY,
             Authorization:"Bearer "+access,
             "Content-Type":"application/json",
-            Prefer:"return=representation"
+            Prefer:"resolution=ignore-duplicates,return=representation"
           },
           body:JSON.stringify({
             id:user.id,
@@ -1340,18 +1345,40 @@
             account_status:"active"
           })
         });
-        if(!insert.ok) throw new Error("Google account was authenticated, but the profile could not be created. Run the profile INSERT policy in the SQL file included with this update.");
+        if(!insert.ok) {
+          const detail=await insert.text();
+          throw new Error("Google authenticated, but profile creation failed: "+detail);
+        }
+        const createdName=meta.full_name || meta.name || (user.email||"").split("@")[0] || "Eagle-J Member";
+        localStorage.setItem("user_full_name",createdName);
+        localStorage.setItem("user_phone",meta.phone||"");
+        localStorage.setItem("user_account_type","job_seeker");
+        googleAccountType = "job_seeker";
       } else {
         const p=profiles[0];
         if(p.account_status && p.account_status!=="active") throw new Error("Your account is not active.");
+        const normalizedType=String(p.account_type||"job_seeker").trim().toLowerCase().replace(/[\s-]+/g,"_");
         localStorage.setItem("user_full_name",p.full_name||"");
         localStorage.setItem("user_phone",p.phone||"");
-        localStorage.setItem("user_account_type",p.account_type||"");
+        localStorage.setItem("user_account_type",normalizedType);
+        googleAccountType = normalizedType;
       }
+
+      let googleIsAdmin = false;
+      try {
+        const adminR = await fetch(SUPABASE_URL+"/rest/v1/admin_users?user_id=eq."+encodeURIComponent(user.id)+"&select=user_id", {
+          headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+access}
+        });
+        if(adminR.ok){
+          const adminRows=await adminR.json();
+          googleIsAdmin=Array.isArray(adminRows)&&adminRows.length>0;
+        }
+      } catch (_) {}
+      localStorage.setItem("user_is_admin",googleIsAdmin?"true":"false");
 
       history.replaceState(null,"",location.pathname+location.search);
       showToast(lang()==="ht" ? "✅ Google koneksyon an reyisi." : lang()==="fr" ? "✅ Connexion Google réussie." : "✅ Google login successful.");
-      setTimeout(()=>{ location.href="dashboard.html"; },600);
+      setTimeout(()=>{ location.href=googleIsAdmin ? "admin.html" : googleAccountType==="employer" ? "employer.html" : "dashboard.html"; },600);
       return true;
     }catch(e){
       console.error(e);

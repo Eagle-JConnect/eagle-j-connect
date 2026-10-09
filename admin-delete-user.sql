@@ -1,3 +1,5 @@
+-- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
+
 -- Eagle-J Connect: permanently delete a user from Auth + profile
 -- Run this ONCE in Supabase SQL Editor before testing the Retire button.
 

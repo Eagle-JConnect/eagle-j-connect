@@ -601,7 +601,7 @@ async function registerUser(e){
             method:"POST",
 
             headers:{
-              Prefer:"return=representation"
+              Prefer:"resolution=ignore-duplicates,return=minimal"
             },
 
             body:JSON.stringify({
@@ -779,7 +779,7 @@ async function loginUser(e){
     if(!profile){
       // Keep the verified auth session so the user is not unnecessarily logged out.
       throw new Error(
-        `Supabase pa retounen pwofil pou kont sa a (ID: ${authUser.id}). Pwofil la ka kache pa RLS. Kouri FIX-LOGIN-PROFILE.sql ki nan ZIP la, epi eseye ankò.`
+        `Supabase pa retounen pwofil pou kont sa a (ID: ${authUser.id}). Pwofil la ka kache pa RLS. Verifye ke SUPABASE-BASE-FINAL.sql te egzekite nan Supabase, epi eseye ankò.`
       );
     }
 
@@ -808,9 +808,12 @@ async function loginUser(e){
       profile.phone || ""
     );
 
+    const normalizedAccountType = String(profile.account_type || "job_seeker")
+      .trim().toLowerCase().replace(/[\s-]+/g, "_");
+
     localStorage.setItem(
       "user_account_type",
-      profile.account_type || ""
+      normalizedAccountType
     );
 
 
@@ -826,7 +829,7 @@ async function loginUser(e){
             profile.phone,
 
           account_type:
-            profile.account_type
+            normalizedAccountType
         }
       );
 
@@ -867,7 +870,7 @@ async function loginUser(e){
 
 
         if(
-          profile.account_type==="employer"
+          normalizedAccountType==="employer"
         ){
 
           location.href="employer.html";
@@ -1010,7 +1013,7 @@ async function saveProfilePhoto(){
     if(message)message.textContent="✅ Foto pwofil rekadre ou a sove avèk siksè.";
   }catch(err){
     console.error("Profile photo upload:",err);
-    if(message)message.textContent="❌ Foto a pa t ka sove: "+err.message+". Verifye SQL/politik ki nan fichye profile-photo-setup.sql.";
+    if(message)message.textContent="❌ Foto a pa t ka sove: "+err.message+". Verifye politik yo nan SUPABASE-BASE-FINAL.sql.";
   }finally{if(button)button.disabled=false;}
 }
 
@@ -1045,7 +1048,7 @@ async function saveProfileDetails(){
     if(qs("profileName"))qs("profileName").textContent=full_name;
     if(qs("profilePhone"))qs("profilePhone").textContent=phone||"—";
     if(message)message.textContent="✅ Pwofil ou mete ajou.";
-  }catch(err){if(message)message.textContent="❌ Pa kapab sove pwofil la: "+err.message+". Verifye fichye profile-photo-setup.sql.";}
+  }catch(err){if(message)message.textContent="❌ Pa kapab sove pwofil la: "+err.message+". Verifye politik yo nan SUPABASE-BASE-FINAL.sql.";}
   finally{if(button)button.disabled=false;}
 }
 
@@ -2943,7 +2946,7 @@ async function loadStats(){
 
     [
       "stat-users",
-      "profiles"
+      "public_member_profiles"
     ]
 
   ];
@@ -3134,7 +3137,7 @@ async function loadUsersDirectory(){
 
     const rows=
       await api(
-        "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
+        "/rest/v1/public_member_profiles?select=id,full_name,account_type,profile_image_url,created_at&order=full_name.asc&limit=100"
       );
 
 
@@ -3201,17 +3204,9 @@ async function loadUsersDirectory(){
           <article class="user-card">
 
             <div class="user-avatar">
-
-              ${esc(
-                (
-                  u.full_name ||
-                  "EJ"
-                )
-                .trim()
-                .slice(0,1)
-                .toUpperCase()
-              )}
-
+              ${u.profile_image_url
+                ? `<img src="${attr(u.profile_image_url)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+                : esc((u.full_name || "EJ").trim().slice(0,1).toUpperCase())}
             </div>
 
 

@@ -1,16 +1,63 @@
 <!DOCTYPE html>
-<html lang="ht"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Manm Piblik | Eagle-J Connect</title><meta name="description" content="Dekouvri manm ki chwazi rann pwofil yo piblik sou Eagle-J Connect."><link rel="stylesheet" href="style.css?v=final8"></head><body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Members | Eagle-J Connect</title>
+  <meta name="description" content="Discover public members on Eagle-J Connect.">
+  <link rel="stylesheet" href="style.css?v=final20261009">
+</head>
+<body>
 <header class="header">
   <div class="container nav-container">
-    <a href="index.html" class="logo-area"><img src="Logo.jpg" alt="Eagle-J Connect logo"><div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div></a>
-    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Ouvri meni" aria-expanded="false" aria-controls="menu">☰</button>
-    <nav id="menu" aria-label="Navigasyon prensipal">
-      <a href="index.html" data-i18n="nav-home">Akèy</a><a href="travay.html" data-i18n="nav-jobs">Travay</a><a href="biznis.html" data-i18n="nav-business">Biznis</a><a href="anons-list.html" data-i18n="nav-ads">Anons</a><a href="search.html" data-i18n="nav-search">Rechèch</a><a href="kontak.html" data-i18n="nav-contact">Kontak</a><a href="enskri.html" data-i18n="nav-register" data-auth="guest">Enskri</a><a href="login.html" data-i18n="nav-login" data-auth="guest">Konekte</a><a href="profil.html" data-i18n="nav-account" data-auth="user">Kont Mwen</a><a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Dekonekte</a>
-      <div class="language"><select id="languageSelect" aria-label="Chwazi lang"><option value="en">🌐 English</option><option value="fr">🇫🇷 Français</option><option value="ht">🗣️ Kreyòl</option></select></div>
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect logo">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="menu">☰</button>
+    <nav id="menu" aria-label="Main navigation">
+      <a href="index.html" data-i18n="nav-home">Home</a>
+      <a href="travay.html" data-i18n="nav-jobs">Jobs</a>
+      <a href="biznis.html" data-i18n="nav-business">Business</a>
+      <a href="anons-list.html" data-i18n="nav-ads">Listings</a>
+      <a href="search.html" data-i18n="nav-search">Search</a>
+      <a href="itilizate.html" aria-current="page">Members</a>
+      <a href="kontak.html" data-i18n="nav-contact">Contact</a>
+      <a href="enskri.html" data-i18n="nav-register" data-auth="guest">Register</a>
+      <a href="login.html" data-i18n="nav-login" data-auth="guest">Login</a>
+      <a href="profil.html" data-i18n="nav-account" data-auth="user">My Account</a>
+      <a href="#" id="logoutBtn" data-i18n="nav-logout" data-auth="user">Logout</a>
+      <div class="language"><select id="languageSelect" aria-label="Choose language">
+        <option value="en">🌐 English</option><option value="fr">🇫🇷 Français</option><option value="ht">🗣️ Kreyòl</option>
+      </select></div>
     </nav>
   </div>
 </header>
-<main><section class="hero"><div class="container hero-content"><p class="card-kicker" style="color:#9edcff">EAGLE-J COMMUNITY</p><h1 data-i18n="members-label">Manm Eagle-J Connect</h1><p data-i18n="Dekouvri manm ki gen pwofil piblik sou Eagle-J Connect.">Dekouvri manm ki gen pwofil piblik sou Eagle-J Connect.</p><p>Nou pa montre imèl oswa nimewo telefòn nan anyè piblik la.</p><div class="hero-buttons"><a class="btn btn-primary" href="enskri.html">Kreye yon kont</a><a class="btn btn-secondary" href="search.html">Chèche opòtinite</a></div></div></section>
-<section class="services"><div class="container"><h2 data-i18n="members-label">👥 Manm</h2><p id="usersDirectoryCount" class="market-result-count" aria-live="polite">Ap chaje manm yo...</p><div id="usersDirectory" class="listing-grid" aria-live="polite"><div class="loading-state"><span>⏳</span><p>Manm yo ap chaje...</p></div></div></div></section></main>
-<footer><div class="container"><div class="footer-grid"><div><h3>Eagle-J Connect</h3><p>Connect people, discover opportunities, and grow anywhere in the world.</p></div><div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="anons-list.html">Anons</a><a href="kontak.html">Kontak</a></div></div><p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p></div></footer>
-<script src="language.js?v=final8"></script><script src="script.js?v=final8"></script><script src="menu.js?v=final8"></script><script src="global.js?v=final8"></script></body></html>
+<main class="services">
+  <div class="container">
+    <section class="section-heading" style="padding:32px 0 12px">
+      <p class="card-kicker">EAGLE-J CONNECT</p>
+      <h1 data-i18n="members-page-title">Public Members</h1>
+      <p data-i18n="members-page-description">Discover members who chose to make their profiles public. Private contact information is never shown here.</p>
+      <p id="usersDirectoryCount" class="notice" aria-live="polite">Loading members…</p>
+    </section>
+    <section id="usersDirectory" class="cards" aria-live="polite">
+      <article class="card"><p>Loading public members…</p></article>
+    </section>
+  </div>
+</main>
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div><h3>Eagle-J Connect</h3><p>Connect people, discover opportunities, and grow anywhere in the world.</p></div>
+      <div class="footer-links"><a href="index.html">Home</a><a href="travay.html">Jobs</a><a href="biznis.html">Business</a><a href="anons-list.html">Listings</a><a href="kontak.html">Contact</a></div>
+    </div>
+    <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
+  </div>
+</footer>
+<script src="language.js?v=final20261009"></script>
+<script src="script.js?v=final20261009"></script>
+<script src="menu.js?v=final20261009"></script>
+<script src="global.js?v=final20261009"></script>
+</body>
+</html>

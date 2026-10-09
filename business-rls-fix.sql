@@ -1,3 +1,5 @@
+-- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
+
 -- Eagle-J Connect — BUSINESS/LISTING RLS
 -- Use member-posting-final.sql as the master migration.
 -- This compatibility file is intentionally safe if run by itself.

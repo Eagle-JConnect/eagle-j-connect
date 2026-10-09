@@ -1,18 +1,5 @@
-EAGLE-J CONNECT — MEMBER POSTING V3
+EAGLE-J CONNECT — MEMBER POSTING (SUPERSEDED)
 
-IMPORTANT:
-1. Open the Supabase project used by Eagle-J Connect.
-2. Open SQL Editor.
-3. Run member-posting-final.sql ONCE.
-4. Wait for the SQL to finish successfully.
-5. The final SELECT must show ej_jobs_member_insert with cmd=INSERT and role authenticated.
-6. Log out of Eagle-J Connect and log in again.
-7. Test Poste yon Travay.
+Use SUPABASE-BASE-FINAL.sql as the single canonical migration. It includes the job and business/listing ownership triggers, RLS policies, and pending moderation workflow. Do not run member-posting-final.sql, jobs-member-final.sql, jobs-rls-fix.sql, or moderation-v7.sql after it.
 
-This version removes EVERY old RLS policy on public.jobs before creating the final policies.
-It also uses a BEFORE INSERT trigger to force employer_id=auth.uid() and status='pending'.
-That means a normal logged-in member can post, but cannot impersonate another user or publish directly.
-
-Do NOT run older jobs-rls-fix.sql, moderation-v7.sql, or other old jobs policy scripts after this.
-
-If the same RLS error remains, copy/paste the result of the final SELECT from member-posting-final.sql here. That result will identify the exact remaining policy problem.
+After running the canonical SQL, test posting a job and listing with a normal authenticated member. New submissions should remain pending until an administrator approves them.
