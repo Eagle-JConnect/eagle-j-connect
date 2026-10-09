@@ -103,3 +103,8 @@ Run `member-posting-final.sql` in Supabase SQL Editor. Normal authenticated user
 
 ## Social Media Manager
 See `SOCIAL-MEDIA-SETUP.md` for the final social integration layer.
+
+
+## Review continuation (2026-10-09)
+
+See `PROJECT-REVIEW-v7.md` for the current audit. The submitted package currently does not include the Supabase Edge Function source files or the `supabase/social-media-schema.sql` file referenced by the social-media setup guide. The Social Media Manager UI calls `social-oauth` and `social-publish`; those server-side functions must be supplied and deployed before OAuth or publishing can work. Do not add provider secrets to frontend files.
