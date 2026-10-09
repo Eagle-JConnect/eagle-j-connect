@@ -40,3 +40,29 @@ WITH CHECK (
   AND (storage.foldername(name))[1] = 'profile-avatars'
   AND (storage.foldername(name))[2] = auth.uid()::text
 );
+
+
+-- Profile editing and public/private visibility
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS profile_visibility text NOT NULL DEFAULT 'public';
+
+ALTER TABLE public.profiles
+  DROP CONSTRAINT IF EXISTS profiles_profile_visibility_check;
+ALTER TABLE public.profiles
+  ADD CONSTRAINT profiles_profile_visibility_check
+  CHECK (profile_visibility IN ('public','private'));
+
+-- Set the existing business-images bucket upload limit to 100 MB.
+UPDATE storage.buckets
+SET file_size_limit = 104857600
+WHERE id = 'business-images';
+
+-- Restrict the public profile directory to public profiles (owners/admins
+-- still retain their own/admin access through the existing policy).
+DROP POLICY IF EXISTS "profiles_public_active_read" ON public.profiles;
+CREATE POLICY "profiles_public_active_read"
+ON public.profiles FOR SELECT TO anon, authenticated
+USING (
+  COALESCE(account_status, 'active') = 'active'
+  AND (COALESCE(profile_visibility, 'public') = 'public' OR auth.uid() = id)
+);

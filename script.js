@@ -905,8 +905,16 @@ async function loginUser(e){
 
 
 /* =========================================================
-   PROFILE PHOTO UPLOAD — available to every signed-in member
+   PROFILE PHOTO CROP + UPLOAD — available to every signed-in member
 ========================================================= */
+let profileCropImage = null;
+let profileCropZoom = 1;
+let profileCropOffsetX = 0;
+let profileCropOffsetY = 0;
+let profileCropDragging = false;
+let profileCropLastX = 0;
+let profileCropLastY = 0;
+
 function showProfilePhoto(url){
   const img=qs("profilePhotoPreview");
   const placeholder=qs("profilePhotoPlaceholder");
@@ -917,28 +925,86 @@ function showProfilePhoto(url){
   if(placeholder) placeholder.style.display=url?"none":"flex";
 }
 
+function drawProfileCrop(){
+  const canvas=qs("profileCropCanvas");
+  if(!canvas || !profileCropImage) return;
+  const ctx=canvas.getContext("2d");
+  const w=canvas.width, h=canvas.height;
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle="#ffffff";
+  ctx.fillRect(0,0,w,h);
+  const base=Math.max(w/profileCropImage.naturalWidth,h/profileCropImage.naturalHeight);
+  const scale=base*profileCropZoom;
+  const drawW=profileCropImage.naturalWidth*scale;
+  const drawH=profileCropImage.naturalHeight*scale;
+  const maxX=0, minX=w-drawW, maxY=0, minY=h-drawH;
+  profileCropOffsetX=Math.min(maxX,Math.max(minX,profileCropOffsetX));
+  profileCropOffsetY=Math.min(maxY,Math.max(minY,profileCropOffsetY));
+  ctx.drawImage(profileCropImage,profileCropOffsetX,profileCropOffsetY,drawW,drawH);
+}
+
+function setupProfileCrop(){
+  const file=qs("profilePhotoFile")?.files?.[0];
+  const message=qs("profilePhotoMessage");
+  const editor=qs("profileCropEditor");
+  if(!file){profileCropImage=null;if(editor)editor.style.display="none";return;}
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+    if(message)message.textContent="Fòma sa a pa sipòte. Itilize JPG, PNG oswa WEBP.";
+    if(editor)editor.style.display="none";return;
+  }
+  if(file.size>100*1024*1024){
+    if(message)message.textContent="Foto a depase 100 MB. Chwazi yon foto ki pi piti.";
+    if(editor)editor.style.display="none";return;
+  }
+  const reader=new FileReader();
+  if(message)message.textContent="Ap prepare foto a pou rekadray...";
+  reader.onload=()=>{
+    const image=new Image();
+    image.onload=()=>{
+      profileCropImage=image;profileCropZoom=1;
+      const canvas=qs("profileCropCanvas");
+      const base=canvas?Math.max(canvas.width/image.naturalWidth,canvas.height/image.naturalHeight):1;
+      profileCropOffsetX=canvas?(canvas.width-image.naturalWidth*base)/2:0;
+      profileCropOffsetY=canvas?(canvas.height-image.naturalHeight*base)/2:0;
+      if(editor)editor.style.display="block";
+      const zoom=qs("profileCropZoom");if(zoom)zoom.value="1";
+      drawProfileCrop();
+      if(message)message.textContent="Deplase foto a ak dwèt ou, epi ajiste zoom lan anvan ou sove.";
+    };
+    image.onerror=()=>{if(message)message.textContent="Nou pa t kapab li foto sa a. Eseye yon lòt foto.";};
+    image.src=reader.result;
+  };
+  reader.onerror=()=>{if(message)message.textContent="Nou pa t kapab louvri fichye foto a.";};
+  reader.readAsDataURL(file);
+}
+
 async function saveProfilePhoto(){
   const message=qs("profilePhotoMessage");
-  const file=qs("profilePhotoFile")?.files?.[0];
   const session=await verifyAuthSession();
   if(!session?.user?.id || !session?.token){
     if(message) message.textContent="Tanpri konekte ankò anvan ou sove foto a.";
     return;
   }
-  if(!file){if(message) message.textContent="Tanpri chwazi yon foto anvan.";return;}
-  const allowed=["image/jpeg","image/png","image/webp"];
-  if(!allowed.includes(file.type)){if(message) message.textContent="Fòma sa a pa sipòte. Itilize JPG, PNG oswa WEBP.";return;}
-  if(file.size>5*1024*1024){if(message) message.textContent="Foto a depase 5 MB. Chwazi yon foto ki pi piti.";return;}
-  const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp"})[file.type];
-  const objectPath=`profile-avatars/${session.user.id}/avatar.${ext}`;
+  if(!profileCropImage){if(message)message.textContent="Tanpri chwazi yon foto epi tann rekadray la parèt.";return;}
+  const canvas=qs("profileCropCanvas");
+  if(!canvas){if(message)message.textContent="Zòn rekadray la pa disponib. Rafrechi paj la epi eseye ankò.";return;}
   const button=qs("saveProfilePhoto");
-  if(button) button.disabled=true;
-  if(message) message.textContent="Ap telechaje foto a...";
+  if(button)button.disabled=true;
+  if(message)message.textContent="Ap prepare foto rekadre a...";
   try{
+    const output=document.createElement("canvas");
+    output.width=1024;output.height=1024;
+    const ctx=output.getContext("2d");
+    ctx.fillStyle="#ffffff";ctx.fillRect(0,0,1024,1024);
+    ctx.drawImage(canvas,0,0,1024,1024);
+    const blob=await new Promise((resolve,reject)=>output.toBlob(b=>b?resolve(b):reject(new Error("Nou pa t kapab prepare foto a.")),"image/jpeg",0.92));
+    if(blob.size>100*1024*1024)throw new Error("Foto rekadre a depase 100 MB.");
+    const objectPath=`profile-avatars/${session.user.id}/avatar.jpg`;
+    if(message)message.textContent="Ap telechaje foto rekadre a...";
     await api(`/storage/v1/object/${IMAGE_BUCKET}/${objectPath}`,{
       method:"POST",
-      headers:{"Content-Type":file.type,"x-upsert":"true","Authorization":`Bearer ${session.token}`},
-      body:file
+      headers:{"Content-Type":"image/jpeg","x-upsert":"true","Authorization":`Bearer ${session.token}`},
+      body:blob
     });
     const publicUrl=`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${objectPath}?v=${Date.now()}`;
     await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,{
@@ -947,11 +1013,46 @@ async function saveProfilePhoto(){
       body:JSON.stringify({profile_image_url:publicUrl})
     });
     showProfilePhoto(publicUrl);
-    if(message) message.textContent="✅ Foto pwofil ou sove avèk siksè.";
+    if(message)message.textContent="✅ Foto pwofil rekadre ou a sove avèk siksè.";
   }catch(err){
     console.error("Profile photo upload:",err);
-    if(message) message.textContent="❌ Foto a pa t ka sove: "+err.message+". Verifye SQL/politik ki nan fichye profile-photo-setup.sql.";
-  }finally{if(button) button.disabled=false;}
+    if(message)message.textContent="❌ Foto a pa t ka sove: "+err.message+". Verifye SQL/politik ki nan fichye profile-photo-setup.sql.";
+  }finally{if(button)button.disabled=false;}
+}
+
+function initProfileCropControls(){
+  const input=qs("profilePhotoFile");
+  const zoom=qs("profileCropZoom");
+  const reset=qs("profileCropReset");
+  const canvas=qs("profileCropCanvas");
+  input?.addEventListener("change",setupProfileCrop);
+  zoom?.addEventListener("input",()=>{profileCropZoom=Number(zoom.value)||1;drawProfileCrop();});
+  reset?.addEventListener("click",()=>{profileCropZoom=1;const c=qs("profileCropCanvas");if(c&&profileCropImage){const base=Math.max(c.width/profileCropImage.naturalWidth,c.height/profileCropImage.naturalHeight);profileCropOffsetX=(c.width-profileCropImage.naturalWidth*base)/2;profileCropOffsetY=(c.height-profileCropImage.naturalHeight*base)/2;}else{profileCropOffsetX=0;profileCropOffsetY=0;}if(zoom)zoom.value="1";drawProfileCrop();});
+  if(canvas){
+    const point=(event)=>{const rect=canvas.getBoundingClientRect();return {x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height};};
+    canvas.addEventListener("pointerdown",event=>{if(!profileCropImage)return;profileCropDragging=true;const p=point(event);profileCropLastX=p.x;profileCropLastY=p.y;canvas.setPointerCapture?.(event.pointerId);});
+    canvas.addEventListener("pointermove",event=>{if(!profileCropDragging)return;const p=point(event);profileCropOffsetX+=p.x-profileCropLastX;profileCropOffsetY+=p.y-profileCropLastY;profileCropLastX=p.x;profileCropLastY=p.y;drawProfileCrop();});
+    const stop=()=>{profileCropDragging=false;};
+    canvas.addEventListener("pointerup",stop);canvas.addEventListener("pointercancel",stop);canvas.addEventListener("lostpointercapture",stop);
+  }
+}
+
+async function saveProfileDetails(){
+  const message=qs("profileDetailsMessage");
+  const session=await verifyAuthSession();
+  if(!session?.user?.id || !session?.token){if(message)message.textContent="Tanpri konekte ankò.";return;}
+  const full_name=qs("editProfileName")?.value.trim()||"";
+  const phone=qs("editProfilePhone")?.value.trim()||null;
+  const profile_visibility=qs("profileVisibility")?.value||"public";
+  if(!full_name){if(message)message.textContent="Tanpri mete non ou.";return;}
+  const button=qs("saveProfileDetails");if(button)button.disabled=true;
+  try{
+    await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,{method:"PATCH",headers:{Authorization:`Bearer ${session.token}`,"Prefer":"return=minimal","Content-Type":"application/json"},body:JSON.stringify({full_name,phone,profile_visibility})});
+    if(qs("profileName"))qs("profileName").textContent=full_name;
+    if(qs("profilePhone"))qs("profilePhone").textContent=phone||"—";
+    if(message)message.textContent="✅ Pwofil ou mete ajou.";
+  }catch(err){if(message)message.textContent="❌ Pa kapab sove pwofil la: "+err.message+". Verifye fichye profile-photo-setup.sql.";}
+  finally{if(button)button.disabled=false;}
 }
 
 /* =========================================================
@@ -1007,7 +1108,9 @@ async function loadDashboard(){
     qs("profileName").textContent=
       p.full_name || "—";
     showProfilePhoto(p.profile_image_url || "");
-
+    if(qs("editProfileName"))qs("editProfileName").value=p.full_name||"";
+    if(qs("editProfilePhone"))qs("editProfilePhone").value=p.phone||"";
+    if(qs("profileVisibility"))qs("profileVisibility").value=p.profile_visibility||"public";
 
     qs("profileEmail").textContent=
       session.user.email || "—";
@@ -1118,7 +1221,9 @@ async function loadEmployerDashboard(){
     }
 
     showProfilePhoto(p.profile_image_url || "");
-
+    if(qs("editProfileName"))qs("editProfileName").value=p.full_name||"";
+    if(qs("editProfilePhone"))qs("editProfilePhone").value=p.phone||"";
+    if(qs("profileVisibility"))qs("profileVisibility").value=p.profile_visibility||"public";
 
     if(qs("profileEmail")){
 
@@ -1916,9 +2021,9 @@ async function submitBusiness(e){
     return;
   }
 
-  const invalidFile=files.find(file=>!file.type.startsWith("image/") || file.size>5*1024*1024);
+  const invalidFile=files.find(file=>!file.type.startsWith("image/") || file.size>100*1024*1024);
   if(invalidFile){
-    msg("formMessage", `❌ Chak foto dwe yon imaj ki pi piti pase 5MB. Pwoblèm: ${invalidFile.name}`);
+    msg("formMessage", `❌ Chak foto dwe yon imaj ki pa depase 100MB. Pwoblèm: ${invalidFile.name}`);
     return;
   }
 
@@ -2062,7 +2167,7 @@ window.editMyBusiness=async function(id){
     <label>WhatsApp<input name="whatsapp" value="${attr(b.whatsapp||'')}"></label>
     <label>Pri / Tarif<input name="price" value="${attr(b.price||'')}"></label>
     <label>Deskripsyon<textarea name="description" required rows="4">${esc(b.description||'')}</textarea></label>
-    <p>Foto aktyèl: ${images.length}. Chwazi nouvo foto si ou vle ranplase yo (jiska 50, 5MB chak).</p>
+    <p>Foto aktyèl: ${images.length}. Chwazi nouvo foto si ou vle ranplase yo (jiska 50, 100MB chak).</p>
     <input name="images" type="file" accept="image/*" multiple>
     <button type="submit">💾 Sove chanjman yo (Admin ap revize anons la)</button>
     <button type="button" onclick="document.getElementById('editListing-${attr(id)}').style.display='none'">Anile</button>
@@ -2075,7 +2180,7 @@ window.saveMyBusiness=async function(e,id){
   const old=rows?.[0];if(!old){alert("Ou pa gen dwa modifye anons sa a.");return;}
   const files=Array.from(form.elements.images.files||[]);
   if(files.length>50){alert("Ou ka mete jiska 50 imaj.");return;}
-  const bad=files.find(f=>!f.type.startsWith('image/')||f.size>5*1024*1024);if(bad){alert(`Chak imaj dwe pi piti pase 5MB: ${bad.name}`);return;}
+  const bad=files.find(f=>!f.type.startsWith('image/')||f.size>100*1024*1024);if(bad){alert(`Chak imaj pa dwe depase 100MB: ${bad.name}`);return;}
   const vals={business_name:form.elements.business_name.value.trim(),category:`${String(old.category||'business').split(':')[0]}:${form.elements.category.value.trim()}`,location:form.elements.location.value.trim(),phone:form.elements.phone.value.trim()||null,whatsapp:form.elements.whatsapp.value.trim()||null,price:form.elements.price.value.trim()||null,description:form.elements.description.value.trim(),status:'pending'};
   try{
     if(files.length){const urls=[];for(let i=0;i<files.length;i++){const f=files[i];const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${id}/${Date.now()}-${i}.${ext}`;const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,'Content-Type':f.type,'x-upsert':'true'},body:f});if(!up.ok)throw new Error(`Foto ${f.name} pa t kapab monte.`);urls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${path}`);}vals.image_url=urls[0]||null;vals.image_urls=JSON.stringify(urls);}
@@ -3205,6 +3310,8 @@ document.addEventListener(
     setupMobileMenu();
 
     qs("saveProfilePhoto")?.addEventListener("click", saveProfilePhoto);
+    initProfileCropControls();
+    qs("saveProfileDetails")?.addEventListener("click", saveProfileDetails);
 
 
     /* =====================================================

@@ -108,3 +108,7 @@ See `SOCIAL-MEDIA-SETUP.md` for the final social integration layer.
 ## Foto pwofil itilizatè yo
 
 Anvan ou teste foto pwofil, kouri `profile-photo-setup.sql` nan Supabase SQL Editor. Upload yo ale nan bucket `business-images`, chemen `profile-avatars/<user-id>/`. Fichye sa a ajoute kolòn `profiles.profile_image_url` ak politik RLS pou chak itilizatè modifye sèlman pwòp pwofil li.
+
+
+### Profile editing, privacy, and image size
+Run `profile-photo-setup.sql` in Supabase SQL Editor for profile editing and public/private profile visibility. The script sets the `business-images` bucket maximum object size to 100 MB. If the project dashboard has a separate upload limit configured, ensure it also permits 100 MB.
