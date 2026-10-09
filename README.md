@@ -112,3 +112,11 @@ Anvan ou teste foto pwofil, kouri `profile-photo-setup.sql` nan Supabase SQL Edi
 
 ### Profile editing, privacy, and image size
 Run `profile-photo-setup.sql` in Supabase SQL Editor for profile editing and public/private profile visibility. The script sets the `business-images` bucket maximum object size to 100 MB. If the project dashboard has a separate upload limit configured, ensure it also permits 100 MB.
+
+
+## Final package notes (2026-10)
+- Added `itilizate.html`, the public member directory linked from the homepage. It displays only public/active profiles and does not display phone numbers or email addresses. Supabase RLS remains the actual privacy enforcement layer.
+- Listing gallery URLs are sent as PostgreSQL `text[]` arrays to match `listing-image-setup.sql`; the first URL remains the cover image.
+- Listing photos open in an accessible lightbox. The cover image is not duplicated in the secondary-image strip.
+- Asset query strings use `final8` to reduce stale browser-cache issues after GitHub Pages deployment.
+- This is a static code/package check, not a live authenticated test against your Supabase project. After uploading, test registration, login, posting, moderation, image upload, profile privacy, and admin access in the live site.

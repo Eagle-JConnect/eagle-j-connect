@@ -1991,7 +1991,7 @@ async function submitBusiness(e){
       "",
 
     image_url:null,
-    image_urls:"[]",
+    image_urls:[],
 
     user_id:
       session.user.id,
@@ -2094,7 +2094,7 @@ async function submitBusiness(e){
       }
       await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,{
         method:"PATCH",headers:{Authorization:`Bearer ${session.token}`},
-        body:JSON.stringify({image_url:imageURLs[0] || null,image_urls:JSON.stringify(imageURLs)})
+        body:JSON.stringify({image_url:imageURLs[0] || null,image_urls:imageURLs})
       });
     }
 
@@ -2185,7 +2185,7 @@ window.saveMyBusiness=async function(e,id){
   const bad=files.find(f=>!f.type.startsWith('image/')||f.size>100*1024*1024);if(bad){alert(`Chak imaj pa dwe depase 100MB: ${bad.name}`);return;}
   const vals={business_name:form.elements.business_name.value.trim(),category:`${String(old.category||'business').split(':')[0]}:${form.elements.category.value.trim()}`,location:form.elements.location.value.trim(),phone:form.elements.phone.value.trim()||null,whatsapp:form.elements.whatsapp.value.trim()||null,price:form.elements.price.value.trim()||null,description:form.elements.description.value.trim(),status:'pending'};
   try{
-    if(files.length){const urls=[];for(let i=0;i<files.length;i++){const f=files[i];const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${id}/${Date.now()}-${i}.${ext}`;const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,'Content-Type':f.type,'x-upsert':'true'},body:f});if(!up.ok)throw new Error(`Foto ${f.name} pa t kapab monte.`);urls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${path}`);}vals.image_url=urls[0]||null;vals.image_urls=JSON.stringify(urls);}
+    if(files.length){const urls=[];for(let i=0;i<files.length;i++){const f=files[i];const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${id}/${Date.now()}-${i}.${ext}`;const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,'Content-Type':f.type,'x-upsert':'true'},body:f});if(!up.ok)throw new Error(`Foto ${f.name} pa t kapab monte.`);urls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${path}`);}vals.image_url=urls[0]||null;vals.image_urls=urls;}
     await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:'PATCH',headers:{Authorization:`Bearer ${session.token}`},body:JSON.stringify(vals)});
     alert('Anons la modifye. Li retounen nan atant pou Admin valide li.');await loadMyBusinessListings();
   }catch(err){console.error(err);alert('Erè: '+err.message);}
@@ -2801,7 +2801,7 @@ async function loadBusinessDetail(){
       }
 
 
-      ${parseListingImages(b).length>1 ? `<div class="business-image-gallery" style="display:flex;gap:10px;overflow-x:auto;margin:12px 0">${parseListingImages(b).map((url,i)=>`<img class="ej-clickable-image" data-lightbox-image="true" src="${attr(url)}" alt="${attr(b.business_name)} - foto ${i+1}" loading="lazy" style="width:150px;height:120px;object-fit:cover;border-radius:8px;flex:0 0 auto;cursor:zoom-in">`).join('')}</div>` : ''}
+      ${parseListingImages(b).length>1 ? `<div class="business-image-gallery" style="display:flex;gap:10px;overflow-x:auto;margin:12px 0">${parseListingImages(b).slice(1).map((url,i)=>`<img class="ej-clickable-image" data-lightbox-image="true" src="${attr(url)}" alt="${attr(b.business_name)} - foto ${i+2}" loading="lazy" style="width:150px;height:120px;object-fit:cover;border-radius:8px;flex:0 0 auto;cursor:zoom-in">`).join('')}</div>` : ''}
 
       <h1>
         ${esc(
@@ -3140,14 +3140,15 @@ async function loadUsersDirectory(){
 
     const rows=
       await api(
-        "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
+        "/rest/v1/profiles?select=id,full_name,account_type,profile_image_url,profile_visibility,account_status&order=full_name.asc&limit=100"
       );
 
 
     const users=
-      Array.isArray(rows)
-        ? rows
-        : [];
+      (Array.isArray(rows) ? rows : []).filter(u =>
+        (u.profile_visibility || "public") === "public" &&
+        (u.account_status || "active") === "active"
+      );
 
 
     if(count){
@@ -3206,19 +3207,10 @@ async function loadUsersDirectory(){
 
           <article class="user-card">
 
-            <div class="user-avatar">
+            ${u.profile_image_url
+              ? `<img class="user-avatar" src="${attr(u.profile_image_url)}" alt="Foto pwofil ${attr(u.full_name || 'manm Eagle-J')}" loading="lazy" style="object-fit:cover">`
+              : `<div class="user-avatar" aria-hidden="true">${esc((u.full_name || "EJ").trim().slice(0,1).toUpperCase())}</div>`}
 
-              ${esc(
-                (
-                  u.full_name ||
-                  "EJ"
-                )
-                .trim()
-                .slice(0,1)
-                .toUpperCase()
-              )}
-
-            </div>
 
 
             <div class="user-card-body">
