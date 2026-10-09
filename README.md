@@ -105,6 +105,6 @@ Run `member-posting-final.sql` in Supabase SQL Editor. Normal authenticated user
 See `SOCIAL-MEDIA-SETUP.md` for the final social integration layer.
 
 
-## Review continuation (2026-10-09)
+## Foto pwofil itilizatè yo
 
-See `PROJECT-REVIEW-v7.md` for the current audit. The submitted package currently does not include the Supabase Edge Function source files or the `supabase/social-media-schema.sql` file referenced by the social-media setup guide. The Social Media Manager UI calls `social-oauth` and `social-publish`; those server-side functions must be supplied and deployed before OAuth or publishing can work. Do not add provider secrets to frontend files.
+Anvan ou teste foto pwofil, kouri `profile-photo-setup.sql` nan Supabase SQL Editor. Upload yo ale nan bucket `business-images`, chemen `profile-avatars/<user-id>/`. Fichye sa a ajoute kolòn `profiles.profile_image_url` ak politik RLS pou chak itilizatè modifye sèlman pwòp pwofil li.

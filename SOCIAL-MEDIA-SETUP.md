@@ -1,118 +1,40 @@
-# Eagle-J Connect — Social Media Manager (Final)
+# Eagle-J Connect — Social Media setup
 
-This package adds a real social-media integration layer without replacing the existing authentication, jobs, businesses, profiles, admin moderation or language system.
+This module is a staged integration. The current backend implements the Meta OAuth connection flow for Facebook Pages and detects a linked Instagram Business account. WhatsApp creates a share link. TikTok, YouTube, and automatic publishing to connected networks are **not yet active**; the UI must not be interpreted as proof that a post was published.
 
-## What was added
+## 1. Database
 
-- `social-media.html` — Social Media Manager UI
-- `social-media.css` — responsive styling
-- `social-media.js` — authenticated UI, OAuth launch, composer and history
-- `supabase/social-media-schema.sql` — tables + RLS
-- `supabase/functions/social-oauth/index.ts` — OAuth start/callback/disconnect
-- `supabase/functions/social-publish/index.ts` — server-side publishing
-- `supabase/config.toml` — function auth settings
+Run `supabase/social-media-schema.sql` in Supabase SQL Editor. If you already created the social tables manually, inspect their columns first; do not blindly replace existing production tables.
 
-## Platforms
+## 2. Edge Function secrets
 
-- Facebook Page publishing
-- Instagram Business/Creator publishing through a linked Meta Page
-- TikTok Content Posting API
-- YouTube video upload
-- WhatsApp share link immediately; WhatsApp Business Cloud API can be added as a separate Meta Business connector
+In Supabase Dashboard → Edge Functions → Secrets, configure:
 
-## Important security rule
+- `SOCIAL_PLATFORM_CONFIG` — one-line JSON, e.g. `{"meta_client_id":"YOUR_META_APP_ID","meta_client_secret":"YOUR_META_APP_SECRET"}`
+- `SOCIAL_TOKEN_ENCRYPTION_KEY` — random 32-byte key encoded as base64
+- `SOCIAL_OAUTH_REDIRECT_URL` — `https://glwyqrvufmjscjbbszzz.supabase.co/functions/v1/social-oauth?action=callback`
 
-Do **not** put Meta/TikTok/Google client secrets, refresh tokens, service-role keys or encryption keys in GitHub Pages or in browser JavaScript. Supabase recommends storing sensitive values in Edge Function secrets. The publishable browser key is the only key intended for client-side use; secret keys stay server-side.
+Supabase provides `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions. Never place the Meta App Secret, service-role key, or encryption key in GitHub files or browser JavaScript.
 
-## 1. Run the SQL
+The exact error `META_CLIENT_ID manke nan SOCIAL_PLATFORM_CONFIG` means the deployed function did not read a valid `meta_client_id` from the `SOCIAL_PLATFORM_CONFIG` secret. The expected JSON key is lowercase `meta_client_id`; do not paste the Facebook personal account ID there. Use the App ID shown in Meta for Developers → your app → App settings → Basic.
 
-Open Supabase SQL Editor and run:
+## 3. Meta redirect and permissions
 
-`supabase/social-media-schema.sql`
+Add the exact callback URL above to the Meta app's valid OAuth redirect URIs. Facebook/Instagram publishing requires a suitable Page, linked Instagram Business/Creator account, and Meta approval for the requested permissions. This code uses Meta Graph API `v24.0`; change it in `supabase/functions/social-oauth/index.ts` if your app must use another supported version.
 
-Do this once.
+## 4. Deploy
 
-## 2. Create the encryption key
+From the project root, deploy:
 
-Generate a random 32-byte value and encode it as base64. Example with a local terminal:
-
-`openssl rand -base64 32`
-
-Set it as the Supabase Edge Function secret:
-
-`SOCIAL_TOKEN_ENCRYPTION_KEY=...`
-
-Never commit this value.
-
-## 3. Set the site/function URLs
-
-Recommended values:
-
-`SOCIAL_SITE_URL=https://eagle-jconnect.github.io/eagle-j-connect/social-media.html`
-
-`SOCIAL_OAUTH_REDIRECT_URL=https://glwyqrvufmjscjbbszzz.supabase.co/functions/v1/social-oauth?action=callback`
-
-## 4. Add platform configuration as ONE JSON secret
-
-Use one secret called `SOCIAL_PLATFORM_CONFIG` so credentials stay together.
-
-Example structure (replace every placeholder):
-
-```json
-{
-  "meta_client_id": "YOUR_META_APP_ID",
-  "meta_client_secret": "YOUR_META_APP_SECRET",
-  "meta_graph_version": "v24.0",
-  "tiktok_client_key": "YOUR_TIKTOK_CLIENT_KEY",
-  "tiktok_client_secret": "YOUR_TIKTOK_CLIENT_SECRET",
-  "google_client_id": "YOUR_GOOGLE_CLIENT_ID",
-  "google_client_secret": "YOUR_GOOGLE_CLIENT_SECRET"
-}
+```sh
+supabase functions deploy social-oauth --no-verify-jwt
+supabase functions deploy social-publish
 ```
 
-The exact Meta Graph version should be changed if Meta requires a newer version for your app.
+`social-oauth` validates the user's access token itself. The callback stores tokens encrypted with AES-GCM and saves no raw provider token in the database. After changing secrets, retry the connection from `social-media.html`.
 
-## 5. Deploy the two Edge Functions
+## 5. Current limitations
 
-From the Supabase project directory:
-
-`supabase functions deploy social-oauth --no-verify-jwt`
-
-`supabase functions deploy social-publish`
-
-Then set the secrets in Supabase Dashboard > Edge Functions > Secrets, or with the Supabase CLI.
-
-## 6. Configure each provider
-
-### Meta / Facebook / Instagram
-
-Create a Meta developer app, enable the products/permissions needed for Page and Instagram publishing, set the OAuth redirect URL to the function URL above, and use the app ID/secret in `SOCIAL_PLATFORM_CONFIG`.
-
-Instagram publishing requires an eligible Business/Creator account and a suitable linked Facebook Page.
-
-### TikTok
-
-Create a TikTok developer app, add the Content Posting API, configure the redirect URL, and request the scopes needed for the posting workflow. TikTok can require approval/audit before unrestricted public posting.
-
-### YouTube
-
-Create a Google Cloud project, enable YouTube Data API v3, configure OAuth consent + web client redirect URI, and use the client ID/secret above. YouTube uploads from new/unverified API projects can be restricted to private visibility until the project passes the required audit.
-
-### WhatsApp
-
-The current UI supports a safe `wa.me` share action without storing a WhatsApp token. A full WhatsApp Business Cloud API connector requires Meta Business setup, phone-number configuration and additional permissions.
-
-## 7. Test
-
-1. Log in to Eagle-J Connect.
-2. Open `social-media.html`.
-3. Connect one provider.
-4. Return to the page.
-5. Create a post and select the connected provider.
-6. Check the Social Media history table.
-
-If a provider has not been configured, the page should show a clear configuration error rather than pretending the account is connected.
-
-## Existing system preservation
-
-The existing `script.js`, `global.js`, `language.js`, login flow, profiles, jobs, businesses and admin moderation remain in place. The only navigation change is that authenticated users receive a Social Media Manager link from the existing menu controller.
+- Facebook OAuth and linked Instagram account discovery are implemented in this package but still require correct Meta configuration and live testing.
+- `social-publish` currently creates a safe WhatsApp share link and records a draft/status for other networks. It deliberately does not claim Facebook, Instagram, TikTok, or YouTube content was published automatically.
+- TikTok and YouTube OAuth/publishing, and actual Facebook/Instagram publishing endpoints, must be implemented and tested separately before promoting the feature as complete.

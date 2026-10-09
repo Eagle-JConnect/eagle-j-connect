@@ -522,3 +522,6 @@ main{min-height:calc(100vh - 82px)}
   .home-search-form .btn,.global-search-form .btn{width:100%}
   .search-filter{flex:1;text-align:center}
 }
+
+/* Profile photo uploader */
+#profilePhotoFile{display:block;width:min(100%,360px);padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff}#profilePhotoMessage{margin-top:10px}

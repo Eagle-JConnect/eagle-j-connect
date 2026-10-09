@@ -903,6 +903,57 @@ async function loginUser(e){
 }
 
 
+
+/* =========================================================
+   PROFILE PHOTO UPLOAD — available to every signed-in member
+========================================================= */
+function showProfilePhoto(url){
+  const img=qs("profilePhotoPreview");
+  const placeholder=qs("profilePhotoPlaceholder");
+  if(img){
+    if(url){img.src=url;img.style.display="block";}
+    else{img.removeAttribute("src");img.style.display="none";}
+  }
+  if(placeholder) placeholder.style.display=url?"none":"flex";
+}
+
+async function saveProfilePhoto(){
+  const message=qs("profilePhotoMessage");
+  const file=qs("profilePhotoFile")?.files?.[0];
+  const session=await verifyAuthSession();
+  if(!session?.user?.id || !session?.token){
+    if(message) message.textContent="Tanpri konekte ankò anvan ou sove foto a.";
+    return;
+  }
+  if(!file){if(message) message.textContent="Tanpri chwazi yon foto anvan.";return;}
+  const allowed=["image/jpeg","image/png","image/webp"];
+  if(!allowed.includes(file.type)){if(message) message.textContent="Fòma sa a pa sipòte. Itilize JPG, PNG oswa WEBP.";return;}
+  if(file.size>5*1024*1024){if(message) message.textContent="Foto a depase 5 MB. Chwazi yon foto ki pi piti.";return;}
+  const ext=({"image/jpeg":"jpg","image/png":"png","image/webp":"webp"})[file.type];
+  const objectPath=`profile-avatars/${session.user.id}/avatar.${ext}`;
+  const button=qs("saveProfilePhoto");
+  if(button) button.disabled=true;
+  if(message) message.textContent="Ap telechaje foto a...";
+  try{
+    await api(`/storage/v1/object/${IMAGE_BUCKET}/${objectPath}`,{
+      method:"POST",
+      headers:{"Content-Type":file.type,"x-upsert":"true","Authorization":`Bearer ${session.token}`},
+      body:file
+    });
+    const publicUrl=`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${objectPath}?v=${Date.now()}`;
+    await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,{
+      method:"PATCH",
+      headers:{"Prefer":"return=minimal","Content-Type":"application/json"},
+      body:JSON.stringify({profile_image_url:publicUrl})
+    });
+    showProfilePhoto(publicUrl);
+    if(message) message.textContent="✅ Foto pwofil ou sove avèk siksè.";
+  }catch(err){
+    console.error("Profile photo upload:",err);
+    if(message) message.textContent="❌ Foto a pa t ka sove: "+err.message+". Verifye SQL/politik ki nan fichye profile-photo-setup.sql.";
+  }finally{if(button) button.disabled=false;}
+}
+
 /* =========================================================
    DASHBOARD
 ========================================================= */
@@ -955,6 +1006,7 @@ async function loadDashboard(){
 
     qs("profileName").textContent=
       p.full_name || "—";
+    showProfilePhoto(p.profile_image_url || "");
 
 
     qs("profileEmail").textContent=
@@ -987,11 +1039,9 @@ async function loadDashboard(){
 
 
     if(card){
-
       card.style.display="block";
-
     }
-
+    loadMyBusinessListings();
 
   }catch(err){
 
@@ -1066,6 +1116,8 @@ async function loadEmployerDashboard(){
         p.full_name || "—";
 
     }
+
+    showProfilePhoto(p.profile_image_url || "");
 
 
     if(qs("profileEmail")){
@@ -1777,10 +1829,7 @@ async function submitBusiness(e){
   }
 
 
-  const file=
-    qs("businessImage")
-      ?.files?.[0] ||
-    null;
+  const files=Array.from(qs("businessImage")?.files || []);
 
 
   const listingType=
@@ -1835,6 +1884,7 @@ async function submitBusiness(e){
       "",
 
     image_url:null,
+    image_urls:"[]",
 
     user_id:
       session.user.id,
@@ -1861,21 +1911,15 @@ async function submitBusiness(e){
   }
 
 
-  if(
-    file &&
-    (
-      !file.type.startsWith("image/") ||
-      file.size>5*1024*1024
-    )
-  ){
-
-    msg(
-      "formMessage",
-      "❌ Foto a dwe yon imaj ki pi piti pase 5MB."
-    );
-
+  if(files.length>50){
+    msg("formMessage", "❌ Ou ka mete jiska 50 imaj sèlman.");
     return;
+  }
 
+  const invalidFile=files.find(file=>!file.type.startsWith("image/") || file.size>5*1024*1024);
+  if(invalidFile){
+    msg("formMessage", `❌ Chak foto dwe yon imaj ki pi piti pase 5MB. Pwoblèm: ${invalidFile.name}`);
+    return;
   }
 
 
@@ -1923,97 +1967,28 @@ async function submitBusiness(e){
     }
 
 
-    if(file){
-
-      const ext=
-        (
-          file.name
-            .split(".")
-            .pop() ||
-          "jpg"
-        ).toLowerCase();
-
-
-      const fileName=
-        `${b.id}-${Date.now()}.${ext}`;
-
-
-      const up=
-        await fetch(
-          `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
-          {
-            method:"POST",
-
-            headers:{
-
-              apikey:
-                SUPABASE_KEY,
-
-              Authorization:
-                `Bearer ${session.token}`,
-
-              "Content-Type":
-                file.type,
-
-              "x-upsert":
-                "true"
-
-            },
-
-            body:file
-
-          }
-        );
-
-
-      if(!up.ok){
-
-        let uploadError=
-          "Foto a pa t kapab monte.";
-
-
-        try{
-
-          const uploadBody=
-            await up.json();
-
-
-          uploadError=
-            uploadBody?.message ||
-            uploadBody?.error ||
-            uploadError;
-
-        }catch(_){}
-
-
-        throw new Error(
-          uploadError
-        );
-
-      }
-
-
-      const imageURL=
-        `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
-
-
-      await api(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
-        {
-          method:"PATCH",
-
-          headers:{
-            Authorization:
-              `Bearer ${session.token}`
-          },
-
-          body:
-            JSON.stringify({
-              image_url:imageURL
-            })
+    if(files.length){
+      const imageURLs=[];
+      for(let i=0;i<files.length;i++){
+        const file=files[i];
+        const ext=(file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+        const fileName=`${b.id}/${Date.now()}-${i}.${ext}`;
+        const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,{
+          method:"POST",
+          headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,"Content-Type":file.type,"x-upsert":"true"},
+          body:file
+        });
+        if(!up.ok){
+          let uploadError="Youn nan foto yo pa t kapab monte.";
+          try{const uploadBody=await up.json();uploadError=uploadBody?.message||uploadBody?.error||uploadError;}catch(_){}
+          throw new Error(`${uploadError} (${file.name})`);
         }
-      );
-
+        imageURLs.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
+      }
+      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,{
+        method:"PATCH",headers:{Authorization:`Bearer ${session.token}`},
+        body:JSON.stringify({image_url:imageURLs[0] || null,image_urls:JSON.stringify(imageURLs)})
+      });
     }
 
 
@@ -2041,6 +2016,80 @@ async function submitBusiness(e){
 
 }
 
+
+/* =========================================================
+   USER'S OWN BUSINESS ADS: EDIT / DELETE
+========================================================= */
+function parseListingImages(b){
+  let list=[];
+  try{ if(Array.isArray(b.image_urls)) list=b.image_urls; else if(b.image_urls) list=JSON.parse(b.image_urls); }catch(_){list=[];}
+  if(!Array.isArray(list)) list=[];
+  if(b.image_url && !list.includes(b.image_url)) list.unshift(b.image_url);
+  return [...new Set(list.filter(x=>typeof x==="string" && x))].slice(0,50);
+}
+
+async function loadMyBusinessListings(){
+  const box=qs("myBusinessListings"); if(!box)return;
+  const session=await verifyAuthSession();
+  if(!session){box.innerHTML="<p>Tanpri konekte pou wè anons ou yo.</p>";return;}
+  box.innerHTML="<p>⏳ Anons ou yo ap chaje...</p>";
+  try{
+    const rows=await api(`/rest/v1/businesses?user_id=eq.${encodeURIComponent(session.user.id)}&select=*&order=created_at.desc`);
+    if(!rows?.length){box.innerHTML="<p>Ou poko kreye okenn anons. <a href='kreye-anons.html'>Kreye premye anons ou</a>.</p>";return;}
+    box.innerHTML=rows.map(b=>{
+      const images=parseListingImages(b);
+      return `<article class="card" style="margin:14px 0;padding:16px;border:1px solid #dbe3ef">
+        <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">${b.image_url?`<img src="${attr(b.image_url)}" alt="" style="width:110px;height:90px;object-fit:cover;border-radius:8px">`:''}<div style="flex:1;min-width:180px"><h3>${esc(b.business_name||'Anons')}</h3><p>${esc(b.location||'')}</p><p><strong>Estati:</strong> ${esc(b.status||'pending')} · ${images.length} imaj</p><p>${esc((b.description||'').slice(0,180))}</p></div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" onclick="editMyBusiness('${attr(b.id)}')">✏️ Modifye</button><button type="button" style="background:#c62828;color:white" onclick="deleteMyBusiness('${attr(b.id)}')">🗑️ Efase</button></div>
+        <div id="editListing-${attr(b.id)}" style="display:none;margin-top:14px"></div></article>`;
+    }).join('');
+  }catch(err){console.error(err);box.innerHTML=`<p>❌ Nou pa kapab chaje anons ou yo: ${esc(err.message)}</p>`;}
+}
+
+window.editMyBusiness=async function(id){
+  const session=await verifyAuthSession();if(!session)return;
+  const rows=await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
+  const b=rows?.[0];if(!b){alert("Nou pa jwenn anons sa a nan kont ou.");return;}
+  const box=qs(`editListing-${id}`);if(!box)return;
+  const catParts=String(b.category||'business:other').split(':');
+  const images=parseListingImages(b);
+  box.style.display='block';
+  box.innerHTML=`<form onsubmit="saveMyBusiness(event,'${attr(id)}')" style="display:grid;gap:9px">
+    <label>Non anons la<input name="business_name" required value="${attr(b.business_name||'')}"></label>
+    <label>Kategori<input name="category" required value="${attr(catParts.slice(1).join(':')||catParts[0])}"></label>
+    <label>Lokalizasyon<input name="location" required value="${attr(b.location||'')}"></label>
+    <label>Telefòn<input name="phone" value="${attr(b.phone||'')}"></label>
+    <label>WhatsApp<input name="whatsapp" value="${attr(b.whatsapp||'')}"></label>
+    <label>Pri / Tarif<input name="price" value="${attr(b.price||'')}"></label>
+    <label>Deskripsyon<textarea name="description" required rows="4">${esc(b.description||'')}</textarea></label>
+    <p>Foto aktyèl: ${images.length}. Chwazi nouvo foto si ou vle ranplase yo (jiska 50, 5MB chak).</p>
+    <input name="images" type="file" accept="image/*" multiple>
+    <button type="submit">💾 Sove chanjman yo (Admin ap revize anons la)</button>
+    <button type="button" onclick="document.getElementById('editListing-${attr(id)}').style.display='none'">Anile</button>
+  </form>`;
+};
+
+window.saveMyBusiness=async function(e,id){
+  e.preventDefault();const form=e.currentTarget;const session=await verifyAuthSession();if(!session)return;
+  const rows=await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
+  const old=rows?.[0];if(!old){alert("Ou pa gen dwa modifye anons sa a.");return;}
+  const files=Array.from(form.elements.images.files||[]);
+  if(files.length>50){alert("Ou ka mete jiska 50 imaj.");return;}
+  const bad=files.find(f=>!f.type.startsWith('image/')||f.size>5*1024*1024);if(bad){alert(`Chak imaj dwe pi piti pase 5MB: ${bad.name}`);return;}
+  const vals={business_name:form.elements.business_name.value.trim(),category:`${String(old.category||'business').split(':')[0]}:${form.elements.category.value.trim()}`,location:form.elements.location.value.trim(),phone:form.elements.phone.value.trim()||null,whatsapp:form.elements.whatsapp.value.trim()||null,price:form.elements.price.value.trim()||null,description:form.elements.description.value.trim(),status:'pending'};
+  try{
+    if(files.length){const urls=[];for(let i=0;i<files.length;i++){const f=files[i];const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${id}/${Date.now()}-${i}.${ext}`;const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,'Content-Type':f.type,'x-upsert':'true'},body:f});if(!up.ok)throw new Error(`Foto ${f.name} pa t kapab monte.`);urls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${path}`);}vals.image_url=urls[0]||null;vals.image_urls=JSON.stringify(urls);}
+    await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:'PATCH',headers:{Authorization:`Bearer ${session.token}`},body:JSON.stringify(vals)});
+    alert('Anons la modifye. Li retounen nan atant pou Admin valide li.');await loadMyBusinessListings();
+  }catch(err){console.error(err);alert('Erè: '+err.message);}
+};
+
+window.deleteMyBusiness=async function(id){
+  if(!confirm('Èske ou sèten ou vle efase anons sa a? Aksyon sa a pa ka defèt.'))return;
+  const session=await verifyAuthSession();if(!session)return;
+  try{await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:'DELETE',headers:{Authorization:`Bearer ${session.token}`}});await loadMyBusinessListings();alert('Anons la efase.');}
+  catch(err){console.error(err);alert('Nou pa kapab efase anons la: '+err.message);}
+};
 
 /* =========================================================
    BUSINESS LISTINGS
@@ -2644,6 +2693,8 @@ async function loadBusinessDetail(){
       }
 
 
+      ${parseListingImages(b).length>1 ? `<div class="business-image-gallery" style="display:flex;gap:10px;overflow-x:auto;margin:12px 0">${parseListingImages(b).map((url,i)=>`<img src="${attr(url)}" alt="${attr(b.business_name)} - foto ${i+1}" loading="lazy" style="width:150px;height:120px;object-fit:cover;border-radius:8px;flex:0 0 auto">`).join('')}</div>` : ''}
+
       <h1>
         ${esc(
           b.business_name
@@ -3152,6 +3203,8 @@ document.addEventListener(
     ===================================================== */
 
     setupMobileMenu();
+
+    qs("saveProfilePhoto")?.addEventListener("click", saveProfilePhoto);
 
 
     /* =====================================================
