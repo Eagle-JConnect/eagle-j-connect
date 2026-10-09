@@ -10,7 +10,7 @@ The canonical `SUPABASE-BASE-FINAL.sql` now creates the social tables and their 
 
 In Supabase Dashboard → Edge Functions → Secrets, configure:
 
-- `SOCIAL_PLATFORM_CONFIG` — one-line JSON, e.g. `{"meta_client_id":"YOUR_META_APP_ID","meta_client_secret":"YOUR_META_APP_SECRET"}`
+- `SOCIAL_PLATFORM_CONFIG` — one-line JSON, e.g. `{"meta_client_id":"1116090894222133","meta_client_secret":"YOUR_META_APP_SECRET"}`
 - `SOCIAL_TOKEN_ENCRYPTION_KEY` — random 32-byte key encoded as base64
 - `SOCIAL_OAUTH_REDIRECT_URL` — `https://glwyqrvufmjscjbbszzz.supabase.co/functions/v1/social-oauth?action=callback`
 
@@ -38,3 +38,7 @@ supabase functions deploy social-publish
 - Facebook OAuth and linked Instagram account discovery are implemented in this package but still require correct Meta configuration and live testing.
 - `social-publish` currently creates a safe WhatsApp share link and records a draft/status for other networks. It deliberately does not claim Facebook, Instagram, TikTok, or YouTube content was published automatically.
 - TikTok and YouTube OAuth/publishing, and actual Facebook/Instagram publishing endpoints, must be implemented and tested separately before promoting the feature as complete.
+
+
+## Meta App ID for this project
+The Meta App ID supplied by the project owner is `1116090894222133`. The ID is included as a fallback in `supabase/functions/social-oauth/index.ts` and in the example configuration. **Do not put the App Secret in frontend files or commit it to GitHub.** Set the real `meta_client_secret` as a Supabase Edge Function secret / within the server-side `SOCIAL_PLATFORM_CONFIG` JSON, then deploy the `social-oauth` function. Also add the deployed callback URL to Meta's Valid OAuth Redirect URIs. An App ID alone cannot complete OAuth.

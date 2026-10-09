@@ -24,3 +24,7 @@ Step 2 will add:
 - social_posts database table + RLS
 - server-side OAuth/token handling through Supabase Edge Functions
 - provider-specific configuration for Facebook/Instagram, TikTok, YouTube and WhatsApp
+
+
+META APP ID (provided by owner): 1116090894222133
+The App ID is configured as a server-side fallback in the social-oauth Edge Function. You must still configure the App Secret securely in Supabase Edge Function Secrets / SOCIAL_PLATFORM_CONFIG and redeploy the function. Never add App Secret to frontend JavaScript or public GitHub files.
