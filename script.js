@@ -1934,7 +1934,9 @@ async function submitBusiness(e){
   }
 
 
-  const files=Array.from(qs("businessImage")?.files || []);
+  const coverFile=qs("businessCoverImage")?.files?.[0] || null;
+  const galleryFiles=Array.from(qs("businessImage")?.files || []);
+  const files=[...(coverFile?[coverFile]:[]),...galleryFiles];
 
 
   const listingType=
@@ -2017,7 +2019,7 @@ async function submitBusiness(e){
 
 
   if(files.length>50){
-    msg("formMessage", "❌ Ou ka mete jiska 50 imaj sèlman.");
+    msg("formMessage", "❌ Chwazi yon imaj akèy ak jiska 49 lòt imaj (50 an total).");
     return;
   }
 
@@ -2527,6 +2529,7 @@ function renderBusinesses(){
                   alt="${attr(
                     b.business_name
                   )}"
+                  data-lightbox-image="true" class="ej-clickable-image" style="cursor:zoom-in"
                   loading="lazy"
 
                   onerror="
@@ -2777,7 +2780,7 @@ async function loadBusinessDetail(){
           ? `
 
             <img
-              class="business-detail-image"
+              class="business-detail-image ej-clickable-image" data-lightbox-image="true"
               src="${attr(
                 b.image_url
               )}"
@@ -2798,7 +2801,7 @@ async function loadBusinessDetail(){
       }
 
 
-      ${parseListingImages(b).length>1 ? `<div class="business-image-gallery" style="display:flex;gap:10px;overflow-x:auto;margin:12px 0">${parseListingImages(b).map((url,i)=>`<img src="${attr(url)}" alt="${attr(b.business_name)} - foto ${i+1}" loading="lazy" style="width:150px;height:120px;object-fit:cover;border-radius:8px;flex:0 0 auto">`).join('')}</div>` : ''}
+      ${parseListingImages(b).length>1 ? `<div class="business-image-gallery" style="display:flex;gap:10px;overflow-x:auto;margin:12px 0">${parseListingImages(b).map((url,i)=>`<img class="ej-clickable-image" data-lightbox-image="true" src="${attr(url)}" alt="${attr(b.business_name)} - foto ${i+1}" loading="lazy" style="width:150px;height:120px;object-fit:cover;border-radius:8px;flex:0 0 auto;cursor:zoom-in">`).join('')}</div>` : ''}
 
       <h1>
         ${esc(
@@ -3571,3 +3574,51 @@ document.addEventListener(
 
   }
 ); 
+
+
+/* =========================================================
+   LISTING IMAGE VIEWER / LIGHTBOX
+   Click any listing photo to open a large image viewer.
+========================================================= */
+function ensureListingLightbox(){
+  if(document.getElementById('ejImageLightbox')) return;
+  const style=document.createElement('style');
+  style.id='ejImageLightboxStyles';
+  style.textContent=`
+    #ejImageLightbox{position:fixed;inset:0;z-index:99999;background:rgba(5,12,24,.92);display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
+    #ejImageLightbox.open{display:flex}
+    #ejImageLightbox img{max-width:min(96vw,1200px);max-height:86vh;object-fit:contain;border-radius:10px;box-shadow:0 12px 50px #0008}
+    #ejImageLightbox .ej-lightbox-close{position:absolute;top:14px;right:18px;border:0;border-radius:50%;width:44px;height:44px;font-size:28px;line-height:1;background:#fff;color:#111;cursor:pointer}
+    #ejImageLightbox .ej-lightbox-caption{position:absolute;bottom:12px;left:12px;right:12px;text-align:center;color:#fff;font-size:14px}
+    .ej-clickable-image{cursor:zoom-in}
+  `;
+  document.head.appendChild(style);
+  const modal=document.createElement('div');
+  modal.id='ejImageLightbox';
+  modal.setAttribute('role','dialog');
+  modal.setAttribute('aria-modal','true');
+  modal.setAttribute('aria-label','Gade foto anons la');
+  modal.innerHTML='<button type="button" class="ej-lightbox-close" aria-label="Fèmen">×</button><img alt="Foto anons an gwo"><div class="ej-lightbox-caption">Klike deyò foto a oswa × pou fèmen</div>';
+  document.body.appendChild(modal);
+  const close=()=>{modal.classList.remove('open');modal.style.display='none';document.body.style.overflow='';};
+  modal.querySelector('button').addEventListener('click',close);
+  modal.addEventListener('click',e=>{if(e.target===modal)close();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+}
+function openListingImageViewer(img){
+  ensureListingLightbox();
+  const modal=document.getElementById('ejImageLightbox');
+  const large=modal.querySelector('img');
+  large.src=img.currentSrc||img.src;
+  large.alt=img.alt||'Foto anons';
+  modal.style.display='flex';
+  modal.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+document.addEventListener('click',function(e){
+  const img=e.target.closest('img[data-lightbox-image="true"], .business-image-gallery img, .business-detail-image');
+  if(!img) return;
+  e.preventDefault();
+  e.stopPropagation();
+  openListingImageViewer(img);
+},true);
