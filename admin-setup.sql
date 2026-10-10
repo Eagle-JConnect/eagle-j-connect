@@ -1,5 +1,3 @@
--- SUPERSEDED: Use SUPABASE-BASE-FINAL.sql (project root) as the only core migration. Do not run this old migration after it.
-
 -- Eagle-J Connect: secure admin setup for Supabase
 -- Run this once in Supabase SQL Editor.
 -- IMPORTANT: After creating the table, insert ONLY your own user id as admin.

@@ -15,6 +15,49 @@ function qs(id){
 
 
 /* =========================================================
+   SHARE PUBLIC POSTS / ADS
+========================================================= */
+async function shareEaglePost(button){
+  if(!button) return;
+
+  const title=button.dataset.shareTitle || "Eagle-J Connect";
+  const text=button.dataset.shareText || "Dekouvri opòtinite sou Eagle-J Connect.";
+  const url=button.dataset.shareUrl || window.location.href;
+  const payload={title, text, url};
+  const combined=[title, text, url].filter(Boolean).join("\n");
+
+  if(typeof navigator.share === "function"){
+    try{
+      await navigator.share(payload);
+      return;
+    }catch(error){
+      // If the user closes the share sheet, do not open another app.
+      if(error && error.name === "AbortError") return;
+    }
+  }
+
+  try{
+    if(navigator.clipboard && typeof navigator.clipboard.writeText === "function"){
+      await navigator.clipboard.writeText(combined);
+      alert("Lyen ak detay piblikasyon an kopye. Ou kapab kole li sou rezo sosyal ou.");
+      return;
+    }
+  }catch(error){
+    console.warn("Could not copy share text:", error);
+  }
+
+  // Last-resort fallback works on browsers without the native share sheet.
+  window.open("https://wa.me/?text=" + encodeURIComponent(combined), "_blank", "noopener,noreferrer");
+}
+
+function eagleJobShareUrl(job){
+  const url=new URL("travay.html", window.location.href);
+  if(job && job.id) url.searchParams.set("job", String(job.id));
+  return url.href;
+}
+
+
+/* =========================================================
    SESSION
 ========================================================= */
 
@@ -125,106 +168,16 @@ window.logoutUser=()=>{
 
 
 /* =========================================================
-   VERIFY SUPABASE AUTH SESSION
-========================================================= */
-
-async function verifyAuthSession(){
-
-  const session=getSession();
-
-  if(!session?.token){
-
-    return null;
-
-  }
-
-  try{
-
-    const r=await fetch(
-      `${SUPABASE_URL}/auth/v1/user`,
-      {
-        method:"GET",
-
-        headers:{
-          "apikey":SUPABASE_KEY,
-          "Authorization":
-            `Bearer ${session.token}`
-        }
-      }
-    );
-
-    const text=await r.text();
-
-    let data=null;
-
-    try{
-
-      data=text
-        ? JSON.parse(text)
-        : null;
-
-    }catch(e){
-
-      data=null;
-
-    }
-
-    if(!r.ok || !data?.id){
-
-      clearSession();
-
-      return null;
-
-    }
-
-    const verifiedUser={
-      ...session.user,
-      ...data,
-      id:data.id
-    };
-
-    localStorage.setItem(
-      "supabase_user",
-      JSON.stringify(verifiedUser)
-    );
-
-    localStorage.setItem(
-      "supabase_user_id",
-      data.id
-    );
-
-    localStorage.setItem(
-      "supabase_user_email",
-      data.email || ""
-    );
-
-    return {
-      token:session.token,
-      user:verifiedUser
-    };
-
-  }catch(error){
-
-    console.error(
-      "Auth verification:",
-      error
-    );
-
-    return null;
-
-  }
-
-}
-
-
-/* =========================================================
    MOBILE MENU
+   menu.js owns the final navigation controller
 ========================================================= */
 
 function setupMobileMenu(){
   /* menu.js owns the final navigation controller */
 }
 
+
+/* Compatibility with pages using onclick="toggleMenu()" */
 
 window.toggleMenu=function(){
 
@@ -244,12 +197,6 @@ window.toggleMenu=function(){
 ========================================================= */
 
 function msg(id,text,type="error"){
-
-  if(window.EJC?.t){
-
-    text=window.EJC.t(text);
-
-  }
 
   const el=qs(id);
 
@@ -322,26 +269,17 @@ function fmtDate(v){
 
 async function api(path,options={}){
 
-  const {
-    skipAuth=false,
-    ...fetchOptions
-  }=options;
-
-
   const headers=Object.assign(
     {
       "apikey":SUPABASE_KEY,
       "Content-Type":"application/json"
     },
-    fetchOptions.headers || {}
+    options.headers || {}
   );
-
 
   const session=getSession();
 
-
   if(
-    !skipAuth &&
     session?.token &&
     !headers.Authorization
   ){
@@ -351,20 +289,17 @@ async function api(path,options={}){
 
   }
 
-
   const r=await fetch(
     SUPABASE_URL+path,
     {
-      ...fetchOptions,
+      ...options,
       headers
     }
   );
 
-
   const text=await r.text();
 
   let data=null;
-
 
   try{
 
@@ -378,26 +313,17 @@ async function api(path,options={}){
 
   }
 
-
   if(!r.ok){
 
-    const errorMessage =
+    throw new Error(
       data?.message ||
       data?.msg ||
       data?.error_description ||
       data?.details ||
-      data?.hint ||
-      (typeof data === "string" ? data : "Request failed");
-
-    const err = new Error(errorMessage);
-    err.code = data?.code || r.status;
-    err.details = data?.details || "";
-    err.hint = data?.hint || "";
-
-    throw err;
+      "Request failed"
+    );
 
   }
-
 
   return data;
 
@@ -406,7 +332,9 @@ async function api(path,options={}){
 
 /* =========================================================
    ADMIN CHECK
-========================================================= */
+   ---------------------------------------------------------
+   Verifye si itilizatè konekte a nan admin_users.
+   ========================================================= */
 
 async function checkCurrentUserIsAdmin(userId){
 
@@ -416,24 +344,20 @@ async function checkCurrentUserIsAdmin(userId){
 
   }
 
-
   try{
 
     const rows=await api(
       `/rest/v1/admin_users?user_id=eq.${encodeURIComponent(userId)}&select=user_id`
     );
 
-
     const isAdmin=
       Array.isArray(rows) &&
       rows.length>0;
-
 
     localStorage.setItem(
       "user_is_admin",
       isAdmin ? "true" : "false"
     );
-
 
     return isAdmin;
 
@@ -444,12 +368,10 @@ async function checkCurrentUserIsAdmin(userId){
       error.message
     );
 
-
     localStorage.setItem(
       "user_is_admin",
       "false"
     );
-
 
     return false;
 
@@ -465,7 +387,6 @@ async function checkCurrentUserIsAdmin(userId){
 async function registerUser(e){
 
   e.preventDefault();
-
 
   const firstName=
     qs("firstName")?.value.trim() || "";
@@ -555,23 +476,17 @@ async function registerUser(e){
       {
         method:"POST",
 
-        skipAuth:true,
-
         body:JSON.stringify({
           email,
           password,
 
           data:{
             full_name:fullName,
-
             first_name:
               firstName ||
               fullName.split(" ")[0],
-
             last_name:lastName,
-
             phone,
-
             account_type:accountType
           }
 
@@ -600,23 +515,17 @@ async function registerUser(e){
           {
             method:"POST",
 
-            headers:{
-              Prefer:"resolution=ignore-duplicates,return=minimal"
-            },
-
             body:JSON.stringify({
-
               id:data.user.id,
-
               full_name:fullName,
-
               email,
-
               phone,
-
               account_type:accountType
+            }),
 
-            })
+            headers:{
+              Prefer:"return=representation"
+            }
 
           }
         );
@@ -671,7 +580,7 @@ async function registerUser(e){
 
 /* =========================================================
    LOGIN
-========================================================= */
+   ========================================================= */
 
 async function loginUser(e){
 
@@ -709,12 +618,19 @@ async function loginUser(e){
 
   try{
 
+    /* -----------------------------------------------------
+       1. LOGIN SUPABASE AUTH
+    ----------------------------------------------------- */
+
     const data=await api(
       "/auth/v1/token?grant_type=password",
       {
         method:"POST",
 
-        skipAuth:true,
+        headers:{
+          Authorization:
+            "Bearer "+SUPABASE_KEY
+        },
 
         body:JSON.stringify({
           email,
@@ -737,52 +653,54 @@ async function loginUser(e){
     }
 
 
+    /* -----------------------------------------------------
+       2. SAVE SESSION
+    ----------------------------------------------------- */
+
     saveSession(data);
 
 
-    const verified=
-      await verifyAuthSession();
+    /* -----------------------------------------------------
+       3. GET PROFILE
+    ----------------------------------------------------- */
+
+    let profiles=[];
 
 
-    if(!verified){
-
-      throw new Error(
-        "Sesyon an pa t kapab verifye ak Supabase."
-      );
-
-    }
-
-
-    const authUser=verified.user;
-
-
-    let profiles;
-
-    // Use the freshly verified access token explicitly. If the profile request
-    // fails, do not hide the Supabase error behind a misleading "no profile"
-    // message and do not erase a valid login session.
     try{
+
       profiles=await api(
-        `/rest/v1/profiles?id=eq.${encodeURIComponent(authUser.id)}&select=id,full_name,phone,account_type,account_status,email`,
-        {headers:{Authorization:`Bearer ${verified.token}`}}
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
       );
+
     }catch(err){
-      console.error("Eagle-J Connect profile lookup failed:", err);
-      const detail = err?.message || "Unknown Supabase error";
-      throw new Error(
-        `Nou pa rive li pwofil ou nan Supabase (ID: ${authUser.id}). Detay: ${detail}. Verifye RLS/SELECT policy pou profiles.`
+
+      console.warn(
+        "Profile request:",
+        err
       );
+
     }
 
-    const profile=Array.isArray(profiles) ? profiles[0] : null;
+
+    const profile=
+      profiles?.[0];
+
 
     if(!profile){
-      // Keep the verified auth session so the user is not unnecessarily logged out.
+
+      clearSession();
+
       throw new Error(
-        `Supabase pa retounen pwofil pou kont sa a (ID: ${authUser.id}). Pwofil la ka kache pa RLS. Verifye ke SUPABASE-BASE-FINAL.sql te egzekite nan Supabase, epi eseye ankò.`
+        "Kont ou pa gen pwofil aktif sou Eagle-J Connect."
       );
+
     }
 
+
+    /* -----------------------------------------------------
+       4. ACCOUNT STATUS
+    ----------------------------------------------------- */
 
     if(
       profile.account_status &&
@@ -798,6 +716,10 @@ async function loginUser(e){
     }
 
 
+    /* -----------------------------------------------------
+       5. SAVE PROFILE DATA
+    ----------------------------------------------------- */
+
     localStorage.setItem(
       "user_full_name",
       profile.full_name || ""
@@ -808,19 +730,16 @@ async function loginUser(e){
       profile.phone || ""
     );
 
-    const normalizedAccountType = String(profile.account_type || "job_seeker")
-      .trim().toLowerCase().replace(/[\s-]+/g, "_");
-
     localStorage.setItem(
       "user_account_type",
-      normalizedAccountType
+      profile.account_type || ""
     );
 
 
     const user=
       Object.assign(
         {},
-        authUser,
+        data.user,
         {
           full_name:
             profile.full_name,
@@ -829,7 +748,7 @@ async function loginUser(e){
             profile.phone,
 
           account_type:
-            normalizedAccountType
+            profile.account_type
         }
       );
 
@@ -840,22 +759,32 @@ async function loginUser(e){
     );
 
 
+    /* -----------------------------------------------------
+       6. CHECK ADMIN
+       -----------------------------------------------------
+       Sa se koreksyon prensipal la.
+       Si UID la nan admin_users,
+       Admin ale admin.html.
+    */
+
     const isAdmin=
       await checkCurrentUserIsAdmin(
-        authUser.id
+        data.user.id
       );
 
 
     msg(
       message,
-
       isAdmin
         ? "🛡️ Admin verifye. W ap antre nan Dashboard Admin..."
         : "✅ Ou konekte avèk siksè!",
-
       "success"
     );
 
+
+    /* -----------------------------------------------------
+       7. ROUTING
+       ----------------------------------------------------- */
 
     setTimeout(
       ()=>{
@@ -870,7 +799,7 @@ async function loginUser(e){
 
 
         if(
-          normalizedAccountType==="employer"
+          profile.account_type==="employer"
         ){
 
           location.href="employer.html";
@@ -900,166 +829,13 @@ async function loginUser(e){
 }
 
 
-
-/* =========================================================
-   PROFILE PHOTO CROP + UPLOAD — available to every signed-in member
-========================================================= */
-let profileCropImage = null;
-let profileCropZoom = 1;
-let profileCropOffsetX = 0;
-let profileCropOffsetY = 0;
-let profileCropDragging = false;
-let profileCropLastX = 0;
-let profileCropLastY = 0;
-
-function showProfilePhoto(url){
-  const img=qs("profilePhotoPreview");
-  const placeholder=qs("profilePhotoPlaceholder");
-  if(img){
-    if(url){img.src=url;img.style.display="block";}
-    else{img.removeAttribute("src");img.style.display="none";}
-  }
-  if(placeholder) placeholder.style.display=url?"none":"flex";
-}
-
-function drawProfileCrop(){
-  const canvas=qs("profileCropCanvas");
-  if(!canvas || !profileCropImage) return;
-  const ctx=canvas.getContext("2d");
-  const w=canvas.width, h=canvas.height;
-  ctx.clearRect(0,0,w,h);
-  ctx.fillStyle="#ffffff";
-  ctx.fillRect(0,0,w,h);
-  const base=Math.max(w/profileCropImage.naturalWidth,h/profileCropImage.naturalHeight);
-  const scale=base*profileCropZoom;
-  const drawW=profileCropImage.naturalWidth*scale;
-  const drawH=profileCropImage.naturalHeight*scale;
-  const maxX=0, minX=w-drawW, maxY=0, minY=h-drawH;
-  profileCropOffsetX=Math.min(maxX,Math.max(minX,profileCropOffsetX));
-  profileCropOffsetY=Math.min(maxY,Math.max(minY,profileCropOffsetY));
-  ctx.drawImage(profileCropImage,profileCropOffsetX,profileCropOffsetY,drawW,drawH);
-}
-
-function setupProfileCrop(){
-  const file=qs("profilePhotoFile")?.files?.[0];
-  const message=qs("profilePhotoMessage");
-  const editor=qs("profileCropEditor");
-  if(!file){profileCropImage=null;if(editor)editor.style.display="none";return;}
-  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
-    if(message)message.textContent="Fòma sa a pa sipòte. Itilize JPG, PNG oswa WEBP.";
-    if(editor)editor.style.display="none";return;
-  }
-  if(file.size>100*1024*1024){
-    if(message)message.textContent="Foto a depase 100 MB. Chwazi yon foto ki pi piti.";
-    if(editor)editor.style.display="none";return;
-  }
-  const reader=new FileReader();
-  if(message)message.textContent="Ap prepare foto a pou rekadray...";
-  reader.onload=()=>{
-    const image=new Image();
-    image.onload=()=>{
-      profileCropImage=image;profileCropZoom=1;
-      const canvas=qs("profileCropCanvas");
-      const base=canvas?Math.max(canvas.width/image.naturalWidth,canvas.height/image.naturalHeight):1;
-      profileCropOffsetX=canvas?(canvas.width-image.naturalWidth*base)/2:0;
-      profileCropOffsetY=canvas?(canvas.height-image.naturalHeight*base)/2:0;
-      if(editor)editor.style.display="block";
-      const zoom=qs("profileCropZoom");if(zoom)zoom.value="1";
-      drawProfileCrop();
-      if(message)message.textContent="Deplase foto a ak dwèt ou, epi ajiste zoom lan anvan ou sove.";
-    };
-    image.onerror=()=>{if(message)message.textContent="Nou pa t kapab li foto sa a. Eseye yon lòt foto.";};
-    image.src=reader.result;
-  };
-  reader.onerror=()=>{if(message)message.textContent="Nou pa t kapab louvri fichye foto a.";};
-  reader.readAsDataURL(file);
-}
-
-async function saveProfilePhoto(){
-  const message=qs("profilePhotoMessage");
-  const session=await verifyAuthSession();
-  if(!session?.user?.id || !session?.token){
-    if(message) message.textContent="Tanpri konekte ankò anvan ou sove foto a.";
-    return;
-  }
-  if(!profileCropImage){if(message)message.textContent="Tanpri chwazi yon foto epi tann rekadray la parèt.";return;}
-  const canvas=qs("profileCropCanvas");
-  if(!canvas){if(message)message.textContent="Zòn rekadray la pa disponib. Rafrechi paj la epi eseye ankò.";return;}
-  const button=qs("saveProfilePhoto");
-  if(button)button.disabled=true;
-  if(message)message.textContent="Ap prepare foto rekadre a...";
-  try{
-    const output=document.createElement("canvas");
-    output.width=1024;output.height=1024;
-    const ctx=output.getContext("2d");
-    ctx.fillStyle="#ffffff";ctx.fillRect(0,0,1024,1024);
-    ctx.drawImage(canvas,0,0,1024,1024);
-    const blob=await new Promise((resolve,reject)=>output.toBlob(b=>b?resolve(b):reject(new Error("Nou pa t kapab prepare foto a.")),"image/jpeg",0.92));
-    if(blob.size>100*1024*1024)throw new Error("Foto rekadre a depase 100 MB.");
-    const objectPath=`profile-avatars/${session.user.id}/avatar.jpg`;
-    if(message)message.textContent="Ap telechaje foto rekadre a...";
-    await api(`/storage/v1/object/${IMAGE_BUCKET}/${objectPath}`,{
-      method:"POST",
-      headers:{"Content-Type":"image/jpeg","x-upsert":"true","Authorization":`Bearer ${session.token}`},
-      body:blob
-    });
-    const publicUrl=`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${objectPath}?v=${Date.now()}`;
-    await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,{
-      method:"PATCH",
-      headers:{"Prefer":"return=minimal","Content-Type":"application/json"},
-      body:JSON.stringify({profile_image_url:publicUrl})
-    });
-    showProfilePhoto(publicUrl);
-    if(message)message.textContent="✅ Foto pwofil rekadre ou a sove avèk siksè.";
-  }catch(err){
-    console.error("Profile photo upload:",err);
-    if(message)message.textContent="❌ Foto a pa t ka sove: "+err.message+". Verifye politik yo nan SUPABASE-BASE-FINAL.sql.";
-  }finally{if(button)button.disabled=false;}
-}
-
-function initProfileCropControls(){
-  const input=qs("profilePhotoFile");
-  const zoom=qs("profileCropZoom");
-  const reset=qs("profileCropReset");
-  const canvas=qs("profileCropCanvas");
-  input?.addEventListener("change",setupProfileCrop);
-  zoom?.addEventListener("input",()=>{profileCropZoom=Number(zoom.value)||1;drawProfileCrop();});
-  reset?.addEventListener("click",()=>{profileCropZoom=1;const c=qs("profileCropCanvas");if(c&&profileCropImage){const base=Math.max(c.width/profileCropImage.naturalWidth,c.height/profileCropImage.naturalHeight);profileCropOffsetX=(c.width-profileCropImage.naturalWidth*base)/2;profileCropOffsetY=(c.height-profileCropImage.naturalHeight*base)/2;}else{profileCropOffsetX=0;profileCropOffsetY=0;}if(zoom)zoom.value="1";drawProfileCrop();});
-  if(canvas){
-    const point=(event)=>{const rect=canvas.getBoundingClientRect();return {x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height};};
-    canvas.addEventListener("pointerdown",event=>{if(!profileCropImage)return;profileCropDragging=true;const p=point(event);profileCropLastX=p.x;profileCropLastY=p.y;canvas.setPointerCapture?.(event.pointerId);});
-    canvas.addEventListener("pointermove",event=>{if(!profileCropDragging)return;const p=point(event);profileCropOffsetX+=p.x-profileCropLastX;profileCropOffsetY+=p.y-profileCropLastY;profileCropLastX=p.x;profileCropLastY=p.y;drawProfileCrop();});
-    const stop=()=>{profileCropDragging=false;};
-    canvas.addEventListener("pointerup",stop);canvas.addEventListener("pointercancel",stop);canvas.addEventListener("lostpointercapture",stop);
-  }
-}
-
-async function saveProfileDetails(){
-  const message=qs("profileDetailsMessage");
-  const session=await verifyAuthSession();
-  if(!session?.user?.id || !session?.token){if(message)message.textContent="Tanpri konekte ankò.";return;}
-  const full_name=qs("editProfileName")?.value.trim()||"";
-  const phone=qs("editProfilePhone")?.value.trim()||null;
-  const profile_visibility=qs("profileVisibility")?.value||"public";
-  if(!full_name){if(message)message.textContent="Tanpri mete non ou.";return;}
-  const button=qs("saveProfileDetails");if(button)button.disabled=true;
-  try{
-    await api(`/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}`,{method:"PATCH",headers:{Authorization:`Bearer ${session.token}`,"Prefer":"return=minimal","Content-Type":"application/json"},body:JSON.stringify({full_name,phone,profile_visibility})});
-    if(qs("profileName"))qs("profileName").textContent=full_name;
-    if(qs("profilePhone"))qs("profilePhone").textContent=phone||"—";
-    if(message)message.textContent="✅ Pwofil ou mete ajou.";
-  }catch(err){if(message)message.textContent="❌ Pa kapab sove pwofil la: "+err.message+". Verifye politik yo nan SUPABASE-BASE-FINAL.sql.";}
-  finally{if(button)button.disabled=false;}
-}
-
 /* =========================================================
    DASHBOARD
 ========================================================= */
 
 async function loadDashboard(){
 
-  const session=
-    await verifyAuthSession();
+  const session=getSession();
 
 
   if(!session){
@@ -1104,10 +880,7 @@ async function loadDashboard(){
 
     qs("profileName").textContent=
       p.full_name || "—";
-    showProfilePhoto(p.profile_image_url || "");
-    if(qs("editProfileName"))qs("editProfileName").value=p.full_name||"";
-    if(qs("editProfilePhone"))qs("editProfilePhone").value=p.phone||"";
-    if(qs("profileVisibility"))qs("profileVisibility").value=p.profile_visibility||"public";
+
 
     qs("profileEmail").textContent=
       session.user.email || "—";
@@ -1139,9 +912,11 @@ async function loadDashboard(){
 
 
     if(card){
+
       card.style.display="block";
+
     }
-    loadMyBusinessListings();
+
 
   }catch(err){
 
@@ -1166,8 +941,7 @@ async function loadDashboard(){
 
 async function loadEmployerDashboard(){
 
-  const session=
-    await verifyAuthSession();
+  const session=getSession();
 
 
   if(!session){
@@ -1217,10 +991,6 @@ async function loadEmployerDashboard(){
 
     }
 
-    showProfilePhoto(p.profile_image_url || "");
-    if(qs("editProfileName"))qs("editProfileName").value=p.full_name||"";
-    if(qs("editProfilePhone"))qs("editProfilePhone").value=p.phone||"";
-    if(qs("profileVisibility"))qs("profileVisibility").value=p.profile_visibility||"public";
 
     if(qs("profileEmail")){
 
@@ -1269,49 +1039,63 @@ async function postJob(e){
 
   e.preventDefault();
 
-  const session = await verifyAuthSession();
 
-  if(!session?.token || !session?.user?.id){
-    msg(
-      "jobMessage",
-      "⚠️ Sesyon ou a pa aktif. Tanpri konekte ankò."
-    );
+  const s=getSession();
+
+
+  if(!s){
+
+    location.href="login.html";
+
     return;
+
   }
 
-  // Use the UUID returned by the verified Supabase Auth session.
-  const authUserId = session.user.id;
 
-  console.log("JOB AUTH TEST:", {
-    authUserId,
-    email: session.user.email,
-    tokenExists: !!session.token
-  });
+  const vals={
 
-  const vals = {
-    title: qs("jobTitle")?.value.trim() || "",
-    company_name: qs("jobCompany")?.value.trim() || "",
-    location: qs("jobLocation")?.value.trim() || "",
-    job_type: qs("jobType")?.value || "",
-    salary: qs("jobSalary")?.value.trim() || null,
-    description: qs("jobDescription")?.value.trim() || "",
-    contact_phone: qs("jobContact")?.value.trim() || ""
+    title:
+      qs("jobTitle")?.value.trim() || "",
+
+    company:
+      qs("jobCompany")?.value.trim() || "",
+
+    location:
+      qs("jobLocation")?.value.trim() || "",
+
+    job_type:
+      qs("jobType")?.value || "",
+
+    salary:
+      qs("jobSalary")?.value.trim() || null,
+
+    description:
+      qs("jobDescription")?.value.trim() || "",
+
+    contact:
+      qs("jobContact")?.value.trim() || ""
+
   };
+
 
   if(
     !vals.title ||
-    !vals.company_name ||
+    !vals.company ||
     !vals.location ||
     !vals.job_type ||
     !vals.description ||
-    !vals.contact_phone
+    !vals.contact
   ){
+
     msg(
       "jobMessage",
       "⚠️ Tanpri ranpli tout chan obligatwa yo."
     );
+
     return;
+
   }
+
 
   msg(
     "jobMessage",
@@ -1319,38 +1103,33 @@ async function postJob(e){
     "warning"
   );
 
-  const payload = {
-    title: vals.title,
-    company_name: vals.company_name,
-    location: vals.location,
-    job_type: vals.job_type,
-    salary: vals.salary,
-    description: vals.description,
-    contact_phone: vals.contact_phone,
-    employer_id: authUserId,
-    status: "pending"
-  };
 
   try{
 
-    const rows = await api(
+    await api(
       "/rest/v1/jobs",
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${session.token}`,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify(payload)
+        method:"POST",
+
+        body:JSON.stringify({
+          ...vals,
+
+          employer_id:
+            s.user.id,
+
+          status:"pending"
+        }),
+
+        headers:{
+          Prefer:"return=representation"
+        }
+
       }
     );
 
-    console.log("JOB INSERT SUCCESS:", {
-      authUserId,
-      rows
-    });
 
     qs("jobForm")?.reset();
+
 
     msg(
       "jobMessage",
@@ -1358,40 +1137,26 @@ async function postJob(e){
       "success"
     );
 
+
     await loadMyJobs(
-      authUserId,
-      session.token
+      s.user.id,
+      s.token
     );
+
 
   }catch(err){
 
-    console.error("JOB INSERT ERROR:", {
-      message: err?.message,
-      code: err?.code,
-      details: err?.details,
-      hint: err?.hint,
-      authUserId,
-      payload
-    });
-
-    let detail =
-      err?.message ||
-      "Erè pandan piblikasyon an.";
-
-    if(err?.details){
-      detail += ` — ${err.details}`;
-    }
-
-    if(err?.hint){
-      detail += ` — ${err.hint}`;
-    }
+    console.error(err);
 
     msg(
       "jobMessage",
-      `❌ ${detail}`
+      "❌ "+err.message
     );
+
   }
+
 }
+
 
 /* =========================================================
    PUBLIC JOBS
@@ -1518,8 +1283,13 @@ function renderJobs(){
     "";
 
 
+  const requestedJobId=
+    new URLSearchParams(window.location.search).get("job");
+
   const jobs=
     publicJobs.filter(job=>{
+
+      if(requestedJobId && String(job.id) !== requestedJobId) return false;
 
       const haystack=[
 
@@ -1605,8 +1375,8 @@ function renderJobs(){
 
 
       const company=
-        job.company_name ||
         job.company ||
+        job.company_name ||
         "Konpayi";
 
 
@@ -1630,7 +1400,6 @@ function renderJobs(){
 
 
       const contact=
-        job.contact_phone ||
         job.contact ||
         job.phone ||
         job.whatsapp ||
@@ -1708,6 +1477,18 @@ function renderJobs(){
               `
               : ""
           }
+
+          <div class="post-share-row">
+            <button
+              type="button"
+              class="btn btn-small share-button"
+              data-share-title="${attr(title)} — Eagle-J Connect"
+              data-share-text="${attr([company, location, salary ? "Salè: " + salary : "", job.description || ""].filter(Boolean).join(" • "))}"
+              data-share-url="${attr(eagleJobShareUrl(job))}"
+              onclick="event.stopPropagation(); shareEaglePost(this)"
+              aria-label="Pataje travay ${attr(title)}"
+            >🔗 Share</button>
+          </div>
 
         </article>
       `;
@@ -1815,8 +1596,8 @@ async function loadMyJobs(
           <p>
             <strong>
               ${esc(
-                job.company_name ||
                 job.company ||
+                job.company_name ||
                 ""
               )}
             </strong>
@@ -1886,20 +1667,20 @@ async function submitBusiness(e){
 
 
   const session=
-    await verifyAuthSession();
+    getSession();
 
 
   if(!session){
 
     msg(
       "formMessage",
-      "⚠️ Pou mete yon anons, ou dwe konekte sou yon kont aktif. Tanpri konekte ankò."
+      "⚠️ Tanpri konekte anvan ou pibliye yon anons."
     );
 
 
     setTimeout(
-      ()=>location.href="login.html?next=kreye-anons.html",
-      1200
+      ()=>location.href="login.html",
+      900
     );
 
 
@@ -1907,33 +1688,11 @@ async function submitBusiness(e){
 
   }
 
-  // IMPORTANT:
-  // Admin status is NOT required to publish an ad.
-  // Any authenticated active member may submit an ad.
-  // RLS forces the row to belong to the current user and status=pending.
-  try{
-    const profileRows = await api(
-      `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=id,account_status`
-    );
 
-    const profile = profileRows?.[0];
-
-    if(!profile){
-      throw new Error("Pwofil ou pa jwenn. Tanpri fini kreye pwofil ou anvan ou mete yon anons.");
-    }
-
-    if(profile.account_status && profile.account_status !== "active"){
-      throw new Error("Kont ou pa aktif. Tanpri kontakte administratè a.");
-    }
-  }catch(err){
-    msg("formMessage", "❌ " + err.message);
-    return;
-  }
-
-
-  const coverFile=qs("businessCoverImage")?.files?.[0] || null;
-  const galleryFiles=Array.from(qs("businessImage")?.files || []);
-  const files=[...(coverFile?[coverFile]:[]),...galleryFiles];
+  const file=
+    qs("businessImage")
+      ?.files?.[0] ||
+    null;
 
 
   const listingType=
@@ -1988,7 +1747,6 @@ async function submitBusiness(e){
       "",
 
     image_url:null,
-    image_urls:"[]",
 
     user_id:
       session.user.id,
@@ -2015,15 +1773,21 @@ async function submitBusiness(e){
   }
 
 
-  if(files.length>50){
-    msg("formMessage", "❌ Chwazi yon imaj akèy ak jiska 49 lòt imaj (50 an total).");
-    return;
-  }
+  if(
+    file &&
+    (
+      !file.type.startsWith("image/") ||
+      file.size>5*1024*1024
+    )
+  ){
 
-  const invalidFile=files.find(file=>!file.type.startsWith("image/") || file.size>100*1024*1024);
-  if(invalidFile){
-    msg("formMessage", `❌ Chak foto dwe yon imaj ki pa depase 100MB. Pwoblèm: ${invalidFile.name}`);
+    msg(
+      "formMessage",
+      "❌ Foto a dwe yon imaj ki pi piti pase 5MB."
+    );
+
     return;
+
   }
 
 
@@ -2043,9 +1807,6 @@ async function submitBusiness(e){
           method:"POST",
 
           headers:{
-            Authorization:
-              `Bearer ${session.token}`,
-
             Prefer:
               "return=representation"
           },
@@ -2071,28 +1832,96 @@ async function submitBusiness(e){
     }
 
 
-    if(files.length){
-      const imageURLs=[];
-      for(let i=0;i<files.length;i++){
-        const file=files[i];
-        const ext=(file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-        const fileName=`${b.id}/${Date.now()}-${i}.${ext}`;
-        const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,{
-          method:"POST",
-          headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,"Content-Type":file.type,"x-upsert":"true"},
-          body:file
-        });
-        if(!up.ok){
-          let uploadError="Youn nan foto yo pa t kapab monte.";
-          try{const uploadBody=await up.json();uploadError=uploadBody?.message||uploadBody?.error||uploadError;}catch(_){}
-          throw new Error(`${uploadError} (${file.name})`);
-        }
-        imageURLs.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
+    /* -----------------------------------------------------
+       UPLOAD ONE IMAGE
+    ----------------------------------------------------- */
+
+    if(file){
+
+      const ext=
+        (
+          file.name
+            .split(".")
+            .pop() ||
+          "jpg"
+        ).toLowerCase();
+
+
+      const fileName=
+        `${b.id}-${Date.now()}.${ext}`;
+
+
+      const up=
+        await fetch(
+          `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
+          {
+            method:"POST",
+
+            headers:{
+
+              apikey:
+                SUPABASE_KEY,
+
+              Authorization:
+                `Bearer ${session.token}`,
+
+              "Content-Type":
+                file.type,
+
+              "x-upsert":
+                "true"
+
+            },
+
+            body:file
+
+          }
+        );
+
+
+      if(!up.ok){
+
+        let uploadError=
+          "Foto a pa t kapab monte.";
+
+
+        try{
+
+          const uploadBody=
+            await up.json();
+
+
+          uploadError=
+            uploadBody?.message ||
+            uploadBody?.error ||
+            uploadError;
+
+        }catch(_){}
+
+
+        throw new Error(
+          uploadError
+        );
+
       }
-      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,{
-        method:"PATCH",headers:{Authorization:`Bearer ${session.token}`},
-        body:JSON.stringify({image_url:imageURLs[0] || null,image_urls:JSON.stringify(imageURLs)})
-      });
+
+
+      const imageURL=
+        `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
+
+
+      await api(
+        `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
+        {
+          method:"PATCH",
+
+          body:
+            JSON.stringify({
+              image_url:imageURL
+            })
+        }
+      );
+
     }
 
 
@@ -2120,80 +1949,6 @@ async function submitBusiness(e){
 
 }
 
-
-/* =========================================================
-   USER'S OWN BUSINESS ADS: EDIT / DELETE
-========================================================= */
-function parseListingImages(b){
-  let list=[];
-  try{ if(Array.isArray(b.image_urls)) list=b.image_urls; else if(b.image_urls) list=JSON.parse(b.image_urls); }catch(_){list=[];}
-  if(!Array.isArray(list)) list=[];
-  if(b.image_url && !list.includes(b.image_url)) list.unshift(b.image_url);
-  return [...new Set(list.filter(x=>typeof x==="string" && x))].slice(0,50);
-}
-
-async function loadMyBusinessListings(){
-  const box=qs("myBusinessListings"); if(!box)return;
-  const session=await verifyAuthSession();
-  if(!session){box.innerHTML="<p>Tanpri konekte pou wè anons ou yo.</p>";return;}
-  box.innerHTML="<p>⏳ Anons ou yo ap chaje...</p>";
-  try{
-    const rows=await api(`/rest/v1/businesses?user_id=eq.${encodeURIComponent(session.user.id)}&select=*&order=created_at.desc`);
-    if(!rows?.length){box.innerHTML="<p>Ou poko kreye okenn anons. <a href='kreye-anons.html'>Kreye premye anons ou</a>.</p>";return;}
-    box.innerHTML=rows.map(b=>{
-      const images=parseListingImages(b);
-      return `<article class="card" style="margin:14px 0;padding:16px;border:1px solid #dbe3ef">
-        <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">${b.image_url?`<img src="${attr(b.image_url)}" alt="" style="width:110px;height:90px;object-fit:cover;border-radius:8px">`:''}<div style="flex:1;min-width:180px"><h3>${esc(b.business_name||'Anons')}</h3><p>${esc(b.location||'')}</p><p><strong>Estati:</strong> ${esc(b.status||'pending')} · ${images.length} imaj</p><p>${esc((b.description||'').slice(0,180))}</p></div></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button type="button" onclick="editMyBusiness('${attr(b.id)}')">✏️ Modifye</button><button type="button" style="background:#c62828;color:white" onclick="deleteMyBusiness('${attr(b.id)}')">🗑️ Efase</button></div>
-        <div id="editListing-${attr(b.id)}" style="display:none;margin-top:14px"></div></article>`;
-    }).join('');
-  }catch(err){console.error(err);box.innerHTML=`<p>❌ Nou pa kapab chaje anons ou yo: ${esc(err.message)}</p>`;}
-}
-
-window.editMyBusiness=async function(id){
-  const session=await verifyAuthSession();if(!session)return;
-  const rows=await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
-  const b=rows?.[0];if(!b){alert("Nou pa jwenn anons sa a nan kont ou.");return;}
-  const box=qs(`editListing-${id}`);if(!box)return;
-  const catParts=String(b.category||'business:other').split(':');
-  const images=parseListingImages(b);
-  box.style.display='block';
-  box.innerHTML=`<form onsubmit="saveMyBusiness(event,'${attr(id)}')" style="display:grid;gap:9px">
-    <label>Non anons la<input name="business_name" required value="${attr(b.business_name||'')}"></label>
-    <label>Kategori<input name="category" required value="${attr(catParts.slice(1).join(':')||catParts[0])}"></label>
-    <label>Lokalizasyon<input name="location" required value="${attr(b.location||'')}"></label>
-    <label>Telefòn<input name="phone" value="${attr(b.phone||'')}"></label>
-    <label>WhatsApp<input name="whatsapp" value="${attr(b.whatsapp||'')}"></label>
-    <label>Pri / Tarif<input name="price" value="${attr(b.price||'')}"></label>
-    <label>Deskripsyon<textarea name="description" required rows="4">${esc(b.description||'')}</textarea></label>
-    <p>Foto aktyèl: ${images.length}. Chwazi nouvo foto si ou vle ranplase yo (jiska 50, 100MB chak).</p>
-    <input name="images" type="file" accept="image/*" multiple>
-    <button type="submit">💾 Sove chanjman yo (Admin ap revize anons la)</button>
-    <button type="button" onclick="document.getElementById('editListing-${attr(id)}').style.display='none'">Anile</button>
-  </form>`;
-};
-
-window.saveMyBusiness=async function(e,id){
-  e.preventDefault();const form=e.currentTarget;const session=await verifyAuthSession();if(!session)return;
-  const rows=await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
-  const old=rows?.[0];if(!old){alert("Ou pa gen dwa modifye anons sa a.");return;}
-  const files=Array.from(form.elements.images.files||[]);
-  if(files.length>50){alert("Ou ka mete jiska 50 imaj.");return;}
-  const bad=files.find(f=>!f.type.startsWith('image/')||f.size>100*1024*1024);if(bad){alert(`Chak imaj pa dwe depase 100MB: ${bad.name}`);return;}
-  const vals={business_name:form.elements.business_name.value.trim(),category:`${String(old.category||'business').split(':')[0]}:${form.elements.category.value.trim()}`,location:form.elements.location.value.trim(),phone:form.elements.phone.value.trim()||null,whatsapp:form.elements.whatsapp.value.trim()||null,price:form.elements.price.value.trim()||null,description:form.elements.description.value.trim(),status:'pending'};
-  try{
-    if(files.length){const urls=[];for(let i=0;i<files.length;i++){const f=files[i];const ext=(f.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';const path=`${id}/${Date.now()}-${i}.${ext}`;const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${path}`,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,'Content-Type':f.type,'x-upsert':'true'},body:f});if(!up.ok)throw new Error(`Foto ${f.name} pa t kapab monte.`);urls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${path}`);}vals.image_url=urls[0]||null;vals.image_urls=JSON.stringify(urls);}
-    await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:'PATCH',headers:{Authorization:`Bearer ${session.token}`},body:JSON.stringify(vals)});
-    alert('Anons la modifye. Li retounen nan atant pou Admin valide li.');await loadMyBusinessListings();
-  }catch(err){console.error(err);alert('Erè: '+err.message);}
-};
-
-window.deleteMyBusiness=async function(id){
-  if(!confirm('Èske ou sèten ou vle efase anons sa a? Aksyon sa a pa ka defèt.'))return;
-  const session=await verifyAuthSession();if(!session)return;
-  try{await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:'DELETE',headers:{Authorization:`Bearer ${session.token}`}});await loadMyBusinessListings();alert('Anons la efase.');}
-  catch(err){console.error(err);alert('Nou pa kapab efase anons la: '+err.message);}
-};
 
 /* =========================================================
    BUSINESS LISTINGS
@@ -2393,7 +2148,26 @@ function renderBusinesses(){
 
   if(location){
 
-    const terms=[location];
+    const aliases={
+
+      ayiti:[
+        "ayiti",
+        "haiti",
+        "haïti"
+      ],
+
+      bahamas:[
+        "bahamas",
+        "nassau",
+        "new providence"
+      ]
+
+    };
+
+
+    const terms=
+      aliases[location] ||
+      [location];
 
 
     rows=
@@ -2429,42 +2203,8 @@ function renderBusinesses(){
 
   if(!rows.length){
 
-    const currentLang =
-      (
-        window.EagleJLanguage &&
-        window.EagleJLanguage.getLanguage
-      )
-        ? window.EagleJLanguage.getLanguage()
-        : "en";
-
-
-    const emptyCopy = {
-
-      ht:[
-        "Pa gen rezilta",
-        "Eseye chanje rechèch ou oswa filtre a."
-      ],
-
-      en:[
-        "No results",
-        "Try changing your search or filter."
-      ],
-
-      fr:[
-        "Aucun résultat",
-        "Essayez de modifier votre recherche ou votre filtre."
-      ]
-
-    };
-
-
-    const ec=
-      emptyCopy[currentLang] ||
-      emptyCopy.en;
-
-
     box.innerHTML=
-      `<div class='empty-state'><span>🔎</span><h3>${ec[0]}</h3><p>${ec[1]}</p></div>`;
+      "<div class='empty-state'><span>🔎</span><h3>Pa gen rezilta</h3><p>Eseye chanje rechèch ou oswa filtre a.</p></div>";
 
     return;
 
@@ -2526,7 +2266,6 @@ function renderBusinesses(){
                   alt="${attr(
                     b.business_name
                   )}"
-                  data-lightbox-image="true" class="ej-clickable-image" style="cursor:zoom-in"
                   loading="lazy"
 
                   onerror="
@@ -2661,6 +2400,16 @@ function renderBusinesses(){
                   : ""
               }
 
+              <button
+                type="button"
+                class="btn btn-small share-button"
+                data-share-title="${attr(b.business_name || "Anons")} — Eagle-J Connect"
+                data-share-text="${attr([b.location || "", b.price ? "Pri: " + b.price : "", b.description || ""].filter(Boolean).join(" • "))}"
+                data-share-url="${attr(new URL("anons.html?id=" + encodeURIComponent(b.id), window.location.href).href)}"
+                onclick="event.stopPropagation(); shareEaglePost(this)"
+                aria-label="Pataje anons ${attr(b.business_name || "") }"
+              >🔗 Share</button>
+
             </div>
 
 
@@ -2777,7 +2526,7 @@ async function loadBusinessDetail(){
           ? `
 
             <img
-              class="business-detail-image ej-clickable-image" data-lightbox-image="true"
+              class="business-detail-image"
               src="${attr(
                 b.image_url
               )}"
@@ -2797,8 +2546,6 @@ async function loadBusinessDetail(){
           `
       }
 
-
-      ${parseListingImages(b).length>1 ? `<div class="business-image-gallery" style="display:flex;gap:10px;overflow-x:auto;margin:12px 0">${parseListingImages(b).map((url,i)=>`<img class="ej-clickable-image" data-lightbox-image="true" src="${attr(url)}" alt="${attr(b.business_name)} - foto ${i+1}" loading="lazy" style="width:150px;height:120px;object-fit:cover;border-radius:8px;flex:0 0 auto;cursor:zoom-in">`).join('')}</div>` : ''}
 
       <h1>
         ${esc(
@@ -2908,6 +2655,15 @@ async function loadBusinessDetail(){
             : ""
         }
 
+        <button
+          type="button"
+          class="btn share-button"
+          data-share-title="${attr(b.business_name || "Anons")} — Eagle-J Connect"
+          data-share-text="${attr([b.location || "", b.price ? "Pri: " + b.price : "", b.description || ""].filter(Boolean).join(" • "))}"
+          data-share-url="${attr(window.location.href)}"
+          onclick="shareEaglePost(this)"
+        >🔗 Share</button>
+
       </div>
 
     `;
@@ -2946,7 +2702,7 @@ async function loadStats(){
 
     [
       "stat-users",
-      "public_member_profiles"
+      "profiles"
     ]
 
   ];
@@ -3137,7 +2893,7 @@ async function loadUsersDirectory(){
 
     const rows=
       await api(
-        "/rest/v1/public_member_profiles?select=id,full_name,account_type,profile_image_url,created_at&order=full_name.asc&limit=100"
+        "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
       );
 
 
@@ -3204,9 +2960,17 @@ async function loadUsersDirectory(){
           <article class="user-card">
 
             <div class="user-avatar">
-              ${u.profile_image_url
-                ? `<img src="${attr(u.profile_image_url)}" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
-                : esc((u.full_name || "EJ").trim().slice(0,1).toUpperCase())}
+
+              ${esc(
+                (
+                  u.full_name ||
+                  "EJ"
+                )
+                .trim()
+                .slice(0,1)
+                .toUpperCase()
+              )}
+
             </div>
 
 
@@ -3275,13 +3039,8 @@ function formatAccountType(type){
   };
 
 
-  const label =
-    map[type] ||
+  return map[type] ||
     "Manm Eagle-J Connect";
-
-  return window.EJC?.t
-    ? window.EJC.t(label)
-    : label;
 
 }
 
@@ -3300,10 +3059,6 @@ document.addEventListener(
     ===================================================== */
 
     setupMobileMenu();
-
-    qs("saveProfilePhoto")?.addEventListener("click", saveProfilePhoto);
-    initProfileCropControls();
-    qs("saveProfileDetails")?.addEventListener("click", saveProfileDetails);
 
 
     /* =====================================================
@@ -3563,51 +3318,3 @@ document.addEventListener(
 
   }
 ); 
-
-
-/* =========================================================
-   LISTING IMAGE VIEWER / LIGHTBOX
-   Click any listing photo to open a large image viewer.
-========================================================= */
-function ensureListingLightbox(){
-  if(document.getElementById('ejImageLightbox')) return;
-  const style=document.createElement('style');
-  style.id='ejImageLightboxStyles';
-  style.textContent=`
-    #ejImageLightbox{position:fixed;inset:0;z-index:99999;background:rgba(5,12,24,.92);display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box}
-    #ejImageLightbox.open{display:flex}
-    #ejImageLightbox img{max-width:min(96vw,1200px);max-height:86vh;object-fit:contain;border-radius:10px;box-shadow:0 12px 50px #0008}
-    #ejImageLightbox .ej-lightbox-close{position:absolute;top:14px;right:18px;border:0;border-radius:50%;width:44px;height:44px;font-size:28px;line-height:1;background:#fff;color:#111;cursor:pointer}
-    #ejImageLightbox .ej-lightbox-caption{position:absolute;bottom:12px;left:12px;right:12px;text-align:center;color:#fff;font-size:14px}
-    .ej-clickable-image{cursor:zoom-in}
-  `;
-  document.head.appendChild(style);
-  const modal=document.createElement('div');
-  modal.id='ejImageLightbox';
-  modal.setAttribute('role','dialog');
-  modal.setAttribute('aria-modal','true');
-  modal.setAttribute('aria-label','Gade foto anons la');
-  modal.innerHTML='<button type="button" class="ej-lightbox-close" aria-label="Fèmen">×</button><img alt="Foto anons an gwo"><div class="ej-lightbox-caption">Klike deyò foto a oswa × pou fèmen</div>';
-  document.body.appendChild(modal);
-  const close=()=>{modal.classList.remove('open');modal.style.display='none';document.body.style.overflow='';};
-  modal.querySelector('button').addEventListener('click',close);
-  modal.addEventListener('click',e=>{if(e.target===modal)close();});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
-}
-function openListingImageViewer(img){
-  ensureListingLightbox();
-  const modal=document.getElementById('ejImageLightbox');
-  const large=modal.querySelector('img');
-  large.src=img.currentSrc||img.src;
-  large.alt=img.alt||'Foto anons';
-  modal.style.display='flex';
-  modal.classList.add('open');
-  document.body.style.overflow='hidden';
-}
-document.addEventListener('click',function(e){
-  const img=e.target.closest('img[data-lightbox-image="true"], .business-image-gallery img, .business-detail-image');
-  if(!img) return;
-  e.preventDefault();
-  e.stopPropagation();
-  openListingImageViewer(img);
-},true);

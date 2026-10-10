@@ -73,8 +73,7 @@
   }
 
   function statusLabel(status){
-
-    const label=({
+    return({
       pending:"⏳ Pending",
       approved:"✅ Piblik",
       rejected:"❌ Refize",
@@ -82,8 +81,6 @@
       active:"✅ Aktif",
       disabled:"🚫 Dezaktive"
     })[status]||status||"—";
-
-    return window.EJC?.t ? window.EJC.t(label) : label;
   }
 
   async function checkAdmin(){
@@ -321,22 +318,22 @@
     if(!s||s.user.id===id)return;
 
     if(!confirm(
-      "Efase kont itilizatè sa a nèt? "+
-      "Aksyon sa a pa ka defèt; pwofil, travay, anons ak aplikasyon ki asosye yo ap efase."
+      "Retire pwofil itilizatè sa a? "+
+      "Li pap kapab konekte atravè sit la apre sa. "+
+      "Sa pa efase Auth user la nan Supabase."
     ))return;
 
     try{
 
       await api(
-        "/rest/v1/rpc/admin_delete_user",
+        `/rest/v1/profiles?id=eq.${encodeURIComponent(id)}`,
         {
-          method:"POST",
-          body:JSON.stringify({target_user_id:id})
+          method:"DELETE"
         }
       );
 
       message(
-        "🗑️ Kont itilizatè a efase nèt.",
+        "🗑️ Pwofil itilizatè a retire.",
         "success"
       );
 
