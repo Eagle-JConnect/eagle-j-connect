@@ -4,6 +4,18 @@ const SUPABASE_URL="https://glwyqrvufmjscjbbszzz.supabase.co";
 const SUPABASE_KEY="sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr";
 const IMAGE_BUCKET="business-images";
 
+/* Visible diagnostics: prevent silent blank-looking listing pages when a runtime error occurs. */
+window.addEventListener("error", function(event){
+  console.error("Eagle-J Connect runtime error:", event.message, event.filename, event.lineno);
+  const pageHasListing = document.getElementById("businessListings") || document.getElementById("businessDetail");
+  if (!pageHasListing) return;
+  const target = document.getElementById("businessListings") || document.getElementById("businessDetail");
+  if (target && !target.dataset.runtimeErrorShown) {
+    target.dataset.runtimeErrorShown = "1";
+    target.innerHTML = "<div class=\"empty-state\"><span>⚠️</span><h3>Paj la pa t kapab fini chaje</h3><p>Eseye rafrechi paj la. Si pwoblèm nan kontinye, voye mesaj erè JavaScript la bay administratè a.</p></div>";
+  }
+});
+
 
 /* =========================================================
    BASIC FUNCTIONS

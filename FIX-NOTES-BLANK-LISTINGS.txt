@@ -1,0 +1,16 @@
+EAGLE-J CONNECT — LISTING PAGE DIAGNOSTIC PATCH
+
+Based on the saved GLOBAL-LISTINGS-FIX-CORRECTED project ZIP.
+
+Changes:
+- Bumped CSS/JS query versions across HTML pages so browsers request the current assets.
+- Added a visible error state for runtime JavaScript errors on Biznis/Anons listing/detail areas, instead of leaving those content areas silently stuck.
+- Preserved the existing page markup, Supabase configuration, business/job/profile logic, language system, admin logic, and SQL files.
+- No database schema, policies, or user data were changed.
+
+Validation performed:
+- node --check passed for all JavaScript files.
+- Static local HTML href/src reference check passed (no missing local files).
+
+Limit:
+- This is not a live GitHub Pages/Supabase browser test. Upload these files to the existing repository, then test the live pages. If the entire document remains white, the deployed page/route or browser-level error must be checked against the live deployment.
