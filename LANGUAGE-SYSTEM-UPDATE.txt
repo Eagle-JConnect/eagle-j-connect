@@ -7,3 +7,6 @@ User-submitted listing names/descriptions and arbitrary database content are not
 
 Deploy the contents of this folder to the existing GitHub Pages repository, preserving the folder's files and existing Supabase configuration.
 Test the language selector on home, jobs, businesses, listings, listing details, create listing, login, registration, profile, dashboard, contact, and admin pages.
+
+
+FULL LANGUAGE FIX: expanded translations for homepage sections, CTA labels, service cards, footer links, and common mixed-language phrases. Updated language.js cache version on HTML pages.
