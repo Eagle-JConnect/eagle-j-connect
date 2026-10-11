@@ -709,17 +709,9 @@ async function loginUser(e){
 
     }catch(err){
 
-      console.error(
-        "Profile request failed:",
+      console.warn(
+        "Profile request:",
         err
-      );
-
-      // Do not erase a valid Supabase session just because the profile
-      // request failed. Surface the real API/RLS error for diagnosis.
-      throw new Error(
-        "Nou pa kapab li pwofil ou nan Supabase: " +
-        (err?.message || "Erè demann enkoni") +
-        ". Sesyon an rete sove; tanpri verifye aksè API/RLS la."
       );
 
     }
@@ -731,10 +723,10 @@ async function loginUser(e){
 
     if(!profile){
 
-      // Keep the session so a temporary API/policy issue does not lock
-      // the user out. The message now distinguishes missing profile data.
+      clearSession();
+
       throw new Error(
-        "Supabase pa retounen pwofil pou kont sa a. Pwofil la ka egziste men demann lan pa jwenn li; verifye ID ak RLS. Sesyon an rete sove."
+        "Kont ou pa gen pwofil aktif sou Eagle-J Connect."
       );
 
     }
@@ -1305,7 +1297,7 @@ async function loadJobs(){
   try{
 
     const rows=
-      await api(
+      await publicApi(
         "/rest/v1/jobs?status=eq.approved&select=*&order=created_at.desc"
       );
 
@@ -2133,7 +2125,7 @@ async function loadBusinesses(){
   try{
 
     const rows=
-      await api(
+      await publicApi(
         "/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc"
       );
 
