@@ -2141,11 +2141,16 @@ async function loadBusinesses(){
 
   }catch(err){
 
-    console.error(err);
-
-
-    box.innerHTML=
-      "<div class='empty-state'><span>⚠️</span><p>Nou pa kapab chaje anons yo.</p></div>";
+    console.error("Public businesses:", err);
+    const message = err && err.message ? err.message : "Erè enkoni";
+    box.innerHTML = `
+      <div class="notice" role="alert">
+        <span>⚠️</span>
+        <h3>Nou pa kapab chaje anons yo kounye a.</h3>
+        <p>Detay erè a pou ede nou jwenn kòz la:</p>
+        <small>${esc(message)}</small>
+        <p>Si mesaj sa a parèt ankò, voye tèks erè a bay sipò.</p>
+      </div>`;
 
   }
 
