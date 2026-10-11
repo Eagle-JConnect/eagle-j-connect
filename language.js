@@ -12,6 +12,54 @@ es:{'nav-home':'Inicio','nav-jobs':'Empleos','nav-business':'Negocios','nav-ads'
 const phrases={
 'Akèy':'Home|Accueil|Inicio','Travay':'Jobs|Emplois|Empleos','Biznis':'Business|Entreprise|Negocios','Anons':'Listings|Annonces|Anuncios','Kontak':'Contact|Contact|Contacto','Enskri':'Register|S’inscrire|Registrarse','Konekte':'Login|Connexion|Iniciar sesión','Kont Mwen':'My Account|Mon compte|Mi cuenta','Dekonekte':'Logout|Déconnexion|Cerrar sesión','Retounen nan Biznis':'Back to Business|Retour aux entreprises|Volver a negocios','Kreye yon Anons Biznis':'Create a Business Listing|Créer une annonce professionnelle|Crear un anuncio de negocio','Fè moun jwenn biznis, pwofesyon, sèvis oswa byen ou ap ofri.':'Help people find your business, profession, services, or items. |Aidez les gens à trouver votre entreprise, votre profession, vos services ou vos biens.|Ayuda a las personas a encontrar tu negocio, profesión, servicios o productos.','Non biznis la':'Business name|Nom de l’entreprise|Nombre del negocio','Ki kalite anons?':'Listing type|Type d’annonce|Tipo de anuncio','Kategori':'Category|Catégorie|Categoría','Lokalizasyon':'Location|Emplacement|Ubicación','Telefòn':'Phone|Téléphone|Teléfono','WhatsApp':'WhatsApp|WhatsApp|WhatsApp','Pri / Tarif':'Price / Rate|Prix / Tarif|Precio / Tarifa','Deskripsyon':'Description|Description|Descripción','Pibliye Anons':'Publish Listing|Publier l’annonce|Publicar anuncio','Chwazi kalite anons':'Choose listing type|Choisir le type d’annonce|Elegir tipo de anuncio','Chwazi yon kategori':'Choose a category|Choisir une catégorie|Elegir una categoría','Egzanp: Nassau, Bahamas':'Example: Nassau, Bahamas|Exemple : Nassau, Bahamas|Ejemplo: Nassau, Bahamas','Ki sa biznis ou ofri?':'What does your business offer?|Que propose votre entreprise ?|¿Qué ofrece tu negocio?','Foto (1 foto, max 5MB)':'Photo (1 photo, max 5MB)|Photo (1 photo, max 5 Mo)|Foto (1 foto, máx. 5 MB)','Anons lan ap chaje...':'Loading listing...|Chargement de l’annonce...|Cargando anuncio...','Pa gen anons':'No listings found|Aucune annonce trouvée|No se encontraron anuncios','Chèche':'Search|Rechercher|Buscar','Tout kategori':'All categories|Toutes les catégories|Todas las categorías','Tout':'All|Tout|Todo','Sove':'Save|Enregistrer|Guardar','Anile':'Cancel|Annuler|Cancelar','Editer':'Edit|Modifier|Editar','Efase':'Delete|Supprimer|Eliminar','Modifye':'Edit|Modifier|Modificar','Sove chanjman':'Save changes|Enregistrer les modifications|Guardar cambios','Chaje foto':'Upload photo|Télécharger une photo|Subir foto','Kreye Kont':'Create Account|Créer un compte|Crear cuenta','Chèche Travay':'Find Jobs|Chercher un emploi|Buscar empleo','Konekte ak moun, dekouvri opòtinite, devlope rezo ou, epi kreye nouvo posiblite.':'Connect with people, discover opportunities, grow your network, and create new possibilities.|Connectez-vous avec les gens, découvrez des opportunités, développez votre réseau et créez de nouvelles possibilités.|Conéctate con personas, descubre oportunidades, amplía tu red y crea nuevas posibilidades.'
 };
+
+const categoryLabels={
+  restaurant:{ht:'🍽 Restoran',en:'🍽 Restaurant',fr:'🍽 Restaurant',es:'🍽 Restaurante'},
+  commerce:{ht:'🛒 Komès',en:'🛒 Commerce',fr:'🛒 Commerce',es:'🛒 Comercio'},
+  service:{ht:'🔧 Sèvis jeneral',en:'🔧 General services',fr:'🔧 Services généraux',es:'🔧 Servicios generales'},
+  construction:{ht:'🏗️ Konstriksyon',en:'🏗️ Construction',fr:'🏗️ Construction',es:'🏗️ Construcción'},
+  transport:{ht:'🚗 Transpò',en:'🚗 Transport',fr:'🚗 Transport',es:'🚗 Transporte'},
+  cleaning:{ht:'🧹 Netwayaj',en:'🧹 Cleaning',fr:'🧹 Nettoyage',es:'🧹 Limpieza'},
+  repair:{ht:'🔧 Reparasyon',en:'🔧 Repairs',fr:'🔧 Réparation',es:'🔧 Reparaciones'},
+  plumbing:{ht:'🚰 Plonbri',en:'🚰 Plumbing',fr:'🚰 Plomberie',es:'🚰 Fontanería'},
+  electrical:{ht:'⚡ Elektrisite',en:'⚡ Electrical',fr:'⚡ Électricité',es:'⚡ Electricidad'},
+  beauty:{ht:'💄 Beauty / Bote',en:'💄 Beauty',fr:'💄 Beauté',es:'💄 Belleza'},
+  food:{ht:'🍔 Manje',en:'🍔 Food',fr:'🍔 Alimentation',es:'🍔 Comida'},
+  digital:{ht:'💻 Digital Services',en:'💻 Digital Services',fr:'💻 Services numériques',es:'💻 Servicios digitales'},
+  it:{ht:'💻 IT / Teknoloji',en:'💻 IT / Technology',fr:'💻 Informatique / Technologie',es:'💻 TI / Tecnología'},
+  clothing:{ht:'👗 Kouti / Rad',en:'👗 Sewing / Clothing',fr:'👗 Couture / Vêtements',es:'👗 Costura / Ropa'},
+  'beauty-service':{ht:'💇🏾 Bote / Barber',en:'💇🏾 Beauty / Barber',fr:'💇🏾 Beauté / Barbier',es:'💇🏾 Belleza / Barbería'},
+  'real-estate':{ht:'🏠 Imobilye',en:'🏠 Real estate',fr:'🏠 Immobilier',es:'🏠 Bienes raíces'},
+  vehicle:{ht:'🚗 Machin / Veyikil',en:'🚗 Cars / Vehicles',fr:'🚗 Voitures / Véhicules',es:'🚗 Autos / Vehículos'},
+  other:{ht:'📦 Lòt',en:'📦 Other',fr:'📦 Autre',es:'📦 Otro'}
+};
+const marketTabLabels={
+  all:{ht:'🌎 Tout',en:'🌎 All',fr:'🌎 Tout',es:'🌎 Todo'},
+  employee:{ht:'👷 Anplwaye',en:'👷 Employees',fr:'👷 Employés',es:'👷 Empleados'},
+  employer:{ht:'🏢 Anplwayè',en:'🏢 Employers',fr:'🏢 Employeurs',es:'🏢 Empleadores'},
+  professional:{ht:'🧑🏾‍🔧 Pwofesyonèl',en:'🧑🏾‍🔧 Professionals',fr:'🧑🏾‍🔧 Professionnels',es:'🧑🏾‍🔧 Profesionales'},
+  service:{ht:'🛠️ Sèvis',en:'🛠️ Services',fr:'🛠️ Services',es:'🛠️ Servicios'},
+  business:{ht:'🛍️ Biznis',en:'🛍️ Business',fr:'🛍️ Entreprises',es:'🛍️ Negocios'},
+  property:{ht:'🏠 Byen',en:'🏠 Property',fr:'🏠 Biens',es:'🏠 Propiedades'}
+};
+function translateCategories(lang){
+  document.querySelectorAll('select#category option').forEach(opt=>{
+    const row=categoryLabels[opt.value]; if(row) opt.textContent=row[lang]||row.ht;
+    else if(opt.value==='' && /Chwazi yon kategori|Choose a category|Choisir une catégorie|Elegir tipo de categoría/i.test(opt.textContent)){
+      opt.textContent=({ht:'Chwazi yon kategori',en:'Choose a category',fr:'Choisir une catégorie',es:'Elegir una categoría'})[lang];
+    }
+  });
+  document.querySelectorAll('.market-tab[data-filter]').forEach(btn=>{
+    const row=marketTabLabels[btn.dataset.filter]; if(row) btn.textContent=row[lang]||row.ht;
+  });
+  document.querySelectorAll('#marketLocation option').forEach(opt=>{
+    if(opt.value==='') opt.textContent=({ht:'📍 Tout lokalizasyon',en:'📍 All locations',fr:'📍 Tous les lieux',es:'📍 Todas las ubicaciones'})[lang];
+    if(opt.value==='bahamas') opt.textContent=({ht:'🇧🇸 Bahamas',en:'🇧🇸 Bahamas',fr:'🇧🇸 Bahamas',es:'🇧🇸 Bahamas'})[lang];
+    if(opt.value==='ayiti') opt.textContent=({ht:'🇭🇹 Ayiti',en:'🇭🇹 Haiti',fr:'🇭🇹 Haïti',es:'🇭🇹 Haití'})[lang];
+  });
+  document.querySelectorAll('select#category').forEach(el=>{el.dispatchEvent(new Event('change',{bubbles:true}));});
+}
+
 const phraseMaps={en:{},fr:{},es:{}};
 Object.keys(phrases).forEach(k=>{const a=phrases[k].split('|');phraseMaps.en[k]=a[0].trim();phraseMaps.fr[k]=(a[1]||a[0]).trim();phraseMaps.es[k]=(a[2]||a[0]).trim();});
 function norm(s){return (s||'').replace(/\s+/g,' ').trim();}
@@ -21,9 +69,10 @@ function applyLanguage(lang){if(!translations[lang])lang='ht';const dict=transla
  // Translate exact static text nodes while preserving nested markup and user-entered data.
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);let node;while((node=walker.nextNode())){const parent=node.parentElement;if(!parent||parent.closest('script,style,textarea,input,option[data-user-content],code,pre,[contenteditable="true"]')||parent.hasAttribute('data-no-translate')||parent.closest('[data-i18n]'))continue;const original=node.nodeValue;const t=norm(original);if(!t)continue;if(lang==='ht'){if(node.__ejOriginal)node.nodeValue=node.__ejOriginal;continue;}let translated=phraseMaps[lang][t];if(!translated){for(const key of Object.keys(translations.ht)){if(translations.ht[key]===t&&translations[lang][key]){translated=translations[lang][key];break;}}}if(translated){if(!node.__ejOriginal)node.__ejOriginal=original;node.nodeValue=original.replace(t,translated);}}
  document.querySelectorAll('input[placeholder],textarea[placeholder]').forEach(el=>{if(!el.dataset.ejPlaceholderOriginal)el.dataset.ejPlaceholderOriginal=el.placeholder;const orig=el.dataset.ejPlaceholderOriginal;if(lang==='ht')el.placeholder=orig;else if(phraseMaps[lang][norm(orig)])el.placeholder=phraseMaps[lang][norm(orig)];});
+ translateCategories(lang);
  const sel=document.getElementById('languageSelect');if(sel)sel.value=lang;try{localStorage.setItem('selectedLanguage',lang)}catch(e){}
 }
 function changeLanguage(lang){const s=document.getElementById('languageSelect');applyLanguage(lang||(s?s.value:'ht'));}
 window.applyLanguage=applyLanguage;window.changeLanguage=changeLanguage;
-document.addEventListener('DOMContentLoaded',()=>{let saved='ht';try{saved=localStorage.getItem('selectedLanguage')||'ht'}catch(e){};const sels=document.querySelectorAll('#languageSelect');sels.forEach(s=>s.addEventListener('change',()=>applyLanguage(s.value)));applyLanguage(saved);});
+document.addEventListener('DOMContentLoaded',()=>{let saved='ht';try{saved=localStorage.getItem('selectedLanguage')||'ht'}catch(e){};const sels=document.querySelectorAll('#languageSelect');sels.forEach(s=>s.addEventListener('change',()=>applyLanguage(s.value)));applyLanguage(saved);let queued=false;const mo=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;let lang='ht';try{lang=localStorage.getItem('selectedLanguage')||'ht'}catch(e){};translateCategories(lang);});});mo.observe(document.body,{childList:true,subtree:true});});
 })();
