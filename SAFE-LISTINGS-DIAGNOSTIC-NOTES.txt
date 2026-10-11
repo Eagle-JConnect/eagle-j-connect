@@ -1,0 +1,9 @@
+EAGLE-J CONNECT - SAFE LISTING DIAGNOSTIC PATCH
+
+- Added listing-watchdog.js to Biznis, Anons list, Anons detail, and Create Anons pages.
+- If a listing stays in a loading state for 15 seconds, the page displays a useful diagnostic message instead of loading forever.
+- Added visible handling for JavaScript errors and unhandled promise rejections on listing/detail areas.
+- Bumped script.js cache version on the affected pages.
+- No Supabase SQL, RLS policies, database records, credentials, or account settings were changed.
+
+Validation: archive integrity, JavaScript syntax, and local HTML references checked. This is not a live GitHub Pages/Supabase test.
