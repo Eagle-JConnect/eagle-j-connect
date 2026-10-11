@@ -1,0 +1,11 @@
+EAGLE-J CONNECT — ADMIN ACCOUNT SAFETY
+
+SUPABASE-BASE-FINAL.sql preserves existing rows in public.admin_users. It does not hard-code anyone's Auth UUID.
+
+If your existing admin_users row is still present, do not add another row. If it is missing, open Supabase > Authentication > Users, find your own account, copy its User UID, then run this query with your own UID replacing the placeholder:
+
+INSERT INTO public.admin_users(user_id)
+VALUES ('YOUR_AUTH_USER_UUID_HERE')
+ON CONFLICT (user_id) DO NOTHING;
+
+Do not use another person's UID. SQL Editor has no signed-in user context, so auth.uid() returning NULL in SQL Editor is expected and does not by itself mean the website login is broken.

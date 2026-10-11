@@ -1,0 +1,9 @@
+IMPORTANT — EAGLE-J CONNECT SUPABASE SETUP
+
+1. The intended consolidated SQL file is SUPABASE-BASE-FINAL.sql.
+2. Back up/export the existing database and review this SQL before running it.
+3. Do NOT run all .sql files in this ZIP one after another. Older partial files can replace/conflict with the canonical RLS policies.
+4. Never put a Supabase service_role key in frontend JavaScript or GitHub Pages.
+5. After the migration, verify that the signed-in admin user ID exists in public.admin_users and that public approved listing reads return rows.
+6. SQL Editor runs without a user JWT, so auth.uid() = NULL and is_admin() = false there; this alone does not prove the signed-in admin is not an admin.
+7. Social-media OAuth publishing also requires separately deployed Supabase Edge Functions and provider secrets; this ZIP alone does not complete that external setup.

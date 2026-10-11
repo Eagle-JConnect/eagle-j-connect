@@ -1,6 +1,6 @@
 # Eagle-J Connect — Final Web Version
 
-Eagle-J Connect is a responsive marketplace/job platform for the Haiti + Bahamas community.
+Eagle-J Connect is a responsive marketplace and jobs platform designed for people, opportunities, businesses, and services across communities worldwide.
 
 ## What was improved
 
@@ -33,13 +33,7 @@ The frontend expects the existing Supabase project and the `businesses`, `jobs`,
 
 ### Important Supabase setup
 
-If the project is being deployed to a fresh database, run the included SQL setup files as appropriate:
-
-- `admin-setup.sql`
-- `admin-rls-fix.sql`
-- `admin-profile-email-fix.sql`
-
-Do not expose a Supabase service-role key in the browser. The project uses the existing publishable key.
+**For the existing Eagle-J Connect Supabase project, review `SUPABASE-BASE-FINAL.sql` before running it.** It is the canonical consolidated migration. Make a backup and review the policy replacement section before applying it. Do not run the older partial SQL files one after another; they are retained only as historical references and may conflict with the canonical policies. The frontend does not need a service-role key; never place a service-role key in browser JavaScript or GitHub Pages.
 
 ## Main pages
 
@@ -63,18 +57,11 @@ Do not expose a Supabase service-role key in the browser. The project uses the e
 - Login/logout navigation state is synchronized automatically.
 - Admin link appears only for verified admin users.
 - Business detail links and marketplace filters are wired consistently.
-- Haiti/Haiti and Bahamas/Nassau location aliases are supported by marketplace filtering.
+- Marketplace location filtering supports broad regions and remote listings.
 
 ## Supabase business publishing fix
 
-Run `business-rls-fix.sql` once in the Supabase SQL Editor. It:
-- adds `businesses.user_id` when missing;
-- allows public reads;
-- allows authenticated users to create, edit and delete only their own ads;
-- ensures the `business-images` public bucket exists;
-- adds secure storage policies for upload/update/delete.
-
-The frontend now sends the signed-in user's UUID as `user_id` when publishing an ad.
+The consolidated `SUPABASE-BASE-FINAL.sql` is the intended setup source for the existing project. Do not additionally run `business-rls-fix.sql`, `moderation-v7.sql`, `public-shared-ads-fix.sql`, or other older partial policy scripts on top of it without reviewing the differences first.
 
 
 FINAL v5: hardened Supabase business creation session handling and explicit Authorization on business INSERT.
@@ -94,7 +81,7 @@ The project was reviewed page-by-page and the main runtime issues found were cor
 
 ### Supabase action for jobs
 
-If the Jobs page still shows an API/RLS error after uploading this version, run `jobs-rls-fix.sql` in the Supabase SQL Editor. The frontend itself is now wired to the `jobs` table.
+The frontend is wired to the `jobs` table. Database policies are consolidated in `SUPABASE-BASE-FINAL.sql`; do not apply the older `jobs-rls-fix.sql` on top of it without reviewing policy conflicts.
 
 
 ## v7 — Admin moderation and publishing control
@@ -109,7 +96,7 @@ If the Jobs page still shows an API/RLS error after uploading this version, run 
 - Added `moderation-v7.sql` for the complete Supabase RLS/status migration.
 - `admin.html` / `admin.js` now provide moderation queues and user management.
 
-Run `moderation-v7.sql` in Supabase SQL Editor before testing v7.
+The moderation logic is consolidated in `SUPABASE-BASE-FINAL.sql`; do not run the older `moderation-v7.sql` on top of it without reviewing policy conflicts.
 
 ## Share posts and ads (October 2026)
 
@@ -120,8 +107,8 @@ Run `moderation-v7.sql` in Supabase SQL Editor before testing v7.
 
 
 ## Shared business-ad links (public visitors)
-1. If the moderation migration has not been run yet, run `moderation-v7.sql` first.
-2. Run `public-shared-ads-fix.sql` in Supabase SQL Editor. It allows public SELECT of approved business ads only.
+1. Review the canonical `SUPABASE-BASE-FINAL.sql` and back up the database before applying it.
+2. Public approved ad access is included in that migration; do not apply old partial scripts on top without review.
 3. Upload the updated project files to the existing GitHub Pages repository. Keep your previous files as a backup.
 4. Test an approved ad link in a private/incognito browser window. Pending ads should remain hidden.
 
@@ -133,3 +120,7 @@ Run `moderation-v7.sql` in Supabase SQL Editor before testing v7.
 - Le formulaire de création/modification d’annonce et ses champs catégorie, type, prix/tarif et description restent inclus dans le projet.
 
 Note : les données et les images existantes restent dans votre projet Supabase; le ZIP ne remplace ni ne supprime aucune donnée distante. La photo de profil ne peut s’afficher que si une URL de photo est déjà enregistrée dans les métadonnées Auth ou dans l’une des colonnes de photo reconnues.
+
+
+## Final audit notes (2026-10-11)
+See `FINAL-AUDIT-REPORT.md` for the exact local checks and remaining live-test limits. The live Supabase database, storage settings, login, and admin permissions must still be verified in the user's project after reviewing the SQL migration.

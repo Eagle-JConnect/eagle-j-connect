@@ -327,13 +327,9 @@ async function api(path,options={}){
 
   if(!r.ok){
 
-    throw new Error(
-      data?.message ||
-      data?.msg ||
-      data?.error_description ||
-      data?.details ||
-      "Request failed"
-    );
+    const detail = data?.message || data?.msg || data?.error_description || data?.details || data?.hint || data?.error || "Request failed";
+    const code = data?.code ? ` [${data.code}]` : "";
+    throw new Error(`${detail}${code} (HTTP ${r.status})`);
 
   }
 
@@ -402,12 +398,9 @@ async function checkCurrentUserIsAdmin(userId){
       error.message
     );
 
-    localStorage.setItem(
-      "user_is_admin",
-      "false"
-    );
-
-    return false;
+    // Do not mark a valid admin as a non-admin when the network or RLS check fails.
+    localStorage.removeItem("user_is_admin");
+    return null;
 
   }
 
@@ -699,36 +692,28 @@ async function loginUser(e){
     ----------------------------------------------------- */
 
     let profiles=[];
-
+    let profileRequestError=null;
 
     try{
-
       profiles=await api(
         `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
       );
-
     }catch(err){
-
-      console.warn(
-        "Profile request:",
-        err
-      );
-
+      profileRequestError=err;
+      console.warn("Profile request:", err);
     }
 
-
-    const profile=
-      profiles?.[0];
-
+    const profile=profiles?.[0];
 
     if(!profile){
-
-      clearSession();
-
+      // Keep the authenticated session. A temporary SELECT/RLS error must not erase
+      // the user's login tokens or silently lock the administrator out.
+      const reason=profileRequestError?.message
+        ? ` Supabase di: ${profileRequestError.message}.`
+        : " Supabase pa jwenn yon ranje pou ID itilizatè sa a nan public.profiles.";
       throw new Error(
-        "Kont ou pa gen pwofil aktif sou Eagle-J Connect."
+        `Ou konekte nan Auth, men nou pa kapab konfime pwofil Eagle-J Connect la.${reason} Sesyon an pa efase; verifye pwofil/RLS anvan ou eseye ankò.`
       );
-
     }
 
 
@@ -801,11 +786,10 @@ async function loginUser(e){
        Admin ale admin.html.
     */
 
-    const isAdmin=
-      await checkCurrentUserIsAdmin(
-        data.user.id
-      );
-
+    const isAdmin=await checkCurrentUserIsAdmin(data.user.id);
+    if(isAdmin===null){
+      throw new Error("Ou konekte, men verifikasyon dwa Admin pa t reyisi. Sesyon an konsève; pa efase kont ou ni rekouri gwo SQL la. Eseye ankò oswa verifye policy admin_users.");
+    }
 
     msg(
       message,
@@ -1435,7 +1419,7 @@ function renderJobs(){
           ${
             publicJobs.length
               ? "Eseye yon lòt rechèch oswa yon lòt kalite travay."
-              : "Lè yon anplwayè poste yon travay, li ap parèt isit la."
+              : "Pa gen travay apwouve ki vizib kounye a. Tounen pita pou wè nouvo opòtinite."
           }
         </p>
 
@@ -1805,10 +1789,8 @@ async function submitBusiness(e){
   }
 
 
-  const file=
-    qs("businessImage")
-      ?.files?.[0] ||
-    null;
+  const files=Array.from(qs("businessImage")?.files || []);
+  const file=files[0] || null;
 
 
   const listingType=
@@ -1889,21 +1871,20 @@ async function submitBusiness(e){
   }
 
 
-  if(
-    file &&
-    (
-      !file.type.startsWith("image/") ||
-      file.size>5*1024*1024
-    )
-  ){
-
-    msg(
-      "formMessage",
-      "❌ Foto a dwe yon imaj ki pi piti pase 5MB."
-    );
-
+  const totalImageBytes=files.reduce((sum,item)=>sum+item.size,0);
+  const maxImageBytes=5*1024*1024;
+  const maxTotalImageBytes=100*1024*1024;
+  if(files.length>50){
+    msg("formMessage","❌ Ou ka chwazi jiska 50 foto pou yon sèl anons.");
     return;
-
+  }
+  if(files.some(item=>!item.type.startsWith("image/") || item.size>maxImageBytes)){
+    msg("formMessage","❌ Chak fichye dwe yon imaj ki pa depase 5MB. Sa ede upload la mache pi byen.");
+    return;
+  }
+  if(totalImageBytes>maxTotalImageBytes){
+    msg("formMessage","❌ Gwosè total tout imaj yo depase 100MB.");
+    return;
   }
 
 
@@ -1925,19 +1906,30 @@ async function submitBusiness(e){
         headers:{Prefer:"return=representation"},
         body:JSON.stringify(updateValues)
       });
-      if(file){
-        const ext=(file.name.split(".").pop() || "jpg").toLowerCase();
-        const fileName=`${editId}-${Date.now()}.${ext}`;
-        const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,{
-          method:"POST",
-          headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,"Content-Type":file.type,"x-upsert":"true"},
-          body:file
+      if(files.length){
+        const uploadedUrls=[];
+        for(let i=0;i<files.length;i++){
+          const selected=files[i];
+          const ext=(selected.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g,"") || "jpg";
+          const fileName=`${editId}-${Date.now()}-${i+1}.${ext}`;
+          const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,{
+            method:"POST",
+            headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,"Content-Type":selected.type,"x-upsert":"true"},
+            body:selected
+          });
+          if(!up.ok){
+            let reason="Supabase pa t kapab monte yon imaj.";
+            try{const body=await up.json();reason=body?.message||body?.error||reason;}catch(_){}
+            throw new Error(reason);
+          }
+          uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
+        }
+        await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{
+          method:"PATCH",
+          body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
         });
-        if(!up.ok) throw new Error("Modifikasyon tèks yo sove, men foto a pa t kapab monte.");
-        const imageURL=`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
-        await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:"PATCH",body:JSON.stringify({image_url:imageURL})});
       }
-      msg("formMessage", "✅ Modifikasyon yo sove!", "success");
+      msg("formMessage", "✅ Modifikasyon yo sove epi yo voye bay Admin pou revizyon anvan yo parèt piblik.", "success");
       setTimeout(()=>location.href=`anons.html?id=${encodeURIComponent(editId)}`, 900);
     }catch(err){
       console.error(err);
@@ -1988,95 +1980,35 @@ async function submitBusiness(e){
 
 
     /* -----------------------------------------------------
-       UPLOAD ONE IMAGE
+       UPLOAD SELECTED IMAGES (maximum 50, total 100MB)
     ----------------------------------------------------- */
-
-    if(file){
-
-      const ext=
-        (
-          file.name
-            .split(".")
-            .pop() ||
-          "jpg"
-        ).toLowerCase();
-
-
-      const fileName=
-        `${b.id}-${Date.now()}.${ext}`;
-
-
-      const up=
-        await fetch(
-          `${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,
-          {
-            method:"POST",
-
-            headers:{
-
-              apikey:
-                SUPABASE_KEY,
-
-              Authorization:
-                `Bearer ${session.token}`,
-
-              "Content-Type":
-                file.type,
-
-              "x-upsert":
-                "true"
-
-            },
-
-            body:file
-
-          }
-        );
-
-
-      if(!up.ok){
-
-        let uploadError=
-          "Foto a pa t kapab monte.";
-
-
-        try{
-
-          const uploadBody=
-            await up.json();
-
-
-          uploadError=
-            uploadBody?.message ||
-            uploadBody?.error ||
-            uploadError;
-
-        }catch(_){}
-
-
-        throw new Error(
-          uploadError
-        );
-
-      }
-
-
-      const imageURL=
-        `${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
-
-
-      await api(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,
-        {
-          method:"PATCH",
-
-          body:
-            JSON.stringify({
-              image_url:imageURL
-            })
+    if(files.length){
+      const uploadedUrls=[];
+      for(let i=0;i<files.length;i++){
+        const selected=files[i];
+        const ext=(selected.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g,"") || "jpg";
+        const fileName=`${b.id}-${Date.now()}-${i+1}.${ext}`;
+        const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,{
+          method:"POST",
+          headers:{
+            apikey:SUPABASE_KEY,
+            Authorization:`Bearer ${session.token}`,
+            "Content-Type":selected.type,
+            "x-upsert":"true"
+          },
+          body:selected
+        });
+        if(!up.ok){
+          let uploadError="Foto a pa t kapab monte.";
+          try{const uploadBody=await up.json();uploadError=uploadBody?.message||uploadBody?.error||uploadError;}catch(_){}
+          throw new Error(uploadError);
         }
-      );
-
+        uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
+      }
+      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,{
+        method:"PATCH",
+        body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
+      });
     }
 
 
@@ -2156,6 +2088,22 @@ async function loadBusinesses(){
 
 }
 
+
+function businessImageList(b){
+  const images=[];
+  if(b?.image_url) images.push(String(b.image_url));
+  if(b?.image_urls){
+    try{
+      const parsed=typeof b.image_urls==="string" ? JSON.parse(b.image_urls) : b.image_urls;
+      if(Array.isArray(parsed)){
+        for(const url of parsed){
+          if(typeof url==="string" && /^https?:\/\//i.test(url) && !images.includes(url)) images.push(url);
+        }
+      }
+    }catch(_){/* Old rows may contain a non-JSON image_urls value. */}
+  }
+  return images.filter(url=>/^https?:\/\//i.test(url)).slice(0,50);
+}
 
 function businessType(category){
   const raw = String(category || "").trim();
@@ -2295,19 +2243,9 @@ function renderBusinesses(){
   if(location){
 
     const aliases={
-
-      ayiti:[
-        "ayiti",
-        "haiti",
-        "haïti"
-      ],
-
-      bahamas:[
-        "bahamas",
-        "nassau",
-        "new providence"
-      ]
-
+      caribbean:["caribbean","karayib","bahamas","nassau","new providence","haiti","ayiti","haïti"],
+      "north-america":["north america","united states","usa","canada","america di nò"],
+      remote:["remote","online","sou entènèt","anywhere","work from home"]
     };
 
 
@@ -2350,7 +2288,7 @@ function renderBusinesses(){
   if(!rows.length){
 
     box.innerHTML=
-      "<div class='empty-state'><span>🔎</span><h3>Pa gen rezilta</h3><p>Eseye chanje rechèch ou oswa filtre a.</p></div>";
+      "<div class='empty-state'><span>🔎</span><h3>Pa gen anons ki disponib</h3><p>Eseye chanje rechèch ou oswa filtre a, oswa retounen pita pou nouvo anons.</p></div>";
 
     return;
 
@@ -2675,29 +2613,9 @@ async function loadBusinessDetail(){
     box.innerHTML=`
 
       ${
-        b.image_url
-
-          ? `
-
-            <img
-              class="business-detail-image"
-              src="${attr(
-                b.image_url
-              )}"
-              alt="${attr(
-                b.business_name
-              )}"
-            >
-
-          `
-
-          : `
-
-            <div class="business-detail-placeholder">
-              🏢
-            </div>
-
-          `
+        businessImageList(b).length
+          ? `<div class="business-detail-gallery">${businessImageList(b).map((url,index)=>`<img class="business-detail-image" src="${attr(url)}" alt="${attr(b.business_name)} — foto ${index+1}" loading="lazy" onclick="window.openBusinessImage && window.openBusinessImage('${attr(url)}')">`).join("")}</div>`
+          : `<div class="business-detail-placeholder">🏢</div>`
       }
 
 
@@ -2845,83 +2763,61 @@ async function loadBusinessDetail(){
 ========================================================= */
 
 async function loadStats(){
-
-  const ids=[
-
-    [
-      "stat-jobs",
-      "jobs"
-    ],
-
-    [
-      "stat-business",
-      "businesses"
-    ],
-
-    [
-      "stat-users",
-      "profiles"
-    ]
-
+  const counts=[
+    {id:"stat-jobs", table:"jobs", filter:"&status=eq.approved"},
+    {id:"stat-business", table:"businesses", filter:"&status=eq.approved"},
+    {id:"stat-users", table:"public_member_profiles", filter:""}
   ];
 
-
-  for(
-    const [id,table]
-    of ids
-  ){
-
+  for(const item of counts){
+    const node=qs(item.id);
+    if(!node) continue;
     try{
-
-      const r=
-        await fetch(
-          `${SUPABASE_URL}/rest/v1/${table}?select=id&limit=1`,
-          {
-            headers:{
-
-              "apikey":
-                SUPABASE_KEY,
-
-              "Range":
-                "0-0",
-
-              "Prefer":
-                "count=exact"
-
-            }
-          }
-        );
-
-
-      const range=
-        r.headers.get(
-          "content-range"
-        );
-
-
-      const total = range ? range.split("/")[1] : null;
-      const count = total !== null && total !== "*" ? parseInt(total, 10) : NaN;
-      if(qs(id)) qs(id).textContent = Number.isFinite(count) ? count : "—";
-
-    }catch(e){
-      console.warn(`Could not load public ${table} statistics:`, e?.message || e);
-      if(qs(id)) qs(id).textContent = "—";
+      const response=await fetch(
+        `${SUPABASE_URL}/rest/v1/${item.table}?select=id${item.filter}&limit=1`,
+        {method:"GET",headers:{
+          apikey:SUPABASE_KEY,
+          Accept:"application/json",
+          Range:"0-0",
+          Prefer:"count=exact"
+        },cache:"no-store"}
+      );
+      if(!response.ok){
+        const raw=await response.text();
+        throw new Error(`${raw || "Request failed"} (HTTP ${response.status})`);
+      }
+      const range=response.headers.get("content-range");
+      const total=range ? range.split("/").pop() : null;
+      const count=total && total!=="*" ? Number.parseInt(total,10) : NaN;
+      node.textContent=Number.isFinite(count) ? String(count) : "—";
+    }catch(error){
+      console.warn(`Could not load public ${item.table} statistics:`,error?.message || error);
+      node.textContent="—";
     }
-
   }
 
-
-  if(qs("stat-ads")){
-
-    qs("stat-ads").textContent=
-      qs("stat-business")
-        ?.textContent ||
-      "0";
-
+  const ads=qs("stat-ads");
+  if(ads){
+    const businessCount=qs("stat-business")?.textContent;
+    ads.textContent=businessCount && businessCount!=="—" ? businessCount : "—";
   }
-
 }
 
+
+/* Accessible click-to-enlarge viewer for listing photos. */
+window.openBusinessImage=function(url){
+  if(!url || !/^https?:\/\//i.test(url)) return;
+  let overlay=document.getElementById("businessImageViewer");
+  if(!overlay){
+    overlay=document.createElement("div");
+    overlay.id="businessImageViewer";
+    overlay.className="image-viewer-overlay";
+    overlay.innerHTML='<button type="button" class="image-viewer-close" aria-label="Fèmen foto a">×</button><img alt="Foto anons la">';
+    overlay.addEventListener("click",event=>{if(event.target===overlay || event.target.closest(".image-viewer-close")) overlay.remove();});
+    document.body.appendChild(overlay);
+  }
+  overlay.querySelector("img").src=url;
+};
 
 /* =========================================================
    CONTACT

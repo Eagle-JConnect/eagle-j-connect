@@ -1,12 +1,5 @@
-EAGLE-J CONNECT — PUBLIC SHARED AD FIX
+EAGLE-J CONNECT — LEGACY SQL NOTICE
 
-1. In Supabase, open the project whose URL is https://glwyqrvufmjscjbbszzz.supabase.co.
-2. Open SQL Editor > New query.
-3. Open public-shared-ads-fix.sql from this ZIP, copy all of it, paste into SQL Editor, and Run.
-4. Upload/replace the website files from this ZIP in the GitHub repository Eagle-JConnect/eagle-j-connect. Keep the folder contents, not an extra nested folder.
-5. Wait for GitHub Pages to deploy.
-6. Open an approved ad link in a private/incognito browser without logging in.
-
-What the SQL changes: removes existing SELECT policies on public.businesses, then adds public read access only for status='approved', plus owner/admin read access. It does not allow public insert/update/delete and does not make profiles public.
-
-IMPORTANT: Run this SQL in the same Supabase project used by script.js. This ZIP has not been tested against your live Supabase database, so confirm with the incognito test.
+Do not run public-shared-ads-fix.sql on top of the consolidated migration.
+The public approved-ad policy is included in SUPABASE-BASE-FINAL.sql.
+Before applying any migration to the existing project, export a backup and review the SQL.
