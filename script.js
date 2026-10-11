@@ -1680,8 +1680,44 @@ async function loadMyJobs(
 
 
 /* =========================================================
-   BUSINESS ADS - CREATE
+   BUSINESS ADS - CREATE / EDIT
 ========================================================= */
+
+let businessEditOriginal = null;
+
+async function loadBusinessEditForm(){
+  const form = qs("businessForm");
+  if(!form) return;
+  const editId = new URLSearchParams(location.search).get("edit");
+  if(!editId) return;
+  const session = getSession();
+  if(!session){
+    msg("formMessage", "⚠️ Konekte pou modifye pwòp anons ou.");
+    return;
+  }
+  try{
+    const rows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
+    const b = rows?.[0];
+    if(!b) throw new Error("Nou pa jwenn anons sa a nan kont ou, oswa ou pa gen pèmisyon pou modifye li.");
+    businessEditOriginal = b;
+    qs("businessName").value = b.business_name || "";
+    const parts = String(b.category || "business:other").split(":");
+    qs("listingType").value = parts.length > 1 ? parts[0] : "business";
+    qs("category").value = parts.length > 1 ? parts.slice(1).join(":") : (parts[0] || "other");
+    qs("location").value = b.location || "";
+    qs("phone").value = b.phone || "";
+    qs("whatsapp").value = b.whatsapp || "";
+    qs("price").value = b.price || "";
+    qs("description").value = b.description || "";
+    const heading = form.parentElement?.querySelector("h1");
+    if(heading) heading.textContent = "✏️ Modifye Anons ou";
+    const submit = form.querySelector('button[type="submit"]');
+    if(submit) submit.textContent = "💾 Sove Modifikasyon yo";
+    msg("formMessage", "Ou ap modifye anons ou. Lè ou sove, anons la ap kenbe estati li ye kounye a.", "warning");
+  }catch(err){
+    msg("formMessage", "❌ " + (err.message || "Nou pa kapab chaje anons sa a."));
+  }
+}
 
 async function submitBusiness(e){
 
@@ -1812,6 +1848,45 @@ async function submitBusiness(e){
 
   }
 
+
+  const editId = new URLSearchParams(location.search).get("edit");
+  if(editId){
+    try{
+      msg("formMessage", "⏳ N ap sove modifikasyon yo...", "warning");
+      const updateValues = {
+        business_name: values.business_name,
+        category: values.category,
+        location: values.location,
+        phone: values.phone,
+        whatsapp: values.whatsapp,
+        price: values.price,
+        description: values.description
+      };
+      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`, {
+        method:"PATCH",
+        headers:{Prefer:"return=representation"},
+        body:JSON.stringify(updateValues)
+      });
+      if(file){
+        const ext=(file.name.split(".").pop() || "jpg").toLowerCase();
+        const fileName=`${editId}-${Date.now()}.${ext}`;
+        const up=await fetch(`${SUPABASE_URL}/storage/v1/object/${IMAGE_BUCKET}/${fileName}`,{
+          method:"POST",
+          headers:{apikey:SUPABASE_KEY,Authorization:`Bearer ${session.token}`,"Content-Type":file.type,"x-upsert":"true"},
+          body:file
+        });
+        if(!up.ok) throw new Error("Modifikasyon tèks yo sove, men foto a pa t kapab monte.");
+        const imageURL=`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`;
+        await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{method:"PATCH",body:JSON.stringify({image_url:imageURL})});
+      }
+      msg("formMessage", "✅ Modifikasyon yo sove!", "success");
+      setTimeout(()=>location.href=`anons.html?id=${encodeURIComponent(editId)}`, 900);
+    }catch(err){
+      console.error(err);
+      msg("formMessage", "❌ " + (err.message || "Nou pa kapab sove modifikasyon yo."));
+    }
+    return;
+  }
 
   msg(
     "formMessage",
@@ -2677,6 +2752,10 @@ async function loadBusinessDetail(){
             : ""
         }
 
+        ${getSession()?.user?.id && getSession().user.id === b.user_id ? `
+          <a class="btn btn-secondary" href="kreye-anons.html?edit=${encodeURIComponent(b.id)}">✏️ Editer Anons</a>
+        ` : ""}
+
         <button
           type="button"
           class="btn share-button"
@@ -3235,6 +3314,7 @@ document.addEventListener(
           "submit",
           submitBusiness
         );
+      loadBusinessEditForm();
 
     }
 
