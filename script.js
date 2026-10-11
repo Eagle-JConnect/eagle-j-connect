@@ -709,9 +709,17 @@ async function loginUser(e){
 
     }catch(err){
 
-      console.warn(
-        "Profile request:",
+      console.error(
+        "Profile request failed:",
         err
+      );
+
+      // Do not erase a valid Supabase session just because the profile
+      // request failed. Surface the real API/RLS error for diagnosis.
+      throw new Error(
+        "Nou pa kapab li pwofil ou nan Supabase: " +
+        (err?.message || "Erè demann enkoni") +
+        ". Sesyon an rete sove; tanpri verifye aksè API/RLS la."
       );
 
     }
@@ -723,10 +731,10 @@ async function loginUser(e){
 
     if(!profile){
 
-      clearSession();
-
+      // Keep the session so a temporary API/policy issue does not lock
+      // the user out. The message now distinguishes missing profile data.
       throw new Error(
-        "Kont ou pa gen pwofil aktif sou Eagle-J Connect."
+        "Supabase pa retounen pwofil pou kont sa a. Pwofil la ka egziste men demann lan pa jwenn li; verifye ID ak RLS. Sesyon an rete sove."
       );
 
     }
