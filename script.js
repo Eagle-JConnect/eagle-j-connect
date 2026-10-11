@@ -331,6 +331,28 @@ async function api(path,options={}){
 
 
 /* =========================================================
+   PUBLIC READ API — shared ad pages must work without login
+========================================================= */
+async function publicApi(path){
+  const response = await fetch(SUPABASE_URL + path, {
+    method: "GET",
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Accept": "application/json"
+    },
+    cache: "no-store"
+  });
+  const raw = await response.text();
+  let data = null;
+  try { data = raw ? JSON.parse(raw) : null; } catch (_) { data = raw; }
+  if (!response.ok) {
+    const message = data?.message || data?.msg || data?.details || data?.hint || data?.error || `HTTP ${response.status}`;
+    throw new Error(`${message} (HTTP ${response.status})`);
+  }
+  return data;
+}
+
+/* =========================================================
    ADMIN CHECK
    ---------------------------------------------------------
    Verifye si itilizatè konekte a nan admin_users.
@@ -2487,7 +2509,7 @@ async function loadBusinessDetail(){
   try{
 
     const rows=
-      await api(
+      await publicApi(
         `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
       );
 
@@ -2675,7 +2697,7 @@ async function loadBusinessDetail(){
 
 
     box.innerHTML=
-      "<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p>";
+      `<p class='notice'>❌ Nou pa kapab chaje detay anons sa a.</p><p class='notice' style='font-size:13px'>Detay teknik: ${esc(err?.message || "Erè enkoni")}</p>`;
 
   }
 

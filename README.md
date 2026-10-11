@@ -117,3 +117,10 @@ Run `moderation-v7.sql` in Supabase SQL Editor before testing v7.
 - Public business/service/property ad cards and their detail page include Share buttons that link to the individual `anons.html?id=<id>` page.
 - On supported phones and browsers, Share opens the native share sheet (WhatsApp, Facebook, Messenger, and other installed apps as available). If native sharing is unavailable, the app tries to copy the details and link, then falls back to a WhatsApp share link.
 - Sharing is added only to public approved listings; pending submissions are not exposed by these listing pages.
+
+
+## Shared business-ad links (public visitors)
+1. If the moderation migration has not been run yet, run `moderation-v7.sql` first.
+2. Run `public-shared-ads-fix.sql` in Supabase SQL Editor. It allows public SELECT of approved business ads only.
+3. Upload the updated project files to the existing GitHub Pages repository. Keep your previous files as a backup.
+4. Test an approved ad link in a private/incognito browser window. Pending ads should remain hidden.
