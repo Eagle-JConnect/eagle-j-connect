@@ -918,9 +918,9 @@ async function loadDashboard(){
         : "👷 Moun k ap chèche travay";
 
     // Keep the user's existing avatar when available (Supabase profile or Auth metadata).
-    const avatarUrl = p.avatar_url || p.photo_url || p.profile_image ||
+    const avatarUrl = p.avatar_url || p.photo_url || p.profile_image || p.profile_picture || p.avatar || p.image_url ||
       session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture ||
-      session.user.user_metadata?.photo_url || "";
+      session.user.user_metadata?.photo_url || session.user.user_metadata?.avatar || "";
     const avatar = qs("profileAvatar");
     const avatarFallback = qs("profileAvatarFallback");
     if (avatar && avatarUrl) {
@@ -2141,36 +2141,22 @@ async function loadBusinesses(){
 
 
 function businessType(category){
-
-  const raw=
-    String(category || "");
-
-
-  const parts=
-    raw.split(":");
-
-
-  return parts.length>1
-    ? parts[0]
-    : "";
-
+  const raw = String(category || "").trim();
+  const parts = raw.split(":");
+  if (parts.length > 1) return parts[0];
+  // Older listings saved only a category (for example "restaurant")
+  // instead of the newer "business:restaurant" format. Keep those visible
+  // under the general Business tab rather than making them disappear.
+  const knownTypes = ["employee", "employer", "professional", "service", "business", "property"];
+  return knownTypes.includes(raw.toLowerCase()) ? raw.toLowerCase() : (raw ? "business" : "");
 }
 
-
 function businessCategory(category){
-
-  const raw=
-    String(category || "");
-
-
-  const parts=
-    raw.split(":");
-
-
-  return parts.length>1
-    ? parts.slice(1).join(":")
-    : raw;
-
+  const raw = String(category || "").trim();
+  const parts = raw.split(":");
+  if (parts.length > 1) return parts.slice(1).join(":");
+  const knownTypes = ["employee", "employer", "professional", "service", "business", "property"];
+  return knownTypes.includes(raw.toLowerCase()) ? "" : raw;
 }
 
 
@@ -2629,23 +2615,31 @@ async function loadBusinessDetail(){
 
   try{
 
-    const rows=
-      await publicApi(
-        `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
-      );
+    const rows = await publicApi(
+      `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&status=eq.approved&select=*`
+    );
+    let b = rows?.[0] || null;
 
-
-    const b=
-      rows?.[0];
-
+    // Owners should be able to open their own pending/rejected listing from
+    // their profile. This private fallback is scoped to the authenticated
+    // user's ID and is never used to expose another user's unpublished ad.
+    if (!b) {
+      const session = getSession();
+      if (session?.user?.id) {
+        try {
+          const ownRows = await api(
+            `/rest/v1/businesses?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`
+          );
+          b = ownRows?.[0] || null;
+        } catch (ownerReadError) {
+          console.warn("Could not load own unpublished listing:", ownerReadError?.message || ownerReadError);
+        }
+      }
+    }
 
     if(!b){
-
-      box.innerHTML=
-        "<p class='notice'>❌ Anons sa pa egziste oswa li pa disponib.</p>";
-
+      box.innerHTML = "<p class='notice'>❌ Anons sa pa egziste, poko apwouve, oswa li pa disponib pou piblik la.</p>";
       return;
-
     }
 
 
@@ -2888,26 +2882,14 @@ async function loadStats(){
         );
 
 
-      const count=
-        range
-          ? parseInt(
-              range.split("/")[1],
-              10
-            )
-          : 0;
+      const total = range ? range.split("/")[1] : null;
+      const count = total !== null && total !== "*" ? parseInt(total, 10) : NaN;
+      if(qs(id)) qs(id).textContent = Number.isFinite(count) ? count : "—";
 
-
-      if(qs(id)){
-
-        qs(id).textContent=
-          Number.isFinite(count)
-            ? count
-            : 0;
-
-      }
-
-
-    }catch(e){}
+    }catch(e){
+      console.warn(`Could not load public ${table} statistics:`, e?.message || e);
+      if(qs(id)) qs(id).textContent = "—";
+    }
 
   }
 
