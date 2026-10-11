@@ -1,0 +1,9 @@
+EAGLE-J CONNECT - MULTILINGUAL UPDATE
+
+Included: Haitian Creole (HT), English (EN), French (FR), and Spanish (ES).
+The selected language is saved in localStorage and reused across pages.
+Static UI text and existing data-i18n content are translated where a phrase is mapped.
+User-submitted listing names/descriptions and arbitrary database content are not automatically machine-translated.
+
+Deploy the contents of this folder to the existing GitHub Pages repository, preserving the folder's files and existing Supabase configuration.
+Test the language selector on home, jobs, businesses, listings, listing details, create listing, login, registration, profile, dashboard, contact, and admin pages.
