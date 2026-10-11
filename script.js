@@ -2557,7 +2557,7 @@ function renderBusinesses(){
 
 
             <div class="view-link">
-              Wè detay →
+              <a href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Wè detay pou ${attr(b.business_name || "anons")}">Wè detay →</a>
             </div>
 
           </div>

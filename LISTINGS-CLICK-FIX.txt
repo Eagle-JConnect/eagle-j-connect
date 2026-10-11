@@ -1,0 +1,8 @@
+EAGLE-J CONNECT — LISTINGS CLICK FIX
+
+Fixes included:
+- The “Wè detay” action is now a real HTML link to anons.html?id=<listing id>.
+- The link has a visible, keyboard-focusable hit area and stops the parent card click from firing twice.
+- HTML script/style cache versions were updated so GitHub Pages browsers request the corrected files.
+
+Important: public listing detail still requires the listing to have status=approved and the Supabase public SELECT policy to permit reading approved listings. This ZIP does not alter or delete any Supabase data or SQL policies.
