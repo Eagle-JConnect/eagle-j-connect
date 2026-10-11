@@ -917,6 +917,23 @@ async function loadDashboard(){
         ? "🏢 Anplwayè"
         : "👷 Moun k ap chèche travay";
 
+    // Keep the user's existing avatar when available (Supabase profile or Auth metadata).
+    const avatarUrl = p.avatar_url || p.photo_url || p.profile_image ||
+      session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture ||
+      session.user.user_metadata?.photo_url || "";
+    const avatar = qs("profileAvatar");
+    const avatarFallback = qs("profileAvatarFallback");
+    if (avatar && avatarUrl) {
+      avatar.src = avatarUrl;
+      avatar.style.display = "block";
+      if (avatarFallback) avatarFallback.style.display = "none";
+      avatar.onerror = () => { avatar.style.display = "none"; if (avatarFallback) avatarFallback.style.display = "flex"; };
+    } else if (avatarFallback) {
+      avatarFallback.textContent = (p.full_name || session.user.email || "👤").trim().charAt(0).toUpperCase() || "👤";
+    }
+
+    await loadMyBusinessListings(session);
+
 
     if(
       p.account_type==="employer"
@@ -956,6 +973,35 @@ async function loadDashboard(){
 
 }
 
+
+/* =========================================================
+   CURRENT USER'S BUSINESS LISTINGS — include pending/approved ads
+========================================================= */
+async function loadMyBusinessListings(session = getSession()) {
+  const host = qs("myBusinessListings");
+  if (!host || !session?.user?.id) return;
+  const lang = (() => { try { return localStorage.getItem("selectedLanguage") || "ht"; } catch(e) { return "ht"; } })();
+  const labels = {
+    ht:{loading:"Anons ou yo ap chaje...",empty:"Ou poko kreye okenn anons.",error:"Nou pa kapab chaje anons ou yo.",edit:"✏️ Modifye",status:"Estati",pending:"An atant validasyon",approved:"Apwouve",rejected:"Refize",price:"Pri / Tarif pa presize",view:"Gade anons"},
+    en:{loading:"Loading your listings...",empty:"You have not created any listings yet.",error:"We could not load your listings.",edit:"✏️ Edit",status:"Status",pending:"Pending review",approved:"Approved",rejected:"Rejected",price:"Price / rate not specified",view:"View listing"},
+    fr:{loading:"Chargement de vos annonces...",empty:"Vous n’avez pas encore créé d’annonce.",error:"Impossible de charger vos annonces.",edit:"✏️ Modifier",status:"Statut",pending:"En attente de validation",approved:"Approuvée",rejected:"Refusée",price:"Prix / tarif non précisé",view:"Voir l’annonce"},
+    es:{loading:"Cargando tus anuncios...",empty:"Todavía no has creado anuncios.",error:"No se pudieron cargar tus anuncios.",edit:"✏️ Editar",status:"Estado",pending:"Pendiente de revisión",approved:"Aprobado",rejected:"Rechazado",price:"Precio/tarifa no especificado",view:"Ver anuncio"}
+  }[lang] || null;
+  const t = labels || {loading:"Anons ou yo ap chaje...",empty:"Ou poko kreye okenn anons.",error:"Nou pa kapab chaje anons ou yo.",edit:"✏️ Modifye",status:"Estati",pending:"An atant validasyon",approved:"Apwouve",rejected:"Refize",price:"Pri / Tarif pa presize",view:"Gade anons"};
+  host.innerHTML = `<p class="notice">⏳ ${t.loading}</p>`;
+  try {
+    const rows = await api(`/rest/v1/businesses?user_id=eq.${encodeURIComponent(session.user.id)}&select=id,business_name,category,location,price,description,image_url,status,created_at&order=created_at.desc`);
+    if (!Array.isArray(rows) || !rows.length) { host.innerHTML = `<p class="notice">${t.empty}</p><a class="btn btn-primary" href="kreye-anons.html">＋ ${lang==='en'?'Create listing':lang==='fr'?'Créer une annonce':lang==='es'?'Crear anuncio':'Kreye yon anons'}</a>`; return; }
+    host.innerHTML = rows.map(b => {
+      const status = String(b.status || 'pending').toLowerCase();
+      const statusLabel = status === 'approved' ? t.approved : status === 'rejected' ? t.rejected : t.pending;
+      const title = esc(b.business_name || 'Anons');
+      const image = b.image_url ? `<img src="${attr(b.image_url)}" alt="${title}" loading="lazy" style="width:100%;max-height:190px;object-fit:cover;border-radius:10px">` : '';
+      const price = b.price ? esc(b.price) : t.price;
+      return `<article class="card" style="margin:14px 0;padding:16px">${image}<h3 style="margin:12px 0 6px">${title}</h3><p>${esc(b.location || '')}</p><p><strong>${t.status}:</strong> ${esc(statusLabel)}</p><p>${price}</p><p>${esc(b.description || '').slice(0,240)}</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn-secondary" href="anons.html?id=${encodeURIComponent(b.id)}">${t.view}</a><a class="btn btn-primary" href="kreye-anons.html?edit=${encodeURIComponent(b.id)}">${t.edit}</a></div></article>`;
+    }).join('');
+  } catch (err) { console.error('My listings:', err); host.innerHTML = `<p class="notice">❌ ${t.error} ${esc(err.message || '')}</p>`; }
+}
 
 /* =========================================================
    EMPLOYER DASHBOARD

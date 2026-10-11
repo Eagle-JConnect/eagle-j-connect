@@ -124,3 +124,12 @@ Run `moderation-v7.sql` in Supabase SQL Editor before testing v7.
 2. Run `public-shared-ads-fix.sql` in Supabase SQL Editor. It allows public SELECT of approved business ads only.
 3. Upload the updated project files to the existing GitHub Pages repository. Keep your previous files as a backup.
 4. Test an approved ad link in a private/incognito browser window. Pending ads should remain hidden.
+
+
+## Corrections incluses dans la version MULTILINGUAL-ALL-FIELDS-PROFILE-FIX
+- Le tableau de bord restaure l’affichage de la photo de profil lorsqu’une URL de photo existe dans le profil ou les métadonnées Supabase Auth, avec un avatar de secours.
+- Le tableau de bord affiche les annonces appartenant à l’utilisateur connecté, y compris celles en attente de validation, avec liens pour consulter et modifier.
+- Les quatre langues (créole haïtien, anglais, français et espagnol) restent prises en charge sur l’ensemble des pages utilisant le système partagé.
+- Le formulaire de création/modification d’annonce et ses champs catégorie, type, prix/tarif et description restent inclus dans le projet.
+
+Note : les données et les images existantes restent dans votre projet Supabase; le ZIP ne remplace ni ne supprime aucune donnée distante. La photo de profil ne peut s’afficher que si une URL de photo est déjà enregistrée dans les métadonnées Auth ou dans l’une des colonnes de photo reconnues.
