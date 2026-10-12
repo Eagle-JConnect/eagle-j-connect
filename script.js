@@ -342,14 +342,29 @@ async function api(path,options={}){
    PUBLIC READ API — shared ad pages must work without login
 ========================================================= */
 async function publicApi(path){
-  const response = await fetch(SUPABASE_URL + path, {
-    method: "GET",
-    headers: {
-      "apikey": SUPABASE_KEY,
-      "Accept": "application/json"
-    },
-    cache: "no-store"
-  });
+  // Prevent public listing pages from staying on "loading" forever if the
+  // network/Supabase request hangs. The caller displays a readable error.
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 15000);
+  let response;
+  try {
+    response = await fetch(SUPABASE_URL + path, {
+      method: "GET",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Accept": "application/json"
+      },
+      cache: "no-store",
+      signal: controller.signal
+    });
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      throw new Error("Supabase pa reponn apre 15 segonn. Verifye koneksyon an epi eseye ankò.");
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
   const raw = await response.text();
   let data = null;
   try { data = raw ? JSON.parse(raw) : null; } catch (_) { data = raw; }
