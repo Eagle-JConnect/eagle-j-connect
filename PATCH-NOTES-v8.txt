@@ -1,0 +1,14 @@
+EAGLE-J CONNECT — PATCH v8 (PUBLIC LISTING READ FIX)
+
+Changes:
+- Public Supabase REST GET requests now send both apikey and Authorization headers.
+- Unauthenticated generic API requests also use the publishable/anon key as bearer identity.
+- Cache-busting query strings updated on biznis.html, anons-list.html, and anons.html.
+- Added FIX-ANONS-BIZNIS-RLS.sql to restore public SELECT for approved business ads while retaining owner/admin SELECT policies.
+
+Important:
+- Upload the ZIP contents to the existing GitHub repository (same folder level as index.html).
+- Run FIX-ANONS-BIZNIS-RLS.sql in the correct Supabase project's SQL Editor if public pages still return permission errors.
+- The SQL assumes public.is_admin() exists and that businesses has columns status and user_id, as in the included project SQL.
+- Public pages intentionally show only status='approved'. Pending listings should not be exposed publicly.
+- Test in a private/incognito window after deployment. If it still fails, copy the exact red error shown on the page.

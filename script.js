@@ -292,14 +292,10 @@ async function api(path,options={}){
 
   const session=getSession();
 
-  if(
-    session?.token &&
-    !headers.Authorization
-  ){
-
-    headers.Authorization=
-      `Bearer ${session.token}`;
-
+  if (!headers.Authorization) {
+    headers.Authorization = session?.token
+      ? `Bearer ${session.token}`
+      : `Bearer ${SUPABASE_KEY}`;
   }
 
   const r=await fetch(
@@ -353,6 +349,9 @@ async function publicApi(path){
       method: "GET",
       headers: {
         "apikey": SUPABASE_KEY,
+        // Supabase REST expects the API key and a bearer identity. For public
+        // reads, use the publishable/anon key itself (never a service-role key).
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
         "Accept": "application/json"
       },
       cache: "no-store",
