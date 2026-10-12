@@ -1,0 +1,16 @@
+EAGLE-J CONNECT — HOMEPAGE LISTINGS FIX v9
+
+What changed:
+- Homepage now includes a “Dènye biznis ak anons yo” section.
+- It reuses the existing approved public listing loader and the same cards/detail link as Business/Anons.
+- The six newest approved listings are shown on the homepage.
+- Clicking a card or “Wè detay” opens anons.html?id=LISTING_ID, matching the profile’s “View listing” destination.
+- Jobs behavior and the separate EAGLE-J MARKET project are not intentionally changed.
+
+Install:
+1. Extract this ZIP.
+2. In the GitHub repository for EAGLE-J CONNECT only, replace the project files with the extracted updated files (or at minimum replace index.html, style.css, and script.js).
+3. Commit the changes to the branch configured in Settings > Pages.
+4. Open the actual published EAGLE-J CONNECT project URL and refresh.
+
+Note: This is a code change only; the live GitHub Pages deployment and Supabase data have not been tested from this package. Public listings are still restricted to rows whose status is approved.

@@ -398,3 +398,17 @@ main{min-height:calc(100vh - 82px)}
 #businessImage{display:block;width:100%;padding:12px;border:1px dashed #8ba7bd;border-radius:12px;background:#f7fafc}
 @media(max-width:760px){.admin-wrap{width:min(100% - 20px,1240px);margin-top:18px}.admin-wrap .admin-card{padding:16px}.admin-grid,.admin-grid-6{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-wrap .admin-actions input,.admin-wrap .admin-actions select{width:100%;min-width:0}.business-image-preview{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:420px){.admin-grid,.admin-grid-6{grid-template-columns:1fr 1fr;gap:9px}.admin-wrap .admin-stat{padding:13px 8px}.business-image-preview{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Homepage listings use the same clickable cards as the Business/Anons pages. */
+.home-listings-section{padding-top:44px;padding-bottom:54px}
+.home-listings-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px}
+.home-listings-heading .section-title{margin:6px 0 8px}
+.home-listings-heading .section-description{margin:0;max-width:680px}
+.home-listing-grid{width:100%;margin:0;grid-template-columns:repeat(3,minmax(0,1fr))}
+.home-listing-grid .business-card{height:100%;display:flex;flex-direction:column}
+.home-listing-grid .business-card-body{display:flex;flex:1;flex-direction:column}
+.home-listing-grid .business-card .view-link{margin-top:auto;padding-top:14px}
+.home-listings-footer{display:flex;justify-content:center;margin-top:28px}
+@media(max-width:760px){.home-listings-heading{align-items:flex-start;flex-direction:column}.home-listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.home-listing-grid{grid-template-columns:1fr}.home-listings-section{padding-top:30px;padding-bottom:38px}}

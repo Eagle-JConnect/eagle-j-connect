@@ -2332,6 +2332,11 @@ function renderBusinesses(){
   }
 
 
+  // On the homepage, show the six newest approved listings; the full Business/Anons pages keep all matches.
+  if(box.classList.contains("home-listing-grid")){
+    rows=rows.slice(0,6);
+  }
+
   const count=
     qs("marketResultCount");
 
