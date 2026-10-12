@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Social Media Manager | Eagle-J Connect</title>
-<link rel="stylesheet" href="style.css?v=eagle-review-20261012-1">
-<link rel="stylesheet" href="social-media.css?v=eagle-review-20261012-1">
+<link rel="stylesheet" href="style.css?v=eagle-market-final-20261012-7">
+<link rel="stylesheet" href="social-media.css?v=eagle-market-final-20261012-7">
 </head>
 <body>
 <header class="header">
@@ -61,13 +61,19 @@
         <textarea id="postCaption" rows="6" maxlength="5000" placeholder="Ekri mesaj ou la... #EagleJConnect" data-i18n-placeholder="social-caption-placeholder"></textarea>
       </label>
       <div class="social-form-grid">
-        <label data-i18n="social-media-url">URL imaj/videyo piblik
-          <input id="postMediaUrl" type="url" placeholder="https://..." data-i18n-placeholder="social-media-url-placeholder">
-        </label>
-        <label data-i18n="social-media-type">Kalite medya
+        <label>Kalite medya
           <select id="postMediaType"><option value="none" data-i18n="social-none">San medya</option><option value="image" data-i18n="social-image">Imaj</option><option value="video" data-i18n="social-video">Videyo</option></select>
         </label>
+        <label id="socialImagePickerLabel">Chwazi yon imaj nan telefòn/òdinatè w
+          <input id="postMediaFile" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          <span class="social-file-picker" role="button" tabindex="0" id="chooseSocialImage">📁 Chwazi imaj</span>
+          <small>JPG, PNG oswa WebP; 5MB maksimòm.</small>
+        </label>
+        <label id="socialVideoUrlLabel" class="hidden">URL videyo piblik
+          <input id="postMediaUrl" type="url" placeholder="https://..." data-i18n-placeholder="social-media-url-placeholder">
+        </label>
       </div>
+      <div id="socialImagePreview" class="social-image-preview" aria-live="polite"></div>
       <div class="platform-checks" id="publishPlatforms">
         <label><input type="checkbox" value="facebook"> Facebook</label>
         <label><input type="checkbox" value="instagram"> Instagram</label>
@@ -87,10 +93,10 @@
 
 <footer><div class="container"><div class="footer-grid"><div><h3>Eagle-J Connect</h3><p>Konekte moun, travay, biznis ak sèvis atravè mond lan.</p></div><div class="footer-links"><a href="index.html">Akèy</a><a href="travay.html">Travay</a><a href="biznis.html">Biznis</a><a href="kontak.html">Kontak</a></div></div><p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p></div></footer>
 
-<script src="language.js?v=eagle-review-20261012-1"></script>
-<script src="script.js?v=eagle-listing-click-fix-20261012-5"></script>
-<script src="menu.js?v=eagle-review-20261012-1"></script>
+<script src="language.js?v=eagle-market-final-20261012-7"></script>
+<script src="script.js?v=eagle-market-final-20261012-7"></script>
+<script src="menu.js?v=eagle-market-final-20261012-7"></script>
 <script src="global.js?v=eagle-review-20261012-1"></script>
-<script src="social-media.js?v=eagle-review-20261012-1"></script>
+<script src="social-media.js?v=eagle-market-final-20261012-7"></script>
 </body>
 </html>

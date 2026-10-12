@@ -1315,14 +1315,19 @@
       localStorage.setItem("supabase_user_id",user.id);
       localStorage.setItem("supabase_user_email",user.email||"");
 
-      const profileR=await fetch(SUPABASE_URL+"/rest/v1/profiles?id=eq."+encodeURIComponent(user.id)+"&select=id,full_name,phone,account_type,account_status,email",{
+      let profileR=await fetch(SUPABASE_URL+"/rest/v1/profiles?id=eq."+encodeURIComponent(user.id)+"&select=*",{
         headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+access}
       });
       if(!profileR.ok){
         const detail=await profileR.text();
         throw new Error("Supabase could not read the profile ("+profileR.status+"): "+detail);
       }
-      const profiles=await profileR.json();
+      let profiles=await profileR.json();
+      if(!Array.isArray(profiles)||!profiles.length){
+        profileR=await fetch(SUPABASE_URL+"/rest/v1/profiles?user_id=eq."+encodeURIComponent(user.id)+"&select=*",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+access}});
+        if(!profileR.ok) throw new Error("Supabase could not read the legacy profile ("+profileR.status+").");
+        profiles=await profileR.json();
+      }
 
       let googleAccountType = "job_seeker";
       if(!Array.isArray(profiles) || !profiles.length){
@@ -1356,9 +1361,9 @@
         googleAccountType = "job_seeker";
       } else {
         const p=profiles[0];
-        if(p.account_status && p.account_status!=="active") throw new Error("Your account is not active.");
+        if((p.account_status||p.status) && (p.account_status||p.status)!=="active") throw new Error("Your account is not active.");
         const normalizedType=String(p.account_type||"job_seeker").trim().toLowerCase().replace(/[\s-]+/g,"_");
-        localStorage.setItem("user_full_name",p.full_name||"");
+        localStorage.setItem("user_full_name",p.full_name||[p.first_name,p.last_name].filter(Boolean).join(" ")||"");
         localStorage.setItem("user_phone",p.phone||"");
         localStorage.setItem("user_account_type",normalizedType);
         googleAccountType = normalizedType;

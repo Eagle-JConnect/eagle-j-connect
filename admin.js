@@ -135,7 +135,7 @@
     try{
 
       users=await api(
-        '/rest/v1/profiles?select=id,full_name,email,phone,account_type,account_status&order=full_name.asc'
+        '/rest/v1/profiles?select=*&limit=500'
       );
 
       if(!Array.isArray(users))users=[];
@@ -173,15 +173,18 @@
 
       const hay=[
         u.full_name,
+        u.first_name,
+        u.last_name,
         u.phone,
         u.id,
+        u.user_id,
         u.email
       ].join(" ").toLowerCase();
 
       return(
         (!q||hay.includes(q))&&
         (!type||u.account_type===type)&&
-        (!accountStatus||u.account_status===accountStatus)
+        (!accountStatus||(u.account_status||u.status)===accountStatus)
       );
     });
 
@@ -189,7 +192,7 @@
 
     $("adminDisabledUserCount").textContent=
       users.filter(
-        u=>u.account_status==="disabled"
+        u=>(u.account_status||u.status)==="disabled"
       ).length;
 
     const body=$("adminUsersBody");
@@ -206,16 +209,16 @@
 
     body.innerHTML=filtered.map(u=>{
 
-      const self=
-        session()?.user?.id===u.id;
+      const authUserId=u.user_id||u.id;
+      const displayName=u.full_name||[u.first_name,u.last_name].filter(Boolean).join(" ")||"—";
+      const self=session()?.user?.id===authUserId;
 
-      const disabled=
-        u.account_status==="disabled";
+      const disabled=(u.account_status||u.status)==="disabled";
 
       return `
         <tr>
 
-          <td>${esc(u.full_name||"—")}</td>
+          <td>${esc(displayName)}</td>
 
           <td class="email-cell">
             ${esc(u.email||"—")}
@@ -227,7 +230,7 @@
 
           <td>
             ${esc(statusLabel(
-              u.account_status||"active"
+              u.account_status||u.status||"active"
             ))}
           </td>
 
@@ -258,7 +261,7 @@
                 <button
                   class="danger-btn"
                   type="button"
-                  onclick="removeUser('${esc(u.id)}')"
+                  onclick="removeUser('${esc(u.id)}','${esc(authUserId)}')"
                 >
                   🗑️ Retire
                 </button>
@@ -311,11 +314,11 @@
     }
   };
 
-  window.removeUser=async function(id){
+  window.removeUser=async function(id,authUserId=id){
 
     const s=session();
 
-    if(!s||s.user.id===id)return;
+    if(!s||s.user.id===authUserId)return;
 
     if(!confirm(
       "Retire pwofil itilizatè sa a? "+
@@ -355,19 +358,10 @@
       .toLowerCase()
       .trim();
 
-    return(
-      !q||
-      [
-        job.title,
-        job.company,
-        job.location,
-        job.description
-      ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase()
-      .includes(q)
-    );
+    const status=$("adminJobStatusFilter")?.value||"";
+    const matchesSearch=!q||[job.title,job.company,job.location,job.description]
+      .filter(Boolean).join(" ").toLowerCase().includes(q);
+    return matchesSearch && (!status || job.status===status);
   }
 
   window.loadAdminJobs=async function(){
@@ -381,16 +375,10 @@
 
     try{
 
-      const status=
-        $("adminJobStatusFilter")?.value||"";
-
-      const filter=
-        status
-        ?`&status=eq.${encodeURIComponent(status)}`
-        :"";
-
+      // Load the complete set once so summary counts stay correct even
+      // when the administrator filters the table to one status.
       jobs=await api(
-        `/rest/v1/jobs?select=*&order=created_at.desc${filter}`
+        "/rest/v1/jobs?select=*&order=created_at.desc"
       );
 
       jobs=Array.isArray(jobs)?jobs:[];
@@ -498,19 +486,10 @@
       .toLowerCase()
       .trim();
 
-    return(
-      !q||
-      [
-        b.business_name,
-        b.category,
-        b.location,
-        b.description
-      ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase()
-      .includes(q)
-    );
+    const status=$("adminBusinessStatusFilter")?.value||"";
+    const matchesSearch=!q||[b.business_name,b.category,b.location,b.description]
+      .filter(Boolean).join(" ").toLowerCase().includes(q);
+    return matchesSearch && (!status || b.status===status);
   }
 
   window.loadAdminBusinesses=async function(){
@@ -524,16 +503,9 @@
 
     try{
 
-      const status=
-        $("adminBusinessStatusFilter")?.value||"";
-
-      const filter=
-        status
-        ?`&status=eq.${encodeURIComponent(status)}`
-        :"";
-
+      // Fetch all statuses for accurate dashboard totals; filter in render.
       businesses=await api(
-        `/rest/v1/businesses?select=*&order=created_at.desc${filter}`
+        "/rest/v1/businesses?select=*&order=created_at.desc"
       );
 
       businesses=
@@ -873,6 +845,17 @@
           loadAdminBusinesses
         );
 
+      const logout=$("logoutBtn");
+      if(logout && logout.dataset.adminLogoutReady!=="1"){
+        logout.dataset.adminLogoutReady="1";
+        logout.addEventListener("click",event=>{
+          event.preventDefault();
+          event.stopPropagation();
+          if(typeof window.logoutUser==="function"){ window.logoutUser(); return; }
+          ["supabase_access_token","supabase_refresh_token","supabase_user","supabase_user_id","supabase_user_email","user_full_name","user_phone","user_account_type","user_is_admin","eagle_j_is_admin"].forEach(key=>localStorage.removeItem(key));
+          location.replace("login.html");
+        });
+      }
       checkAdmin();
 
     }

@@ -162,7 +162,8 @@ function clearSession(){
     "user_full_name",
     "user_phone",
     "user_account_type",
-    "user_is_admin"
+    "user_is_admin",
+    "eagle_j_is_admin"
   ].forEach(
     k=>localStorage.removeItem(k)
   );
@@ -713,6 +714,9 @@ async function loginUser(e){
       profiles=await api(
         `/rest/v1/profiles?id=eq.${encodeURIComponent(data.user.id)}&select=*`
       );
+      if(!Array.isArray(profiles)||!profiles.length){
+        profiles=await api(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(data.user.id)}&select=*`);
+      }
     }catch(err){
       profileRequestError=err;
       console.warn("Profile request:", err);
@@ -737,8 +741,8 @@ async function loginUser(e){
     ----------------------------------------------------- */
 
     if(
-      profile.account_status &&
-      profile.account_status!=="active"
+      (profile.account_status || profile.status) &&
+      (profile.account_status || profile.status)!=="active"
     ){
 
       clearSession();
@@ -756,7 +760,7 @@ async function loginUser(e){
 
     localStorage.setItem(
       "user_full_name",
-      profile.full_name || ""
+      profile.full_name || [profile.first_name,profile.last_name].filter(Boolean).join(" ") || ""
     );
 
     localStorage.setItem(
@@ -776,7 +780,7 @@ async function loginUser(e){
         data.user,
         {
           full_name:
-            profile.full_name,
+            profile.full_name || [profile.first_name,profile.last_name].filter(Boolean).join(" "),
 
           phone:
             profile.phone,
@@ -893,13 +897,14 @@ async function loadDashboard(){
 
   try{
 
-    const rows=await api(
+    let rows=await api(
       `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
     );
+    if(!Array.isArray(rows)||!rows.length){
+      rows=await api(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
+    }
 
-
-    const p=
-      rows?.[0];
+    const p=rows?.[0];
 
 
     if(!p){
@@ -911,8 +916,8 @@ async function loadDashboard(){
     }
 
 
-    qs("profileName").textContent=
-      p.full_name || "—";
+    const profileName=p.full_name || [p.first_name,p.last_name].filter(Boolean).join(" ") || "—";
+    qs("profileName").textContent=profileName;
 
 
     qs("profileEmail").textContent=
@@ -940,7 +945,7 @@ async function loadDashboard(){
       if (avatarFallback) avatarFallback.style.display = "none";
       avatar.onerror = () => { avatar.style.display = "none"; if (avatarFallback) avatarFallback.style.display = "flex"; };
     } else if (avatarFallback) {
-      avatarFallback.textContent = (p.full_name || session.user.email || "👤").trim().charAt(0).toUpperCase() || "👤";
+      avatarFallback.textContent = (profileName || session.user.email || "👤").trim().charAt(0).toUpperCase() || "👤";
     }
 
     await loadMyBusinessListings(session);
@@ -1034,13 +1039,14 @@ async function loadEmployerDashboard(){
 
   try{
 
-    const rows=await api(
+    let rows=await api(
       `/rest/v1/profiles?id=eq.${encodeURIComponent(session.user.id)}&select=*`
     );
+    if(!Array.isArray(rows)||!rows.length){
+      rows=await api(`/rest/v1/profiles?user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
+    }
 
-
-    const p=
-      rows?.[0];
+    const p=rows?.[0];
 
 
     if(
@@ -1058,7 +1064,7 @@ async function loadEmployerDashboard(){
     if(qs("employerName")){
 
       qs("employerName").textContent=
-        p.full_name || "Anplwayè";
+        p.full_name || [p.first_name,p.last_name].filter(Boolean).join(" ") || "Anplwayè";
 
     }
 
@@ -1066,7 +1072,7 @@ async function loadEmployerDashboard(){
     if(qs("profileName")){
 
       qs("profileName").textContent=
-        p.full_name || "—";
+        p.full_name || [p.first_name,p.last_name].filter(Boolean).join(" ") || "—";
 
     }
 
@@ -1770,10 +1776,47 @@ async function loadBusinessEditForm(){
     if(heading) heading.textContent = "✏️ Modifye Anons ou";
     const submit = form.querySelector('button[type="submit"]');
     if(submit) submit.textContent = "💾 Sove Modifikasyon yo";
-    msg("formMessage", "Ou ap modifye anons ou. Lè ou sove, anons la ap kenbe estati li ye kounye a.", "warning");
+    msg("formMessage", "Ou ap modifye anons ou. Lè ou sove, anons la ap retounen nan verifikasyon Admin.", "warning");
   }catch(err){
     msg("formMessage", "❌ " + (err.message || "Nou pa kapab chaje anons sa a."));
   }
+}
+
+// Preview selected images locally before upload; no image URL is required.
+function setupBusinessImagePicker(){
+  const picker=qs("businessImage");
+  const preview=qs("businessImagePreview");
+  if(!picker||!preview||picker.dataset.previewReady==="1") return;
+  picker.dataset.previewReady="1";
+  picker.addEventListener("change",()=>{
+    const files=Array.from(picker.files||[]);
+    preview.replaceChildren();
+    if(files.length>5){
+      msg("formMessage","❌ Chwazi jiska 5 foto sèlman.");
+      picker.value="";
+      return;
+    }
+    const allowed=["image/jpeg","image/png","image/webp","image/gif"];
+    if(files.some(f=>!allowed.includes(f.type)||f.size>5*1024*1024)){
+      msg("formMessage","❌ Foto yo dwe JPG, PNG, WebP oswa GIF, epi chak dwe 5MB oswa mwens.");
+      picker.value="";
+      return;
+    }
+    const total=files.reduce((sum,f)=>sum+f.size,0);
+    if(total>20*1024*1024){
+      msg("formMessage","❌ Gwosè total foto yo pa dwe depase 20MB.");
+      picker.value="";
+      return;
+    }
+    files.forEach(file=>{
+      const item=document.createElement("div"); item.className="business-image-preview-item";
+      const img=document.createElement("img"); img.alt=file.name; img.src=URL.createObjectURL(file);
+      img.onload=()=>URL.revokeObjectURL(img.src);
+      const caption=document.createElement("span"); caption.textContent=file.name;
+      item.append(img,caption); preview.append(item);
+    });
+    if(files.length) msg("formMessage",`📸 ${files.length} foto chwazi. Yo pral monte lè ou pibliye anons la.`,"success");
+  });
 }
 
 async function submitBusiness(e){
@@ -1888,17 +1931,18 @@ async function submitBusiness(e){
 
   const totalImageBytes=files.reduce((sum,item)=>sum+item.size,0);
   const maxImageBytes=5*1024*1024;
-  const maxTotalImageBytes=100*1024*1024;
-  if(files.length>50){
-    msg("formMessage","❌ Ou ka chwazi jiska 50 foto pou yon sèl anons.");
+  const maxTotalImageBytes=20*1024*1024;
+  const allowedImageTypes=["image/jpeg","image/png","image/webp","image/gif"];
+  if(files.length>5){
+    msg("formMessage","❌ Ou ka chwazi jiska 5 foto pou yon sèl anons.");
     return;
   }
-  if(files.some(item=>!item.type.startsWith("image/") || item.size>maxImageBytes)){
-    msg("formMessage","❌ Chak fichye dwe yon imaj ki pa depase 5MB. Sa ede upload la mache pi byen.");
+  if(files.some(item=>!allowedImageTypes.includes(item.type) || item.size>maxImageBytes)){
+    msg("formMessage","❌ Chwazi foto JPG, PNG, WebP oswa GIF; chak dwe 5MB oswa mwens.");
     return;
   }
   if(totalImageBytes>maxTotalImageBytes){
-    msg("formMessage","❌ Gwosè total tout imaj yo depase 100MB.");
+    msg("formMessage","❌ Gwosè total foto yo depase 20MB.");
     return;
   }
 
@@ -1914,7 +1958,8 @@ async function submitBusiness(e){
         phone: values.phone,
         whatsapp: values.whatsapp,
         price: values.price,
-        description: values.description
+        description: values.description,
+        status: "pending"
       };
       await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`, {
         method:"PATCH",
@@ -1995,7 +2040,7 @@ async function submitBusiness(e){
 
 
     /* -----------------------------------------------------
-       UPLOAD SELECTED IMAGES (maximum 50, total 100MB)
+       UPLOAD SELECTED IMAGES (maximum 5, total 20MB)
     ----------------------------------------------------- */
     if(files.length){
       const uploadedUrls=[];
@@ -2961,10 +3006,13 @@ async function loadUsersDirectory(){
 
   try{
 
-    const rows=
-      await api(
-        "/rest/v1/profiles?select=id,full_name,account_type&order=full_name.asc&limit=100"
-      );
+    let rows;
+    try{
+      // Prefer the restricted public view so private email/phone fields are never requested.
+      rows=await api("/rest/v1/public_member_profiles?select=id,full_name,account_type&limit=100");
+    }catch(_){
+      rows=await api("/rest/v1/profiles?select=id,first_name,last_name,account_type&limit=100");
+    }
 
 
     const users=
@@ -3012,7 +3060,7 @@ async function loadUsersDirectory(){
 
         const name=
           esc(
-            u.full_name ||
+            (u.full_name || [u.first_name,u.last_name].filter(Boolean).join(" ")) ||
             "Itilizatè Eagle-J"
           );
 
@@ -3033,7 +3081,7 @@ async function loadUsersDirectory(){
 
               ${esc(
                 (
-                  u.full_name ||
+                  (u.full_name || [u.first_name,u.last_name].filter(Boolean).join(" ")) ||
                   "EJ"
                 )
                 .trim()
@@ -3283,6 +3331,7 @@ document.addEventListener(
           "submit",
           submitBusiness
         );
+      setupBusinessImagePicker();
       loadBusinessEditForm();
 
     }
