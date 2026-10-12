@@ -412,3 +412,10 @@ main{min-height:calc(100vh - 82px)}
 .home-listings-footer{display:flex;justify-content:center;margin-top:28px}
 @media(max-width:760px){.home-listings-heading{align-items:flex-start;flex-direction:column}.home-listing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.home-listing-grid{grid-template-columns:1fr}.home-listings-section{padding-top:30px;padding-bottom:38px}}
+
+/* Highlight a business selected from a homepage "Voir business" link. */
+.listing-highlight {
+  outline: 3px solid var(--primary, #2563eb);
+  outline-offset: 3px;
+  scroll-margin-top: 110px;
+}

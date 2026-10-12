@@ -2389,6 +2389,7 @@ function renderBusinesses(){
       return `
 
         <article
+          id="listing-${attr(b.id)}"
           class="business-card card"
           data-listing-id="${attr(b.id)}"
           role="link"
@@ -2557,8 +2558,9 @@ function renderBusinesses(){
             </div>
 
 
-            <div class="view-link">
-              <a href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Wè detay pou ${attr(b.business_name || "anons")}">Wè detay →</a>
+            <div class="view-link listing-view-actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+              <a class="btn btn-primary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Voir annonce ${attr(b.business_name || "anons")}">Voir annonce →</a>
+              <a class="btn btn-secondary btn-small" href="biznis.html#listing-${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Voir business ${attr(b.business_name || "business")}">Voir business →</a>
             </div>
 
           </div>
@@ -2573,6 +2575,16 @@ function renderBusinesses(){
     card.setAttribute("tabindex", "0");
     card.setAttribute("role", "link");
   });
+
+  // Scroll to the selected business after listings finish rendering.
+  if (!box.classList.contains("home-listing-grid") && location.hash.startsWith("#listing-")) {
+    const requestedId = decodeURIComponent(location.hash.slice("#listing-".length));
+    const requestedCard = document.getElementById("listing-" + requestedId);
+    if (requestedCard) {
+      setTimeout(() => requestedCard.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+      requestedCard.classList.add("listing-highlight");
+    }
+  }
 
 }
 
