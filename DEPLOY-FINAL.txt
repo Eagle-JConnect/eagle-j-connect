@@ -1,16 +1,15 @@
 EAGLE-J CONNECT — FINAL DEPLOYMENT CHECKLIST
 
-A. SUPABASE
-1. Open the existing Eagle-J Connect project in Supabase.
-2. Export/back up your current database schema and data first.
-3. Open SQL Editor and run SUPABASE-BASE-FINAL.sql only.
-4. Wait for Success and review the verification rows returned at the end.
-5. Do not run the older jobs/business/admin/profile SQL files afterward; they are superseded by the canonical migration.
+A. SUPABASE — DO NOT CHANGE THE DATABASE JUST TO DEPLOY THIS ZIP
+1. This ZIP updates the website files; it does not replace or delete Supabase data.
+2. Do not rerun SUPABASE-BASE-FINAL.sql automatically if you have already configured the database.
+3. Only consider a database migration if a specific missing column/policy has been identified; back up first and review the SQL carefully.
+4. Never run old partial SQL scripts on top of the canonical setup without reviewing policy conflicts.
 
 B. GITHUB PAGES
 1. Extract the ZIP.
-2. Open eagle-j-connect-main.
-3. Upload the CONTENTS of that folder to the root of the existing GitHub Pages repository (not the folder itself).
+2. Extract the files; this final ZIP places the project files directly at the archive root.
+3. Upload the CONTENTS of the extracted folder to the root of the existing GitHub Pages repository (not a nested folder).
 4. Commit the changes and wait for Pages to publish.
 5. Open https://eagle-jconnect.github.io/eagle-j-connect/ and refresh the page.
 

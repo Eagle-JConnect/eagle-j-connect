@@ -1,6 +1,6 @@
 # Eagle-J Connect — Final local audit
 
-Date: 2026-10-11
+Date: 2026-10-12
 
 ## Corrections included
 - Public jobs and business listings use the unauthenticated public-read helper rather than attaching a stale logged-in bearer token.
@@ -11,11 +11,13 @@ Date: 2026-10-11
 - Editing a listing sends it back to pending review (database migration) so owners can edit approved listings without being able to approve their own edits.
 - Listing form supports up to 50 images, with each image limited to 5 MB and total selected images limited to 100 MB. It stores the first image in `image_url` and the full image URL list in `image_urls`; listing detail pages show a responsive gallery with click-to-enlarge.
 - SQL migration creates the optional `business_images` table if missing and configures the `business-images` storage bucket for image files up to 100 MB per object.
-- Cache keys bumped for updated JavaScript/CSS.
+- Cache keys standardized and bumped across all local JavaScript/CSS references so GitHub Pages is less likely to serve mixed older assets.
+- First-visit language now defaults to English when no language preference is saved; previously saved language choices remain respected.
 - Removed an embedded old ZIP and malformed duplicate member-directory HTML files.
 
 ## Local checks performed
-- `node --check` passed for all 7 JavaScript files.
+- `node --check` passed for all 8 JavaScript files.
+- Rechecked all 20 HTML pages for missing local assets/links and duplicate IDs; no missing local references or duplicate IDs were found.
 - Static HTML asset check passed for all 20 HTML pages; no missing local references were found.
 - ZIP integrity checked after packaging.
 
