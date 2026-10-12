@@ -76,7 +76,7 @@
     var controller = new AbortController();
     var timeout = window.setTimeout(function () { controller.abort(); }, 12000);
     try {
-      var response = await fetch(URL + "/rest/v1/businesses?status=eq.approved&select=id,business_name,category,location,phone,whatsapp,price,description,image_url,created_at&order=created_at.desc&limit=100", {
+      var response = await fetch(URL + "/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc&limit=100", {
         method: "GET",
         headers: {"apikey": KEY, "Accept": "application/json"},
         cache: "no-store",
@@ -116,6 +116,6 @@
     }
   }
   document.addEventListener("DOMContentLoaded", function () {
-    window.setTimeout(recover, 18000);
+    window.setTimeout(recover, 3000);
   });
 })();
