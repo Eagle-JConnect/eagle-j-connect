@@ -2342,7 +2342,11 @@ function renderBusinesses(){
         <article
           class="business-card card"
           data-listing-id="${attr(b.id)}"
-          aria-label="Anons: ${attr(b.business_name || 'Anons')}"
+          role="link"
+          tabindex="0"
+          aria-label="Ouvri anons: ${attr(b.business_name || 'Anons')}"
+          onclick="if(!event.target.closest('a,button,input,select,textarea,label')) openBusinessAd('${attr(b.id)}')"
+          onkeydown="if((event.key==='Enter'||event.key===' ') && !event.target.closest('a,button,input,select,textarea,label')){event.preventDefault();openBusinessAd('${attr(b.id)}')}"
         >
 
           ${
@@ -2533,8 +2537,10 @@ window.openBusinessAd=function(id){
     console.error("Business ID missing.");
     return;
   }
-  // Use a same-site URL and the same detail route used by the profile.
-  window.location.assign(new URL("anons.html?id=" + encodeURIComponent(id), window.location.href).href);
+  // Resolve from the current site directory, matching the profile's detail route.
+  const detailUrl = new URL("anons.html", window.location.href);
+  detailUrl.searchParams.set("id", String(id));
+  window.location.href = detailUrl.href;
 };
 
 // Let users open a listing by tapping the card body, while keeping phone,
