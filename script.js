@@ -2058,7 +2058,7 @@ async function loadBusinesses(){
 
     const rows=
       await publicApi(
-        "/rest/v1/businesses?status=eq.approved&select=*&order=created_at.desc"
+        "/rest/v1/businesses?status=eq.approved&select=id,business_name,category,location,phone,whatsapp,price,description,image_url,created_at&order=created_at.desc&limit=100"
       );
 
 
