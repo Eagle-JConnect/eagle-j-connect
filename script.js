@@ -1846,6 +1846,35 @@ async function submitBusiness(e){
   }
 
 
+  // Verify the identity represented by the access token with Supabase Auth.
+  // localStorage can contain a stale user object; RLS checks auth.uid() from
+  // the token, not the locally stored user ID.
+  let authenticatedUser;
+  try {
+    const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${session.token}`,
+        Accept: "application/json"
+      },
+      cache: "no-store"
+    });
+    const authData = await authResponse.json().catch(() => null);
+    if (!authResponse.ok || !authData?.id) {
+      throw new Error("Sesyon an ekspire oswa li pa valab. Tanpri dekonekte epi konekte ankò.");
+    }
+    authenticatedUser = authData;
+    // Keep the stored user record aligned with the identity in the access token.
+    localStorage.setItem("supabase_user", JSON.stringify(authData));
+    localStorage.setItem("supabase_user_id", authData.id);
+    if (authData.email) localStorage.setItem("supabase_user_email", authData.email);
+    session.user = authData;
+  } catch (authError) {
+    msg("formMessage", "❌ " + (authError?.message || "Nou pa kapab verifye sesyon an. Tanpri konekte ankò."));
+    return;
+  }
+
   const files=Array.from(qs("businessImage")?.files || []);
   const file=files[0] || null;
 
@@ -1904,7 +1933,7 @@ async function submitBusiness(e){
     image_url:null,
 
     user_id:
-      session.user.id,
+      authenticatedUser.id,
 
     status:"pending"
 
@@ -2014,7 +2043,9 @@ async function submitBusiness(e){
 
           headers:{
             Prefer:
-              "return=representation"
+              "return=representation",
+            Authorization:
+              `Bearer ${session.token}`
           },
 
           body:
