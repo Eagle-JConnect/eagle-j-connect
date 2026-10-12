@@ -2253,7 +2253,7 @@ function renderBusinesses(){
     .toLowerCase();
 
 
-  const location=
+  const locationFilter=
     (
       qs("marketLocation")
         ?.value ||
@@ -2299,7 +2299,7 @@ function renderBusinesses(){
   }
 
 
-  if(location){
+  if(locationFilter){
 
     const aliases={
       caribbean:["caribbean","karayib","bahamas","nassau","new providence","haiti","ayiti","haïti"],
@@ -2309,8 +2309,8 @@ function renderBusinesses(){
 
 
     const terms=
-      aliases[location] ||
-      [location];
+      aliases[locationFilter] ||
+      [locationFilter];
 
 
     rows=
@@ -2577,8 +2577,8 @@ function renderBusinesses(){
   });
 
   // Scroll to the selected business after listings finish rendering.
-  if (!box.classList.contains("home-listing-grid") && location.hash.startsWith("#listing-")) {
-    const requestedId = decodeURIComponent(location.hash.slice("#listing-".length));
+  if (!box.classList.contains("home-listing-grid") && window.location.hash.startsWith("#listing-")) {
+    const requestedId = decodeURIComponent(window.location.hash.slice("#listing-".length));
     const requestedCard = document.getElementById("listing-" + requestedId);
     if (requestedCard) {
       setTimeout(() => requestedCard.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
