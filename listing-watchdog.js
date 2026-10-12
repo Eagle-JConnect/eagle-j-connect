@@ -28,6 +28,6 @@
       if (loading && /ap chaje|loading|⏳/i.test(loading.textContent || "")) {
         showMessage(target, "Anons yo pran twòp tan pou chaje", "Tcheke koneksyon entènèt la, epi verifye erè JavaScript ak repons Supabase. Si paj la rete konsa, voye screenshot la bay administratè a.");
       }
-    }, 25000);
+    }, 15000);
   });
 })();

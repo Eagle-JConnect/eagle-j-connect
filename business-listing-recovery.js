@@ -116,6 +116,6 @@
     }
   }
   document.addEventListener("DOMContentLoaded", function () {
-    window.setTimeout(recover, 5000);
+    window.setTimeout(recover, 18000);
   });
 })();
