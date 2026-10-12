@@ -1,0 +1,15 @@
+EAGLE-J CONNECT — LISTING CLICK FIX v5
+
+Changes:
+- Public business/ad cards now use a data-listing-id instead of an inline onclick on the entire article.
+- Delegated click and keyboard handlers open the same anons.html?id=... detail page used by the user's profile.
+- Clicks on links and buttons (phone, WhatsApp, Share, and Wè detay) remain independent and do not trigger the card navigation.
+- Bumped script.js cache version in HTML files so browsers request the updated script.
+- No Supabase schema, RLS policy, credentials, or user data changed.
+
+Validation:
+- JavaScript syntax checked with node --check.
+- ZIP archive integrity checked.
+
+Limit:
+- This is a local code correction; live GitHub Pages/Supabase authenticated testing is not available in this environment. Public details still require the listing to be approved and visible under Supabase RLS.

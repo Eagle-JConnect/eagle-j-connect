@@ -2341,16 +2341,8 @@ function renderBusinesses(){
 
         <article
           class="business-card card"
-          onclick="openBusinessAd('${attr(b.id)}')"
-          role="button"
-          tabindex="0"
-
-          onkeydown="
-            if(event.key==='Enter'||event.key===' '){
-              event.preventDefault();
-              openBusinessAd('${attr(b.id)}')
-            }
-          "
+          data-listing-id="${attr(b.id)}"
+          aria-label="Anons: ${attr(b.business_name || 'Anons')}"
         >
 
           ${
@@ -2524,6 +2516,11 @@ function renderBusinesses(){
 
     }).join("");
 
+  box.querySelectorAll(".business-card[data-listing-id]").forEach(card => {
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("role", "link");
+  });
+
 }
 
 
@@ -2532,22 +2529,32 @@ function renderBusinesses(){
 ========================================================= */
 
 window.openBusinessAd=function(id){
-
   if(!id){
-
-    console.error(
-      "Business ID missing."
-    );
-
+    console.error("Business ID missing.");
     return;
-
   }
-
-
-  location.href=
-    `anons.html?id=${encodeURIComponent(id)}`;
-
+  // Use a same-site URL and the same detail route used by the profile.
+  window.location.assign(new URL("anons.html?id=" + encodeURIComponent(id), window.location.href).href);
 };
+
+// Let users open a listing by tapping the card body, while keeping phone,
+// WhatsApp, share, and explicit detail links clickable as their own actions.
+document.addEventListener("click", function(event){
+  const card = event.target && event.target.closest ? event.target.closest(".business-card[data-listing-id]") : null;
+  if (!card) return;
+  if (event.target.closest("a, button, input, select, textarea, label")) return;
+  const id = card.getAttribute("data-listing-id");
+  if (id) window.openBusinessAd(id);
+});
+
+document.addEventListener("keydown", function(event){
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const card = event.target && event.target.closest ? event.target.closest(".business-card[data-listing-id]") : null;
+  if (!card || event.target.closest("a, button, input, select, textarea, label")) return;
+  event.preventDefault();
+  const id = card.getAttribute("data-listing-id");
+  if (id) window.openBusinessAd(id);
+});
 
 
 /* =========================================================
