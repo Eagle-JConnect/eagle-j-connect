@@ -1,0 +1,18 @@
+EAGLE-J CONNECT — GLOBAL LANGUAGE SYSTEM PATCH
+Release: 2026-10-13
+
+Changes:
+- Kept the existing site pages, authentication, navigation, and business logic intact.
+- Updated the shared language.js cache version across HTML pages so browsers fetch the updated language system.
+- Added the shared language selector and language.js loader to the standalone Privacy Policy and Data Deletion pages.
+- Improved translation of newly inserted/dynamically rendered interface content using the existing Haitian Creole, English, French, and Spanish dictionaries.
+- Preserved original user-entered content and skipped scripts, styles, inputs, textareas, code, and editable content during text translation.
+- Language preference continues to persist in localStorage under selectedLanguage.
+
+Validation:
+- language.js passed Node.js syntax validation.
+- All 20 HTML pages include the shared language.js system.
+- This patch does not change Supabase SQL, credentials, authentication rules, or listing logic.
+
+Important:
+- The selector and shared translation engine apply across the site. Individual wording can only be translated when a translation exists in the project's dictionaries; pages with long legal copy or uncommon phrases may still contain untranslated text and should be expanded with reviewed translations over time.
