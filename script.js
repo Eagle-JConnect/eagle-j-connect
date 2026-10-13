@@ -2590,8 +2590,8 @@ function renderBusinesses(){
 
 
             <div class="view-link listing-view-actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-              <a class="btn btn-primary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Voir annonce ${attr(b.business_name || "anons")}">Voir annonce →</a>
-              <a class="btn btn-secondary btn-small" href="biznis.html#listing-${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Voir business ${attr(b.business_name || "business")}">Voir business →</a>
+              <a class="btn btn-primary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Detay anons ${attr(b.business_name || "anons")}">Detay anons →</a>
+              <a class="btn btn-secondary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Detay biznis ${attr(b.business_name || "biznis")}">Detay biznis →</a>
             </div>
 
           </div>
