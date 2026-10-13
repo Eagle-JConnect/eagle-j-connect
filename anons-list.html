@@ -101,8 +101,18 @@
     <p class="copyright">© 2026 Eagle-J Connect • Connect • Discover • Grow</p>
   </div>
 </footer>
-<script src="language.js?v=20261013-v16"></script>
-<script src="menu.js?v=20261013-v16"></script>
-<script src="marketplace-listings.js?v=20261013-v16" defer></script>
+<script>
+(function(){
+  'use strict';
+  var btn=document.getElementById('menuToggle');
+  var nav=document.getElementById('menu');
+  if(btn&&nav){btn.addEventListener('click',function(){var open=!nav.classList.contains('show');nav.classList.toggle('show',open);btn.setAttribute('aria-expanded',open?'true':'false');});}
+  var logout=document.getElementById('logoutBtn');
+  if(logout){logout.addEventListener('click',function(e){e.preventDefault();try{['supabase_access_token','supabase_refresh_token','supabase_user','supabase_user_id','supabase_user_email','user_full_name','user_phone','user_account_type','user_is_admin'].forEach(function(k){localStorage.removeItem(k);});}catch(_e){}location.href='login.html';});}
+  var sel=document.getElementById('languageSelect');
+  if(sel){try{var saved=localStorage.getItem('selectedLanguage');if(saved&&Array.prototype.some.call(sel.options,function(o){return o.value===saved;}))sel.value=saved;}catch(_e){}}
+})();
+</script>
+<script src="marketplace-listings.js?v=20261013-v17" defer></script>
 </body>
 </html>
