@@ -1,0 +1,18 @@
+EAGLE-J CONNECT — ENSTRIKSYON TÈS PEMAN (SAN LAJAN REYÈL)
+
+1. Fè yon backup depo GitHub la.
+2. Mete payment-test.html nan rasin pwojè a, menm kote ak index.html, login.html, script.js ak style.css.
+3. Nan Supabase > SQL Editor, kouri PAYMENT-TEST-SETUP.sql yon sèl fwa.
+4. Dènye rechèch verifikasyon an dwe montre true pou:
+   - test_plan_exists
+   - test_function_exists
+   - test_mode_column_exists
+5. Pibliye fichye payment-test.html sou GitHub Pages.
+6. Konekte sou Eagle-J Connect nan menm navigatè a.
+7. Louvri https://eagle-jconnect.github.io/eagle-j-connect/payment-test.html
+8. Peze “Kreye tranzaksyon tès”. Tranzaksyon an dwe rete pending.
+9. Peze “Verifye tranzaksyon mwen yo” pou wè tranzaksyon kont ou sèlman.
+
+Si ou wè “You must be signed in”, rekonekte sou sit la. Pa retire auth.uid() nan fonksyon an.
+Pa kole JavaScript nan SQL Editor la. Pa mete service-role key nan sit la.
+Pake sa a pa konekte PayPal/Paddle, li pa deplase lajan, epi li pa aktive abònman.
