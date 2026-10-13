@@ -1989,11 +1989,14 @@ async function submitBusiness(e){
         description: values.description,
         status: "pending"
       };
-      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`, {
+      const updatedRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id,status`, {
         method:"PATCH",
         headers:{Prefer:"return=representation"},
         body:JSON.stringify(updateValues)
       });
+      if (!Array.isArray(updatedRows) || updatedRows.length === 0) {
+        throw new Error("Supabase pa konfime okenn chanjman. Verifye koneksyon ou ak pèmisyon pou modifye anons sa a.");
+      }
       if(files.length){
         const uploadedUrls=[];
         for(let i=0;i<files.length;i++){
@@ -2012,10 +2015,14 @@ async function submitBusiness(e){
           }
           uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
         }
-        await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{
+        const imageRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id`,{
           method:"PATCH",
+          headers:{Prefer:"return=representation"},
           body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
         });
+        if (!Array.isArray(imageRows) || imageRows.length === 0) {
+          throw new Error("Foto yo monte, men baz done a pa konfime mizajou foto yo.");
+        }
       }
       msg("formMessage", "✅ Modifikasyon yo sove epi yo voye bay Admin pou revizyon anvan yo parèt piblik.", "success");
       setTimeout(()=>location.href=`anons.html?id=${encodeURIComponent(editId)}`, 900);
