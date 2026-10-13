@@ -349,9 +349,9 @@ async function publicApi(path){
       method: "GET",
       headers: {
         "apikey": SUPABASE_KEY,
-        // Supabase REST expects the API key and a bearer identity. For public
-        // reads, use the publishable/anon key itself (never a service-role key).
-        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        // Public listing requests use the publishable key only. Do not send
+        // a publishable API key as a Bearer JWT; it is not a user access token.
+        // With no Authorization header, PostgREST applies the public anon role.
         "Accept": "application/json"
       },
       cache: "no-store",
