@@ -298,13 +298,21 @@ async function api(path,options={}){
       : `Bearer ${SUPABASE_KEY}`;
   }
 
-  const r=await fetch(
-    SUPABASE_URL+path,
-    {
-      ...options,
-      headers
-    }
-  );
+  let r;
+  try {
+    r=await fetch(
+      SUPABASE_URL+path,
+      {
+        ...options,
+        headers
+      }
+    );
+  } catch (networkError) {
+    // Browser's generic "Failed to fetch" usually means connectivity, CORS,
+    // blocked request, or a Supabase endpoint issue; preserve a useful message.
+    const detail = networkError && networkError.message ? networkError.message : "Network request failed";
+    throw new Error(`Koneksyon ak Supabase echwe (${detail}). Verifye entènèt la, SUPABASE_URL, ak si pwojè Supabase la aktif.`);
+  }
 
   const text=await r.text();
 
@@ -1789,6 +1797,9 @@ function setupBusinessImagePicker(){
   picker.dataset.previewReady="1";
   picker.addEventListener("change",()=>{
     const files=Array.from(picker.files||[]);
+    // Release previous local preview URLs only when the preview list is replaced.
+    (preview._eaglePreviewUrls || []).forEach(url => URL.revokeObjectURL(url));
+    preview._eaglePreviewUrls = [];
     preview.replaceChildren();
     if(files.length>5){
       msg("formMessage","❌ Chwazi jiska 5 foto sèlman.");
@@ -1809,8 +1820,12 @@ function setupBusinessImagePicker(){
     }
     files.forEach(file=>{
       const item=document.createElement("div"); item.className="business-image-preview-item";
-      const img=document.createElement("img"); img.alt=file.name; img.src=URL.createObjectURL(file);
-      img.onload=()=>URL.revokeObjectURL(img.src);
+      const img=document.createElement("img");
+      img.alt=file.name;
+      const previewUrl=URL.createObjectURL(file);
+      preview._eaglePreviewUrls.push(previewUrl);
+      img.src=previewUrl;
+      img.onerror=()=>{ img.removeAttribute("src"); img.alt="Pa kapab montre foto sa a: "+file.name; };
       const caption=document.createElement("span"); caption.textContent=file.name;
       item.append(img,caption); preview.append(item);
     });
@@ -2018,7 +2033,7 @@ async function submitBusiness(e){
         const imageRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id`,{
           method:"PATCH",
           headers:{Prefer:"return=representation"},
-          body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
+          body:JSON.stringify({image_url:uploadedUrls[0],image_urls:uploadedUrls})
         });
         if (!Array.isArray(imageRows) || imageRows.length === 0) {
           throw new Error("Foto yo monte, men baz done a pa konfime mizajou foto yo.");
@@ -2104,7 +2119,7 @@ async function submitBusiness(e){
       }
       await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(b.id)}`,{
         method:"PATCH",
-        body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
+        body:JSON.stringify({image_url:uploadedUrls[0],image_urls:uploadedUrls})
       });
     }
 
