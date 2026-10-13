@@ -1,29 +1,15 @@
-EAGLE-J CONNECT — FINAL DEPLOYMENT CHECKLIST
+EAGLE-J CONNECT — FINAL PACKAGE (2026-10-12)
 
-A. SUPABASE — DO NOT CHANGE THE DATABASE JUST TO DEPLOY THIS ZIP
-1. This ZIP updates the website files; it does not replace or delete Supabase data.
-2. Do not rerun SUPABASE-BASE-FINAL.sql automatically if you have already configured the database.
-3. Only consider a database migration if a specific missing column/policy has been identified; back up first and review the SQL carefully.
-4. Never run old partial SQL scripts on top of the canonical setup without reviewing policy conflicts.
+Included checks/fixes:
+- Unified script.js cache version across HTML pages.
+- Homepage public-count placeholders show — until a live count is confirmed, rather than briefly claiming zero.
+- JavaScript syntax and local HTML references validated in this package.
+- Supabase RLS, authentication, image storage, and admin actions still require live testing after deployment.
 
-B. GITHUB PAGES
-1. Extract the ZIP.
-2. Extract the files; this final ZIP places the project files directly at the archive root.
-3. Upload the CONTENTS of the extracted folder to the root of the existing GitHub Pages repository (not a nested folder).
-4. Commit the changes and wait for Pages to publish.
-5. Open https://eagle-jconnect.github.io/eagle-j-connect/ and refresh the page.
+DEPLOYMENT:
+1. Back up the current GitHub repository and export the Supabase schema/policies first.
+2. Upload the CONTENTS of this folder to the GitHub Pages repository root (the folder containing index.html), then commit/push.
+3. Review SUPABASE-BASE-FINAL.sql carefully against your actual schema and run only if appropriate; it replaces policies on core tables. Do not run all SQL files in this ZIP.
+4. Test registration, login, job posting, business/ad posting, image upload, listing details, admin approval/rejection, and logout using separate member/admin accounts.
 
-C. TEST IN THIS ORDER
-- Register a new account (email confirmation if enabled) and verify a profile is created.
-- Sign in with email/password and sign out.
-- Open the public member directory and verify only public active profiles appear.
-- Create a job; verify it is pending and hidden publicly until an admin approves it.
-- Create a business/listing; verify it is pending and hidden publicly until an admin approves it.
-- Upload listing/profile images.
-- Log in as the configured admin; approve/reject content, disable/reactivate a user, and test account deletion only with a test account.
-- Test Google login only after Google OAuth is configured.
-
-SECURITY NOTES
-- Never place a service-role/secret key in frontend files.
-- The migration grants administrator access to Judes Versanne's verified Auth UUID. Change that UUID if reusing the SQL for another project.
-- Social network publishing still requires external OAuth credentials and Edge Function configuration; see SOCIAL-MEDIA-SETUP.md.
+LIMITATION: This package cannot publish itself to GitHub Pages or execute SQL in your Supabase project. Those remote actions require access from you. Never put a Supabase service-role key in browser files.

@@ -128,13 +128,5 @@ function applyLanguage(lang){if(!translations[lang])lang='ht';const dict=transla
 }
 function changeLanguage(lang){const s=document.getElementById('languageSelect');applyLanguage(lang||(s?s.value:'ht'));}
 window.applyLanguage=applyLanguage;window.changeLanguage=changeLanguage;
-function translateAddedContent(root,lang){
- if(!root)return;const dict=translations[lang]||translations.ht;
- const tagged=[];if(root.nodeType===1&&root.matches&&root.matches('[data-i18n]'))tagged.push(root);
- if(root.querySelectorAll)root.querySelectorAll('[data-i18n]').forEach(el=>tagged.push(el));
- tagged.forEach(el=>{const k=el.getAttribute('data-i18n');if(dict[k]!==undefined)el.textContent=dict[k];});
- if(root.nodeType===3){const p=root.parentElement;if(p&&!p.closest('script,style,textarea,input,option[data-user-content],code,pre,[contenteditable="true"],[data-i18n]')&&!p.hasAttribute('data-no-translate')){if(!root.__ejOriginal)root.__ejOriginal=root.nodeValue;const original=root.__ejOriginal,t=norm(original);let tr=phraseMaps[lang]&&phraseMaps[lang][t];if(!tr){for(const k of Object.keys(translations.ht)){if(norm(translations.ht[k])===t&&translations[lang]&&translations[lang][k]){tr=translations[lang][k];break;}}}const next=(lang==='ht'?original:(tr?original.replace(t,tr):original));if(root.nodeValue!==next)root.nodeValue=next;}}
- if(root.nodeType===1&&root.querySelectorAll){const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;while((n=w.nextNode()))translateAddedContent(n,lang);}
-}
-document.addEventListener('DOMContentLoaded',()=>{let saved='en';try{saved=localStorage.getItem('selectedLanguage')||'en'}catch(e){};const sels=document.querySelectorAll('#languageSelect');sels.forEach(s=>s.addEventListener('change',()=>applyLanguage(s.value)));applyLanguage(saved);let queued=false;const pending=[];const mo=new MutationObserver(records=>{records.forEach(r=>r.addedNodes.forEach(n=>pending.push(n)));if(queued)return;queued=true;queueMicrotask(()=>{queued=false;let lang='en';try{lang=localStorage.getItem('selectedLanguage')||'en'}catch(e){};while(pending.length)translateAddedContent(pending.shift(),lang);translateCategories(lang);});});mo.observe(document.body,{childList:true,subtree:true});});
+document.addEventListener('DOMContentLoaded',()=>{let saved='en';try{saved=localStorage.getItem('selectedLanguage')||'en'}catch(e){};const sels=document.querySelectorAll('#languageSelect');sels.forEach(s=>s.addEventListener('change',()=>applyLanguage(s.value)));applyLanguage(saved);});
 })();

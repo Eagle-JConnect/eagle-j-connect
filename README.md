@@ -124,3 +124,10 @@ Note : les données et les images existantes restent dans votre projet Supabase;
 
 ## Final audit notes (2026-10-11)
 See `FINAL-AUDIT-REPORT.md` for the exact local checks and remaining live-test limits. The live Supabase database, storage settings, login, and admin permissions must still be verified in the user's project after reviewing the SQL migration.
+
+
+## v12 — Business posting auth identity check
+- Before creating a business listing, the form now verifies the current access token against Supabase Auth `/auth/v1/user`.
+- The inserted `user_id` comes from the authenticated user returned by Supabase, rather than trusting only the locally stored user object.
+- The business INSERT explicitly sends the current session bearer token.
+- If the session is expired/invalid, the form asks the member to sign in again instead of sending a mismatched user ID.

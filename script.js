@@ -1846,6 +1846,35 @@ async function submitBusiness(e){
   }
 
 
+  // Verify the identity represented by the access token with Supabase Auth.
+  // localStorage can contain a stale user object; RLS checks auth.uid() from
+  // the token, not the locally stored user ID.
+  let authenticatedUser;
+  try {
+    const authResponse = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: "GET",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${session.token}`,
+        Accept: "application/json"
+      },
+      cache: "no-store"
+    });
+    const authData = await authResponse.json().catch(() => null);
+    if (!authResponse.ok || !authData?.id) {
+      throw new Error("Sesyon an ekspire oswa li pa valab. Tanpri dekonekte epi konekte ankò.");
+    }
+    authenticatedUser = authData;
+    // Keep the stored user record aligned with the identity in the access token.
+    localStorage.setItem("supabase_user", JSON.stringify(authData));
+    localStorage.setItem("supabase_user_id", authData.id);
+    if (authData.email) localStorage.setItem("supabase_user_email", authData.email);
+    session.user = authData;
+  } catch (authError) {
+    msg("formMessage", "❌ " + (authError?.message || "Nou pa kapab verifye sesyon an. Tanpri konekte ankò."));
+    return;
+  }
+
   const files=Array.from(qs("businessImage")?.files || []);
   const file=files[0] || null;
 
@@ -1904,7 +1933,7 @@ async function submitBusiness(e){
     image_url:null,
 
     user_id:
-      session.user.id,
+      authenticatedUser.id,
 
     status:"pending"
 
@@ -1960,11 +1989,14 @@ async function submitBusiness(e){
         description: values.description,
         status: "pending"
       };
-      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`, {
+      const updatedRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id,status`, {
         method:"PATCH",
         headers:{Prefer:"return=representation"},
         body:JSON.stringify(updateValues)
       });
+      if (!Array.isArray(updatedRows) || updatedRows.length === 0) {
+        throw new Error("Supabase pa konfime okenn chanjman. Verifye koneksyon ou ak pèmisyon pou modifye anons sa a.");
+      }
       if(files.length){
         const uploadedUrls=[];
         for(let i=0;i<files.length;i++){
@@ -1983,10 +2015,14 @@ async function submitBusiness(e){
           }
           uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
         }
-        await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{
+        const imageRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id`,{
           method:"PATCH",
+          headers:{Prefer:"return=representation"},
           body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
         });
+        if (!Array.isArray(imageRows) || imageRows.length === 0) {
+          throw new Error("Foto yo monte, men baz done a pa konfime mizajou foto yo.");
+        }
       }
       msg("formMessage", "✅ Modifikasyon yo sove epi yo voye bay Admin pou revizyon anvan yo parèt piblik.", "success");
       setTimeout(()=>location.href=`anons.html?id=${encodeURIComponent(editId)}`, 900);
@@ -2014,7 +2050,9 @@ async function submitBusiness(e){
 
           headers:{
             Prefer:
-              "return=representation"
+              "return=representation",
+            Authorization:
+              `Bearer ${session.token}`
           },
 
           body:
