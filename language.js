@@ -128,5 +128,5 @@ function applyLanguage(lang){if(!translations[lang])lang='ht';const dict=transla
 }
 function changeLanguage(lang){const s=document.getElementById('languageSelect');applyLanguage(lang||(s?s.value:'ht'));}
 window.applyLanguage=applyLanguage;window.changeLanguage=changeLanguage;
-document.addEventListener('DOMContentLoaded',()=>{let saved='en';try{saved=localStorage.getItem('selectedLanguage')||'en'}catch(e){};const sels=document.querySelectorAll('#languageSelect');sels.forEach(s=>s.addEventListener('change',()=>applyLanguage(s.value)));applyLanguage(saved);});
+document.addEventListener('DOMContentLoaded',()=>{let saved='en';try{saved=localStorage.getItem('selectedLanguage')||'en'}catch(e){};const sels=document.querySelectorAll('#languageSelect');sels.forEach(s=>s.addEventListener('change',()=>applyLanguage(s.value)));applyLanguage(saved);let queued=false;const mo=new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;let lang='en';try{lang=localStorage.getItem('selectedLanguage')||'en'}catch(e){};translateCategories(lang);});});mo.observe(document.body,{childList:true,subtree:true});});
 })();
