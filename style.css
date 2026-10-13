@@ -419,3 +419,10 @@ main{min-height:calc(100vh - 82px)}
   outline-offset: 3px;
   scroll-margin-top: 110px;
 }
+
+
+/* Fix v20: ensure create/edit listing controls remain interactive on mobile */
+.services .form-wrap{position:relative;z-index:2;pointer-events:auto}
+.services .business-form{position:relative;z-index:3;pointer-events:auto}
+.services .business-form label,.services .business-form input,.services .business-form select,.services .business-form textarea,.services .business-form button{position:relative;pointer-events:auto;touch-action:manipulation}
+.services .business-form input,.services .business-form select,.services .business-form textarea{z-index:4}

@@ -1750,34 +1750,34 @@ let businessEditOriginal = null;
 async function loadBusinessEditForm(){
   const form = qs("businessForm");
   if(!form) return;
-  const editId = new URLSearchParams(location.search).get("edit");
+  const editId = new URLSearchParams(window.location.search).get("edit");
   if(!editId) return;
   const session = getSession();
-  if(!session){
-    msg("formMessage", "⚠️ Konekte pou modifye pwòp anons ou.");
+  if(!session || !session.token || !session.user?.id){
+    msg("formMessage", "⚠️ Sesyon ou pa disponib. Konekte ankò, epi peze Modifye.", "warning");
     return;
   }
+  msg("formMessage", "⏳ N ap chaje enfòmasyon anons ou a...", "warning");
   try{
     const rows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=*`);
-    const b = rows?.[0];
-    if(!b) throw new Error("Nou pa jwenn anons sa a nan kont ou, oswa ou pa gen pèmisyon pou modifye li.");
+    const b = Array.isArray(rows) ? rows[0] : null;
+    if(!b) throw new Error("Nou pa jwenn anons sa a nan kont ou. Verifye ou konekte ak menm kont ki te kreye anons lan.");
     businessEditOriginal = b;
-    qs("businessName").value = b.business_name || "";
+    const setValue=(id,value)=>{const el=qs(id);if(el)el.value=value??"";};
+    setValue("businessName",b.business_name);
     const parts = String(b.category || "business:other").split(":");
-    qs("listingType").value = parts.length > 1 ? parts[0] : "business";
-    qs("category").value = parts.length > 1 ? parts.slice(1).join(":") : (parts[0] || "other");
-    qs("location").value = b.location || "";
-    qs("phone").value = b.phone || "";
-    qs("whatsapp").value = b.whatsapp || "";
-    qs("price").value = b.price || "";
-    qs("description").value = b.description || "";
+    const typeEl=qs("listingType"), catEl=qs("category");
+    if(typeEl) typeEl.value = parts.length > 1 ? parts[0] : "business";
+    if(catEl) catEl.value = parts.length > 1 ? parts.slice(1).join(":") : (parts[0] || "other");
+    setValue("location",b.location); setValue("phone",b.phone); setValue("whatsapp",b.whatsapp); setValue("price",b.price); setValue("description",b.description);
     const heading = form.parentElement?.querySelector("h1");
     if(heading) heading.textContent = "✏️ Modifye Anons ou";
     const submit = form.querySelector('button[type="submit"]');
     if(submit) submit.textContent = "💾 Sove Modifikasyon yo";
-    msg("formMessage", "Ou ap modifye anons ou. Lè ou sove, anons la ap retounen nan verifikasyon Admin.", "warning");
+    msg("formMessage", "✏️ Enfòmasyon anons la chaje. Ou ka modifye chan yo epi sove.", "success");
   }catch(err){
-    msg("formMessage", "❌ " + (err.message || "Nou pa kapab chaje anons sa a."));
+    console.error("loadBusinessEditForm failed:",err);
+    msg("formMessage", "❌ Anons la pa t ka chaje: " + (err.message || "Erè enkoni") + ". Rafrechi paj la; si pwoblèm nan kontinye, konekte ankò.", "error");
   }
 }
 
