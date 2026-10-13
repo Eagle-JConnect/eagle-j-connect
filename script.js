@@ -349,9 +349,9 @@ async function publicApi(path){
       method: "GET",
       headers: {
         "apikey": SUPABASE_KEY,
-        // Public listing requests use the publishable key only. Do not send
-        // a publishable API key as a Bearer JWT; it is not a user access token.
-        // With no Authorization header, PostgREST applies the public anon role.
+        // Supabase REST expects the API key and a bearer identity. For public
+        // reads, use the publishable/anon key itself (never a service-role key).
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
         "Accept": "application/json"
       },
       cache: "no-store",
@@ -2590,8 +2590,8 @@ function renderBusinesses(){
 
 
             <div class="view-link listing-view-actions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-              <a class="btn btn-primary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Detay anons ${attr(b.business_name || "anons")}">Detay anons →</a>
-              <a class="btn btn-secondary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Detay biznis ${attr(b.business_name || "biznis")}">Detay biznis →</a>
+              <a class="btn btn-primary btn-small" href="anons.html?id=${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Voir annonce ${attr(b.business_name || "anons")}">Voir annonce →</a>
+              <a class="btn btn-secondary btn-small" href="biznis.html#listing-${encodeURIComponent(b.id)}" onclick="event.stopPropagation()" aria-label="Voir business ${attr(b.business_name || "business")}">Voir business →</a>
             </div>
 
           </div>

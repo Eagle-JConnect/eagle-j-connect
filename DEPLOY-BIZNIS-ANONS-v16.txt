@@ -1,0 +1,16 @@
+EAGLE-J CONNECT — FINAL BIZNIS/ANONS FIX v16
+
+This package keeps the existing project pages and Supabase data setup. It changes only biznis.html, anons-list.html and adds marketplace-listings.js for the public listings view.
+
+PUBLISHING
+1. Extract the ZIP.
+2. Open the eagle/ folder.
+3. Upload/replace the files in the repository's actual GitHub Pages publishing folder (the folder that currently contains index.html). Do not upload an extra nested eagle/ folder unless that is your configured publishing root.
+4. Ensure biznis.html, anons-list.html, marketplace-listings.js, style.css, language.js, menu.js, Logo.jpg and the other existing site files sit together in that same published folder.
+5. Wait for the GitHub Pages deployment to finish, then open the site in a fresh tab. GitHub notes deployment may take several minutes.
+
+NOTES
+- This patch does not modify or delete database rows and does not require new SQL.
+- Public listing reads only approved rows from public.businesses.
+- The loader limits cards to 30 and lazy-loads images to reduce mobile browser memory pressure.
+- This ZIP has been statically packaged; live Supabase/GitHub Pages testing could not be performed from this environment.
