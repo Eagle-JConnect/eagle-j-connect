@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ht">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eagle-J Connect — Tès Peman</title>
+  <link rel="stylesheet" href="style.css?v=payment-test-20261013-1">
+  <style>
+    .payment-test-wrap{max-width:760px;margin:36px auto;padding:0 16px}
+    .payment-test-card{background:#fff;border:1px solid #dbe3ec;border-radius:16px;padding:24px;box-shadow:0 8px 24px rgba(15,23,42,.07)}
+    .payment-test-note{padding:12px 14px;border-radius:10px;background:#fff7df;color:#674b00;margin:16px 0}
+    .payment-test-status{white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;border-radius:10px;background:#f4f7fb;margin-top:14px;min-height:48px}
+    .payment-test-actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+    .payment-test-actions button,.payment-test-actions a{cursor:pointer}
+    .payment-test-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.92rem}
+    .payment-test-table th,.payment-test-table td{padding:9px;border-bottom:1px solid #e5eaf0;text-align:left;overflow-wrap:anywhere}
+    .payment-test-actions button:disabled{opacity:.6;cursor:wait}
+    @media(max-width:560px){.payment-test-card{padding:16px}.payment-test-table{font-size:.8rem}}
+  </style>
+</head>
+<body>
+<header class="header">
+  <div class="container nav-container">
+    <a href="index.html" class="logo-area">
+      <img src="Logo.jpg" alt="Eagle-J Connect logo">
+      <div><h2>Eagle-J Connect</h2><span>Connect • Discover • Grow</span></div>
+    </a>
+    <a class="btn btn-secondary" href="index.html">Retounen sou sit la</a>
+  </div>
+</header>
+<main class="payment-test-wrap">
+  <section class="payment-test-card">
+    <p class="card-kicker">EAGLE-J CONNECT · ENVIRONNEMENT TÈS</p>
+    <h1>Tès tranzaksyon san lajan reyèl</h1>
+    <p>Paj sa a sèlman kreye tranzaksyon ki rete <strong>pending</strong>. Li pa konekte ak PayPal oswa Paddle, li pa chaje lajan, epi li pa aktive okenn abònman.</p>
+    <div class="payment-test-note"><strong>Enpòtan:</strong> Konekte sou Eagle-J Connect anvan ou itilize tès la. Pa kole okenn kle sekrè sou paj sa a.</div>
+    <div class="payment-test-actions">
+      <button class="btn btn-primary" id="createTest" type="button">Kreye tranzaksyon tès</button>
+      <button class="btn btn-secondary" id="refreshTests" type="button">Verifye tranzaksyon mwen yo</button>
+      <a class="btn btn-secondary" href="login.html">Konekte</a>
+    </div>
+    <div id="testStatus" class="payment-test-status" role="status" aria-live="polite">Ap verifye sesyon ou...</div>
+    <h2>Tranzaksyon tès resan yo</h2>
+    <div id="testRows">Pa gen done chaje ankò.</div>
+  </section>
+</main>
+<script>
+(function(){
+  'use strict';
+  const SUPABASE_URL = 'https://glwyqrvufmjscjbbszzz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_BW1Y0QkG-tCV0TiQnto4IA_H32L2esr';
+  const statusEl = document.getElementById('testStatus');
+  const rowsEl = document.getElementById('testRows');
+  const createBtn = document.getElementById('createTest');
+  const refreshBtn = document.getElementById('refreshTests');
+
+  function getSignedInSession(){
+    const token = localStorage.getItem('supabase_access_token');
+    const userId = localStorage.getItem('supabase_user_id');
+    if (!token || !userId) return null;
+    return {token, userId};
+  }
+  function say(message){ statusEl.textContent = message; }
+  function requestHeaders(token){
+    return {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + token,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+  }
+  async function refresh(){
+    const session = getSignedInSession();
+    if (!session) {
+      say('Ou pa konekte. Konekte sou Eagle-J Connect, apre sa retounen sou paj tès la.');
+      rowsEl.textContent = 'Pa gen sesyon itilizatè.';
+      return;
+    }
+    refreshBtn.disabled = true;
+    try {
+      const url = SUPABASE_URL + '/rest/v1/payment_transactions?select=id,status,amount,currency,purpose,test_mode,created_at&user_id=eq.' + encodeURIComponent(session.userId) + '&test_mode=eq.true&order=created_at.desc&limit=10';
+      const response = await fetch(url, {headers: requestHeaders(session.token), cache: 'no-store'});
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.message || data?.details || ('HTTP ' + response.status));
+      if (!Array.isArray(data) || data.length === 0) {
+        rowsEl.textContent = 'Pa gen tranzaksyon tès pou kont sa a ankò.';
+      } else {
+        const table = document.createElement('table');
+        table.className = 'payment-test-table';
+        const thead = document.createElement('thead');
+        thead.innerHTML = '<tr><th>Estati</th><th>Montan tès</th><th>ID tranzaksyon</th></tr>';
+        table.appendChild(thead);
+        const tbody = document.createElement('tbody');
+        data.forEach(item => {
+          const tr = document.createElement('tr');
+          [item.status, String(item.amount) + ' ' + item.currency, item.id].forEach(value => {
+            const td = document.createElement('td');
+            td.textContent = value == null ? '' : String(value);
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        rowsEl.replaceChildren(table);
+      }
+      say('Sesyon verifye. Lis tranzaksyon yo ajou.');
+    } catch (error) {
+      say('Nou pa t kapab li tranzaksyon yo: ' + error.message + '. Verifye sesyon an ak règ RLS yo.');
+    } finally {
+      refreshBtn.disabled = false;
+    }
+  }
+  async function createTestTransaction(){
+    const session = getSignedInSession();
+    if (!session) {
+      say('Ou pa konekte. Konekte sou sit la anvan ou kreye yon tranzaksyon tès.');
+      return;
+    }
+    createBtn.disabled = true;
+    say('Ap kreye tranzaksyon tès la...');
+    try {
+      const response = await fetch(SUPABASE_URL + '/rest/v1/rpc/create_ejc_test_payment', {
+        method: 'POST',
+        headers: requestHeaders(session.token),
+        body: '{}'
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.message || data?.details || data?.hint || ('HTTP ' + response.status));
+      say('Tranzaksyon tès kreye. ID: ' + String(data) + '. Pa gen lajan ki deplase; estati a dwe rete pending.');
+      await refresh();
+    } catch (error) {
+      say('Tès la echwe: ' + error.message + '. Voye mesaj sa a pou nou korije fonksyon an san nou pa retire verifikasyon sekirite a.');
+    } finally {
+      createBtn.disabled = false;
+    }
+  }
+  createBtn.addEventListener('click', createTestTransaction);
+  refreshBtn.addEventListener('click', refresh);
+  refresh();
+})();
+</script>
+</body>
+</html>
