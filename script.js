@@ -1796,14 +1796,8 @@ function setupBusinessImagePicker(){
       return;
     }
     const allowed=["image/jpeg","image/png","image/webp","image/gif"];
-    if(files.some(f=>!allowed.includes(f.type)||f.size>5*1024*1024)){
-      msg("formMessage","❌ Foto yo dwe JPG, PNG, WebP oswa GIF, epi chak dwe 5MB oswa mwens.");
-      picker.value="";
-      return;
-    }
-    const total=files.reduce((sum,f)=>sum+f.size,0);
-    if(total>20*1024*1024){
-      msg("formMessage","❌ Gwosè total foto yo pa dwe depase 20MB.");
+    if(files.some(f=>!allowed.includes(f.type)||f.size>10*1024*1024)){
+      msg("formMessage","❌ Foto yo dwe JPG, PNG, WebP oswa GIF, epi chak dwe 10MB oswa mwens.");
       picker.value="";
       return;
     }
@@ -1957,17 +1951,16 @@ async function submitBusiness(e){
   }
 
 
-  const maxImageBytes=5*1024*1024;
+  const maxImageBytes=10*1024*1024;
   const allowedImageTypes=["image/jpeg","image/png","image/webp","image/gif"];
   if(files.length>15){
     msg("formMessage","❌ Ou ka chwazi jiska 15 foto pou yon sèl anons.");
     return;
   }
   if(files.some(item=>!allowedImageTypes.includes(item.type) || item.size>maxImageBytes)){
-    msg("formMessage","❌ Chwazi foto JPG, PNG, WebP oswa GIF; chak dwe 5MB oswa mwens.");
+    msg("formMessage","❌ Chwazi foto JPG, PNG, WebP oswa GIF; chak dwe 10MB oswa mwens.");
     return;
   }
-
 
   const editId = new URLSearchParams(location.search).get("edit");
   if(editId){
@@ -1983,14 +1976,11 @@ async function submitBusiness(e){
         description: values.description,
         status: "pending"
       };
-      const updatedRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id,status`, {
+      await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`, {
         method:"PATCH",
         headers:{Prefer:"return=representation"},
         body:JSON.stringify(updateValues)
       });
-      if (!Array.isArray(updatedRows) || updatedRows.length === 0) {
-        throw new Error("Supabase pa konfime okenn chanjman. Verifye koneksyon ou ak pèmisyon pou modifye anons sa a.");
-      }
       if(files.length){
         const uploadedUrls=[];
         for(let i=0;i<files.length;i++){
@@ -2009,14 +1999,10 @@ async function submitBusiness(e){
           }
           uploadedUrls.push(`${SUPABASE_URL}/storage/v1/object/public/${IMAGE_BUCKET}/${fileName}`);
         }
-        const imageRows = await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}&select=id`,{
+        await api(`/rest/v1/businesses?id=eq.${encodeURIComponent(editId)}&user_id=eq.${encodeURIComponent(session.user.id)}`,{
           method:"PATCH",
-          headers:{Prefer:"return=representation"},
           body:JSON.stringify({image_url:uploadedUrls[0],image_urls:JSON.stringify(uploadedUrls)})
         });
-        if (!Array.isArray(imageRows) || imageRows.length === 0) {
-          throw new Error("Foto yo monte, men baz done a pa konfime mizajou foto yo.");
-        }
       }
       msg("formMessage", "✅ Modifikasyon yo sove epi yo voye bay Admin pou revizyon anvan yo parèt piblik.", "success");
       setTimeout(()=>location.href=`anons.html?id=${encodeURIComponent(editId)}`, 900);
@@ -2071,7 +2057,7 @@ async function submitBusiness(e){
 
 
     /* -----------------------------------------------------
-       UPLOAD SELECTED IMAGES (maximum 15, each file <= 5MB)
+       UPLOAD SELECTED IMAGES (maximum 15; each file <= 10MB)
     ----------------------------------------------------- */
     if(files.length){
       const uploadedUrls=[];
