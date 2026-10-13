@@ -1,0 +1,25 @@
+EAGLE-J CONNECT LEGAL PAGES — INSTALL NOTES
+
+Included pages:
+- privacy-policy.html
+- terms-of-service.html
+- cookie-policy.html
+- community-guidelines.html
+- data-deletion.html
+
+All existing HTML pages now have footer links to these pages. The policies use the support email found in the existing project: ingjudesversanne@gmail.com.
+
+DEPLOY:
+1. Extract this ZIP on your phone or computer.
+2. Open the eagle folder inside the extracted ZIP.
+3. Upload/replace the repository files at the ROOT of https://github.com/eagle-jconnect/eagle-j-connect (do not create an extra eagle folder in the GitHub repository). The files inside the ZIP are nested in eagle/; upload the CONTENTS of that folder to repository root.
+4. Commit the changes to the branch configured for GitHub Pages (commonly main). Wait for deployment.
+5. Test these URLs: /privacy-policy.html, /terms-of-service.html, /cookie-policy.html, /community-guidelines.html, /data-deletion.html.
+6. Test the footer from home page and a subpage on mobile.
+
+IMPORTANT REVIEW BEFORE PUBLIC LAUNCH:
+- Confirm the support email is controlled by the platform operator.
+- Confirm the actual services integrated (Google/Facebook login, Supabase, analytics, advertising) match the statements on the pages. Remove any provider reference not actually used.
+- Cookie Policy is written conservatively: it does not claim analytics/advertising cookies are active. If non-essential tracking is added, implement appropriate consent controls where required and update the policy.
+- Terms include general protections but do not select a governing law. Have a qualified lawyer review jurisdiction, business model, minors policy, and dispute terms for the markets served. These templates are not legal advice or a guarantee of compliance.
+- GitHub Pages serves static pages; it does not itself implement account deletion. Requests sent to the listed email must be handled manually until a verified deletion workflow is implemented.
